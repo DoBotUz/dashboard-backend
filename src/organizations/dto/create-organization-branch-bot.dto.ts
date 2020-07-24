@@ -27,10 +27,24 @@ class Bot {
 export class CreateOrganizationBranchBot {
   @IsNotEmpty()
   @Length(3, 255)
-  title: string;
+  ru_title: string;
 
   @IsNotEmpty()
-  description: string;
+  ru_description: string;
+
+  @IsNotEmpty()
+  @Length(3, 255)
+  en_title: string;
+
+  @IsNotEmpty()
+  en_description: string;
+
+  @IsNotEmpty()
+  @Length(3, 255)
+  uz_title: string;
+
+  @IsNotEmpty()
+  uz_description: string;
 
   @IsNotEmpty()
   fixed_delivery_price: string;
