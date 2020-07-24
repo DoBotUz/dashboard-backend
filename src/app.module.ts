@@ -7,6 +7,16 @@ import { UsersModule } from './users/users.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { BranchesModule } from './branches/branches.module';
 import { BotsModule } from './bots/bots.module';
+import { CategoriesModule } from './categories/categories.module';
+import { ItemsModule } from './items/items.module';
+import { FilesModule } from './files/files.module';
+import { BotUsersModule } from './bot-users/bot-users.module';
+import { BotNotificationsModule } from './bot-notifications/bot-notifications.module';
+import { FeedbacksModule } from './feedbacks/feedbacks.module';
+import { OrdersModule } from './orders/orders.module';
+import { PromosModule } from './promos/promos.module';
+import { PromocodesModule } from './promocodes/promocodes.module';
+import { SubscriptionPlansModule } from './subscription-plans/subscription-plans.module';
 
 @Module({
   imports: [
@@ -27,6 +37,16 @@ import { BotsModule } from './bots/bots.module';
     OrganizationsModule,
     BranchesModule,
     BotsModule,
+    CategoriesModule,
+    ItemsModule,
+    FilesModule,
+    BotUsersModule,
+    BotNotificationsModule,
+    FeedbacksModule,
+    OrdersModule,
+    PromosModule,
+    PromocodesModule,
+    SubscriptionPlansModule,
   ],
   controllers: [AppController],
   providers: [AppService],

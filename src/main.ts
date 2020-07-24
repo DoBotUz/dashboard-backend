@@ -38,6 +38,7 @@ async function bootstrap() {
 
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
+  app.setGlobalPrefix('rest/v1');
   await app.listen(3000);
 }
 bootstrap();

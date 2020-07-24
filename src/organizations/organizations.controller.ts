@@ -1,6 +1,6 @@
-import { Controller, Get, UseGuards, Param, Post, Body, Put, BadRequestException, Delete, Query } from '@nestjs/common';
+import { Controller, Get, UseGuards, Param, Post, Body, Put, BadRequestException, } from '@nestjs/common';
 import { ValidationException } from '../validation-exception';
-import { ApiResponse, ApiOkResponse, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
+import {ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
 
@@ -9,7 +9,6 @@ import { CreateOrganizationBranchBot } from './dto/create-organization-branch-bo
 import { BranchesService } from 'src/branches/branches.service';
 import { BotsService } from 'src/bots/bots.service';
 import { Organization } from './organization.entity';
-import { title } from 'process';
 
 @ApiTags('organizations')
 @Controller('organizations')
