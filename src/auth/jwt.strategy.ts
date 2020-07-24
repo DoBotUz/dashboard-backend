@@ -20,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any): Promise<any> {
     const userId = payload.sub;
     const user = await this.usersService.findOne(userId);
-    if (!user || user.status === User.STATUSES.INACTIVE){
+    if (!user || user.status !== User.STATUSES.ACTIVE){
       return false;
     }
     user.last_seen = Math.floor((new Date().getTime()));

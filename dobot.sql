@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 24, 2020 at 04:45 PM
+-- Generation Time: Jul 24, 2020 at 06:01 PM
 -- Server version: 5.7.28
 -- PHP Version: 7.1.28
 
@@ -32,9 +32,9 @@ CREATE TABLE `bot` (
   `id` int(11) NOT NULL,
   `organization_id` int(11) NOT NULL,
   `token` varchar(512) NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `last_container_poke` timestamp NULL DEFAULT NULL,
-  `status` tinyint(4) NOT NULL COMMENT '10 -active, 9 - moderation, 11 - inactive, 0 deleted',
+  `title` varchar(255) DEFAULT NULL,
+  `last_container_poke` datetime DEFAULT NULL,
+  `status` tinyint(4) DEFAULT '10' COMMENT '10 -active, 9 - moderation, 11 - inactive, 0 deleted',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -282,7 +282,7 @@ CREATE TABLE `organization` (
   `per_km_deliver_price` double DEFAULT NULL,
   `delivery_time_range_start` int(11) DEFAULT NULL,
   `delivery_time_range_end` int(11) DEFAULT NULL,
-  `status` tinyint(4) NOT NULL COMMENT '10 - active, 9 - moderation, 11 - inactive, 0 - deleted',
+  `status` tinyint(4) DEFAULT '10' COMMENT '10 - active, 9 - moderation, 11 - inactive, 0 - deleted',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -376,7 +376,7 @@ CREATE TABLE `user` (
   `first_name` varchar(255) NOT NULL,
   `last_name` varchar(255) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
-  `last_seen` timestamp NULL DEFAULT NULL,
+  `last_seen` datetime DEFAULT NULL,
   `password_reset_token` varchar(255) DEFAULT NULL,
   `balance` double DEFAULT '0',
   `status` int(11) NOT NULL COMMENT '10 - active, 9 - moderation 0 - deleted',

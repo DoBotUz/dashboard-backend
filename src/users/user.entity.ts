@@ -10,7 +10,8 @@ import { Column, Model, Table, DataType, Unique, } from 'sequelize-typescript';
 export class User extends Model<User> {
   public static STATUSES = {
     ACTIVE: 10,
-    INACTIVE: 0
+    MODERATION: 9,
+    DELETED: 0
   };
 
   public static searchable = [
