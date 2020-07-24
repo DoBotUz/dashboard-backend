@@ -13,4 +13,12 @@ export class BotsService {
     data.status = this.botModel.STATUSES.ACTIVE;
     return await this.botModel.create(data);
   }
+
+  async findOne(id: number): Promise<Bot> {
+    return this.botModel.findOne({
+      where: {
+        id,
+      },
+    });
+  }
 }

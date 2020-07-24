@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 24, 2020 at 06:01 PM
+-- Generation Time: Jul 24, 2020 at 10:37 PM
 -- Server version: 5.7.28
 -- PHP Version: 7.1.28
 
@@ -39,6 +39,16 @@ CREATE TABLE `bot` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `bot`
+--
+
+INSERT INTO `bot` (`id`, `organization_id`, `token`, `title`, `last_container_poke`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, '123', NULL, NULL, 10, '2020-07-24 16:37:37', '2020-07-24 16:37:37'),
+(2, 2, '123', NULL, NULL, 10, '2020-07-24 16:40:51', '2020-07-24 16:40:51'),
+(3, 3, '123', NULL, NULL, 10, '2020-07-24 16:58:59', '2020-07-24 16:58:59'),
+(4, 4, '123', NULL, NULL, 10, '2020-07-24 20:35:07', '2020-07-24 20:35:07');
+
 -- --------------------------------------------------------
 
 --
@@ -66,13 +76,12 @@ CREATE TABLE `bot_notification_template` (
   `type` tinyint(4) DEFAULT '10' COMMENT '10 - Рассылка. 11 - ответ на feedback',
   `ru_title` varchar(255) NOT NULL,
   `ru_description` text NOT NULL,
-  `thumbnail` varchar(255) DEFAULT NULL,
   `en_title` varchar(255) NOT NULL,
   `en_description` text NOT NULL,
   `uz_title` varchar(255) NOT NULL,
   `uz_description` text NOT NULL,
+  `thumbnail` varchar(255) DEFAULT NULL,
   `start_time` datetime NOT NULL,
-  `status` tinyint(4) NOT NULL COMMENT '10 - sent to all, 9 - sending',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -119,6 +128,19 @@ CREATE TABLE `branch` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `branch`
+--
+
+INSERT INTO `branch` (`id`, `organization_id`, `title`, `lat`, `lng`, `timetable`, `is_all_day`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, 'asd', 123, 321, NULL, 0, 10, '2020-07-24 16:37:37', '2020-07-24 20:26:39'),
+(2, 2, '123', 123, 321, NULL, 0, 10, '2020-07-24 16:40:51', '2020-07-24 16:40:51'),
+(3, 3, '123', 123, 321, NULL, 0, 10, '2020-07-24 16:58:59', '2020-07-24 16:58:59'),
+(4, 1, 'asd', 123, 321, NULL, 0, 10, '2020-07-24 20:25:51', '2020-07-24 20:25:51'),
+(5, 1, 'asd', 123, 321, NULL, 0, 10, '2020-07-24 20:26:26', '2020-07-24 20:26:26'),
+(6, 1, 'asd', 123, 321, NULL, 0, 10, '2020-07-24 20:26:49', '2020-07-24 20:26:49'),
+(7, 4, '123', 123, 321, NULL, 0, 10, '2020-07-24 20:35:07', '2020-07-24 20:35:07');
+
 -- --------------------------------------------------------
 
 --
@@ -136,11 +158,18 @@ CREATE TABLE `category` (
   `uz_title` varchar(255) NOT NULL,
   `uz_description` text,
   `thumbnail` varchar(255) DEFAULT NULL,
-  `pos` int(11) DEFAULT NULL,
+  `pos` int(11) DEFAULT '0',
   `status` tinyint(4) NOT NULL COMMENT '10 -active, 9 - moderation, 0 - inactive',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `category`
+--
+
+INSERT INTO `category` (`id`, `bot_id`, `parent_category_id`, `ru_title`, `ru_description`, `en_title`, `en_description`, `uz_title`, `uz_description`, `thumbnail`, `pos`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, NULL, 'Dag', 'Cat', 'Cat', 'Cat', 'Cat', 'Cat', NULL, 0, 0, '2020-07-24 19:09:25', '2020-07-24 19:25:53');
 
 -- --------------------------------------------------------
 
@@ -197,12 +226,12 @@ CREATE TABLE `file` (
 CREATE TABLE `item` (
   `id` int(11) NOT NULL,
   `category_id` int(11) NOT NULL,
-  `ru_title` varchar(255) NOT NULL,
-  `ru_description` text NOT NULL,
+  `ru_title` varchar(255) DEFAULT NULL,
+  `ru_description` text,
   `en_title` varchar(255) NOT NULL,
-  `en_description` text NOT NULL,
+  `en_description` text,
   `uz_title` varchar(255) NOT NULL,
-  `uz_description` text NOT NULL,
+  `uz_description` text,
   `price` double NOT NULL,
   `amount` int(10) UNSIGNED DEFAULT '1',
   `thumbnail` varchar(255) DEFAULT NULL,
@@ -210,6 +239,13 @@ CREATE TABLE `item` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `item`
+--
+
+INSERT INTO `item` (`id`, `category_id`, `ru_title`, `ru_description`, `en_title`, `en_description`, `uz_title`, `uz_description`, `price`, `amount`, `thumbnail`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Dag', 'Cat', 'Cat', 'Cat', 'Cat', 'Cat', 123, 321, NULL, 0, '2020-07-24 19:59:42', '2020-07-24 20:09:11');
 
 -- --------------------------------------------------------
 
@@ -286,6 +322,16 @@ CREATE TABLE `organization` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `organization`
+--
+
+INSERT INTO `organization` (`id`, `user_id`, `ru_title`, `ru_description`, `en_title`, `en_description`, `uz_title`, `uz_description`, `thumbnail`, `is_multilanguage`, `min_order_charge`, `free_distance`, `fixed_delivery_price`, `per_km_deliver_price`, `delivery_time_range_start`, `delivery_time_range_end`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Org', 'Org', 'Org', 'Org', 'Org', 'Org', NULL, 0, 0, 0, 1, NULL, NULL, NULL, 10, '2020-07-24 16:37:37', '2020-07-24 16:37:37'),
+(2, 1, 'Org', 'Org', 'Org', 'Org', 'Org', 'Org', NULL, 0, 0, 0, 1, NULL, NULL, NULL, 10, '2020-07-24 16:40:51', '2020-07-24 16:40:51'),
+(3, 1, 'Org', 'Org', 'Org', 'Org', 'Org', 'Org', NULL, 0, 0, 0, 1, NULL, NULL, NULL, 10, '2020-07-24 16:58:59', '2020-07-24 16:58:59'),
+(4, 1, '123', 'Org', 'Org', 'Org', 'Org', 'Org', NULL, 0, 0, 0, 1, NULL, NULL, NULL, 10, '2020-07-24 20:35:07', '2020-07-24 20:36:31');
 
 -- --------------------------------------------------------
 
@@ -389,7 +435,8 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `email`, `first_name`, `last_name`, `password_hash`, `last_seen`, `password_reset_token`, `balance`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'email@com', 'john', 'green', '$2b$10$4VC8XDPT.rJ/x/3gRBTR7urb5pw9FSY4E89XkB3MOdrzarsFMV3Oi', NULL, NULL, 0, 10, '2020-07-24 14:41:00', '2020-07-24 14:41:00');
+(1, '123@mail.com', '123', '312', '$2b$10$4VC8XDPT.rJ/x/3gRBTR7urb5pw9FSY4E89XkB3MOdrzarsFMV3Oi', '2020-07-24 20:36:31', NULL, 0, 10, '2020-07-24 14:41:00', '2020-07-24 20:36:31'),
+(2, 'asd@mail.com', 'John', 'Green', '$2b$10$yO/IUP4S5zi8uEBPAvcq/OpwDw3M.FbVyQAczQKwJhVBD3mzOah2q', NULL, NULL, 0, 10, '2020-07-24 17:02:04', '2020-07-24 17:02:04');
 
 --
 -- Indexes for dumped tables
@@ -530,7 +577,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `bot`
 --
 ALTER TABLE `bot`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `bot_notification_template`
@@ -548,13 +595,13 @@ ALTER TABLE `bot_user`
 -- AUTO_INCREMENT for table `branch`
 --
 ALTER TABLE `branch`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `category`
 --
 ALTER TABLE `category`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `category_upsell_item`
@@ -572,7 +619,7 @@ ALTER TABLE `feedback`
 -- AUTO_INCREMENT for table `item`
 --
 ALTER TABLE `item`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `item_upsell_item`
@@ -596,7 +643,7 @@ ALTER TABLE `order_item`
 -- AUTO_INCREMENT for table `organization`
 --
 ALTER TABLE `organization`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `promocode`
@@ -620,7 +667,7 @@ ALTER TABLE `subscription_plan_user`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables

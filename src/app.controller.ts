@@ -1,8 +1,9 @@
-import { Controller, Request, Post, Get, UseGuards, Body } from '@nestjs/common';
+import { Controller, Request, Post, Get, UseGuards, Body, Param } from '@nestjs/common';
 import { IsEmail, IsNotEmpty, Length } from 'class-validator';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
 import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
+import { UsersService } from './users/users.service';
 
 class LoginResDto {
   @IsNotEmpty()
@@ -31,7 +32,7 @@ class SignUpDto {
 
   @IsNotEmpty()
   @IsEmail()
-  @Length(1, 255)
+  @Length(3, 255)
   email: string;
   
   @IsNotEmpty()
@@ -43,6 +44,7 @@ class SignUpDto {
 export class AppController {
   constructor(
     private authService: AuthService,
+    private usersService: UsersService,
   ) {}
 
   @UseGuards(LocalAuthGuard)
@@ -64,6 +66,15 @@ export class AppController {
   })
   async signup(@Body() signUpDto: SignUpDto): Promise<boolean> {
     return this.authService.signup(signUpDto);
+  }
+
+  @Get('auth/isemailunique/:email')
+  @ApiOkResponse({
+    description: "Is email unique?",
+    type: Boolean
+  })
+  async isEmailUnique(@Param('email') email: string): Promise<boolean> {
+    return await this.usersService.isEmailUnique(email);
   }
 
   @Get()

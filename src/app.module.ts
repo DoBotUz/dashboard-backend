@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { MulterModule } from "@nestjs/platform-express";
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -20,6 +21,9 @@ import { SubscriptionPlansModule } from './subscription-plans/subscription-plans
 
 @Module({
   imports: [
+    MulterModule.register({
+      dest: './uploads',
+    }),
     SequelizeModule.forRoot({
       dialect: 'mysql',
       host: 'localhost',

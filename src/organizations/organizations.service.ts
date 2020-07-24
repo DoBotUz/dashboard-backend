@@ -13,4 +13,18 @@ export class OrganizationsService {
     data.status = this.organizationModel.STATUSES.ACTIVE;
     return await this.organizationModel.create(data);
   }
+
+  async findOne(id: number): Promise<Organization> {
+    return this.organizationModel.findOne({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async updateOne(id: number, data: any): Promise<Organization> {
+    const model = await this.findOne(id);
+    await model.update(data);
+    return model;
+  }
 }

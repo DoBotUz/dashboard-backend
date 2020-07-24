@@ -1,6 +1,6 @@
 import { ValidateNested, IsNotEmpty, IsOptional, Length } from 'class-validator';
 import { Type } from 'class-transformer';
-
+import { BaseOrganizationDTO } from './base-organization.dto';
 
 class Branch {
   @IsNotEmpty()
@@ -24,30 +24,9 @@ class Bot {
 }
 
 
-export class CreateOrganizationBranchBot {
-  @IsNotEmpty()
-  @Length(3, 255)
-  ru_title: string;
-
-  @IsNotEmpty()
-  ru_description: string;
-
-  @IsNotEmpty()
-  @Length(3, 255)
-  en_title: string;
-
-  @IsNotEmpty()
-  en_description: string;
-
-  @IsNotEmpty()
-  @Length(3, 255)
-  uz_title: string;
-
-  @IsNotEmpty()
-  uz_description: string;
-
-  @IsNotEmpty()
-  fixed_delivery_price: string;
+export class CreateOrganizationBranchBotDTO extends BaseOrganizationDTO {
+  @IsOptional()
+  user_id: number;
 
   @IsNotEmpty()
   @ValidateNested()

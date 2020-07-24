@@ -3,45 +3,45 @@ import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
 
-import { CategoriesService } from './categories.service';
-import { CreateCategoryDTO, UpdateCategoryDTO } from './dto';
-import { Category } from './category.entity';
+import { ItemsService } from './items.service';
+import { CreateItemDTO, UpdateItemDTO } from './dto';
+import { Item } from './item.entity';
 
-@ApiTags('categories')
-@Controller('categories')
+@ApiTags('items')
+@Controller('items')
 @UseGuards(JwtAuthGuard)
-export class CategoriesController {
+export class ItemsController {
   constructor(
-    private categoriesService: CategoriesService,
+    private itemsService: ItemsService,
   ) {}
 
   @Get(':bot_id/list')
   @ApiOkResponse({
-    description: 'Array of Categories',
+    description: 'Array of Items',
     isArray: true,
-    type: Category
+    type: Item
   })
-  async listAll(@UserD() user, @Param("bot_id") bot_id): Promise<Category[]> {
-    return this.categoriesService.listAll(bot_id);
+  async listAll(@UserD() user, @Param("bot_id") bot_id): Promise<Item[]> {
+    return this.itemsService.listAll(bot_id);
   }
 
   @Post()
   @ApiOkResponse({
     description: 'Sucessfuly Created',
-    type: Category
+    type: Item
   })
-  async create(@UserD() user, @Body() data: CreateCategoryDTO): Promise<Category> {
-    return this.categoriesService.createNew(data);
+  async create(@UserD() user, @Body() data: CreateItemDTO): Promise<Item> {
+    return this.itemsService.createNew(data);
   }
 
   @Post("update")
   @ApiOkResponse({
     description: 'Sucessfuly Updated',
-    type: Category
+    type: Item
   })
-  async updateOne(@Body() updateCategoryDto: UpdateCategoryDTO): Promise<Category> {
-    const { id, ...data } = updateCategoryDto;
-    return this.categoriesService.updateOne(id, data);
+  async updateOne(@Body() updateItemDto: UpdateItemDTO): Promise<Item> {
+    const { id, ...data } = updateItemDto;
+    return this.itemsService.updateOne(id, data);
   }
 
   @Post("deactivate/:id")
@@ -50,7 +50,7 @@ export class CategoriesController {
     type: Boolean
   })
   async deactivate(@Param("id") id): Promise<boolean> {
-    await this.categoriesService.deactivate(id);
+    await this.itemsService.deactivate(id);
     return true;
   }
 
@@ -60,7 +60,7 @@ export class CategoriesController {
     type: Boolean
   })
   async activate(@Param("id") id): Promise<boolean> {
-    await this.categoriesService.activate(id);
+    await this.itemsService.activate(id);
     return true;
   }
 
@@ -70,7 +70,7 @@ export class CategoriesController {
     type: Boolean
   })
   async delete(@Param("id") id): Promise<boolean> {
-    await this.categoriesService.delete(id);
+    await this.itemsService.delete(id);
     return true;
   }
 }

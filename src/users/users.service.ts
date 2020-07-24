@@ -52,9 +52,12 @@ export class UsersService {
     return compareResult;
   }
 
-  public async isEmailUnique(email: string, user_id: number): Promise<boolean> {
+  public async isEmailUnique(email: string, user_id?: number): Promise<boolean> {
     const user = await this.findOneByEmail(email);
-    const userById = await this.findOne(user_id);
+    let userById = null;
+    if (user_id) {
+      userById = await this.findOne(user_id);
+    }
     if(!user)
       return true;
     else {
@@ -63,5 +66,11 @@ export class UsersService {
       else
         return false;
     }
+  }
+
+  async updateOne(id: number, data: any): Promise<User> {
+    const model = await this.findOne(id);
+    await model.update(data);
+    return model;
   }
 }

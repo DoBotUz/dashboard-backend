@@ -3,45 +3,45 @@ import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
 
-import { CategoriesService } from './categories.service';
-import { CreateCategoryDTO, UpdateCategoryDTO } from './dto';
-import { Category } from './category.entity';
+import { BranchesService } from './branches.service';
+import { CreateBranchDTO, UpdateBranchDTO } from './dto';
+import { Branch } from './branch.entity';
 
-@ApiTags('categories')
-@Controller('categories')
+@ApiTags('branches')
+@Controller('branches')
 @UseGuards(JwtAuthGuard)
-export class CategoriesController {
+export class BranchesController {
   constructor(
-    private categoriesService: CategoriesService,
+    private branchesService: BranchesService,
   ) {}
 
-  @Get(':bot_id/list')
+  @Get(':organization_id/list')
   @ApiOkResponse({
-    description: 'Array of Categories',
+    description: 'Array of Branches',
     isArray: true,
-    type: Category
+    type: Branch
   })
-  async listAll(@UserD() user, @Param("bot_id") bot_id): Promise<Category[]> {
-    return this.categoriesService.listAll(bot_id);
+  async listAll(@UserD() user, @Param("organization_id") organization_id): Promise<Branch[]> {
+    return this.branchesService.listAll(organization_id);
   }
 
   @Post()
   @ApiOkResponse({
     description: 'Sucessfuly Created',
-    type: Category
+    type: Branch
   })
-  async create(@UserD() user, @Body() data: CreateCategoryDTO): Promise<Category> {
-    return this.categoriesService.createNew(data);
+  async create(@UserD() user, @Body() data: CreateBranchDTO): Promise<Branch> {
+    return this.branchesService.createNew(data);
   }
 
   @Post("update")
   @ApiOkResponse({
     description: 'Sucessfuly Updated',
-    type: Category
+    type: Branch
   })
-  async updateOne(@Body() updateCategoryDto: UpdateCategoryDTO): Promise<Category> {
-    const { id, ...data } = updateCategoryDto;
-    return this.categoriesService.updateOne(id, data);
+  async updateOne(@Body() updateBranchDto: UpdateBranchDTO): Promise<Branch> {
+    const { id, ...data } = updateBranchDto;
+    return this.branchesService.updateOne(id, data);
   }
 
   @Post("deactivate/:id")
@@ -50,7 +50,7 @@ export class CategoriesController {
     type: Boolean
   })
   async deactivate(@Param("id") id): Promise<boolean> {
-    await this.categoriesService.deactivate(id);
+    await this.branchesService.deactivate(id);
     return true;
   }
 
@@ -60,7 +60,7 @@ export class CategoriesController {
     type: Boolean
   })
   async activate(@Param("id") id): Promise<boolean> {
-    await this.categoriesService.activate(id);
+    await this.branchesService.activate(id);
     return true;
   }
 
@@ -70,7 +70,7 @@ export class CategoriesController {
     type: Boolean
   })
   async delete(@Param("id") id): Promise<boolean> {
-    await this.categoriesService.delete(id);
+    await this.branchesService.delete(id);
     return true;
   }
 }
