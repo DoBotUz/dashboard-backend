@@ -30,11 +30,6 @@ export class CreateOrganizationBranchBotDTO extends BaseOrganizationDTO {
 
   @IsNotEmpty()
   @ValidateNested()
-  @Type(() => Branch)
-  branch: Branch;
-
-  @IsNotEmpty()
-  @ValidateNested()
   @Type(() => Bot)
   bot: Bot;
 }

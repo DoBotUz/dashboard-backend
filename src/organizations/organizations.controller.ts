@@ -30,10 +30,6 @@ export class OrganizationsController {
       ...data
     });
 
-    const branch = await this.branchesService.createNew({
-      organization_id: org.id,
-      ...data.branch
-    });
     const bot = await this.botsService.createNew({
       organization_id: org.id,
       ...data.bot,
@@ -41,7 +37,6 @@ export class OrganizationsController {
     return {
       organization: org,
       bot,
-      branch,
     };
   }
 
