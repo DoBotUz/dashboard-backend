@@ -1,9 +1,10 @@
 import { Controller, Request, Post, Get, UseGuards, Body, Param } from '@nestjs/common';
-import { IsEmail, IsNotEmpty, Length } from 'class-validator';
+import { IsEmail, IsNotEmpty, Length, Validate } from 'class-validator';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
 import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
 import { UsersService } from './users/users.service';
+import { UniqueEmail } from 'src/users/validators';
 
 class LoginResDto {
   @IsNotEmpty()
@@ -32,6 +33,7 @@ class SignUpDto {
 
   @IsNotEmpty()
   @IsEmail()
+  @Validate(UniqueEmail)
   @Length(3, 255)
   email: string;
   
