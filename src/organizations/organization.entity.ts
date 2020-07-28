@@ -1,5 +1,6 @@
-import { Column, Model, Table, BelongsTo, ForeignKey } from 'sequelize-typescript';
+import { Column, Model, Table, BelongsTo, ForeignKey, HasOne } from 'sequelize-typescript';
 import { User } from '../users/user.entity';
+import { Bot } from 'src/bots/bot.entity';
 
 @Table({
   tableName: 'organization',
@@ -77,4 +78,7 @@ export class Organization extends Model<Organization> {
 
   @BelongsTo(() => User)
   user: User;
+
+  @HasOne(() => Bot)
+  bot: Bot;
 }

@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Post, Body, } from '@nestjs/common';
+import { Controller, UseGuards, Post, Body, Get, Param, } from '@nestjs/common';
 import {ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
@@ -38,6 +38,25 @@ export class OrganizationsController {
       organization: org,
       bot,
     };
+  }
+
+  @Get()
+  @ApiOkResponse({
+    description: 'List of Orgnizations',
+    isArray: true,
+    type: Organization
+  })
+  async index(@UserD() user): Promise<Organization[]> {
+    return await this.organizationsService.listAllUsers(user.id);
+  }
+
+  @Get(':id')
+  @ApiOkResponse({
+    description: 'Get organization by id',
+    type: Organization
+  })
+  async getOrganization(@UserD() user, @Param("id") id): Promise<Organization> {
+    return await this.organizationsService.findOneUsersById(user.id, id);
   }
 
   @Post('update')
