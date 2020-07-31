@@ -1,11 +1,15 @@
-import { Controller, Get, UseGuards, Param, Post, Body, Delete } from '@nestjs/common';
+import * as fs from 'fs';
+import { Controller, Get, UseGuards, Param, Post, Body, Delete, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
-
+import { FileInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express";
+import { diskStorage } from 'multer';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDTO, UpdateCategoryDTO } from './dto';
 import { Category } from './category.entity';
+import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
+import { FilesService } from 'src/files/files.service';
 
 @ApiTags('categories')
 @Controller('categories')
@@ -13,6 +17,7 @@ import { Category } from './category.entity';
 export class CategoriesController {
   constructor(
     private categoriesService: CategoriesService,
+    private filesService: FilesService
   ) {}
 
   @Get(':bot_id/list')
@@ -34,14 +39,43 @@ export class CategoriesController {
     return await this.categoriesService.findOne(id);
   }
 
-
   @Post()
   @ApiOkResponse({
     description: 'Sucessfuly Created',
     type: Category
   })
-  async create(@UserD() user, @Body() data: CreateCategoryDTO): Promise<Category> {
-    return this.categoriesService.createNew(data);
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      {
+        name: 'thumbnail',
+        maxCount: 1,
+      },
+      {
+        name: 'files',
+        maxCount: 20,
+      }
+    ], {
+      storage: diskStorage({
+        destination: 'tmp/uploads',
+        filename: editFileName,
+      }),
+      fileFilter: imageFileFilter,
+    }),
+  )
+  async create(@UserD() user, @Body() data: CreateCategoryDTO, @UploadedFiles() uploadedFiles): Promise<Category> {
+    if (uploadedFiles && uploadedFiles.thumbnail && typeof uploadedFiles.thumbnail[0] !== 'undefined') {
+      const thumbnail = uploadedFiles.thumbnail[0];
+      data.thumbnail = thumbnail.filename;
+      fs.rename(thumbnail.path, `./uploads/categories/${thumbnail.filename}`, (res) => {
+        if (res !== null)
+          console.log(res);
+      });
+    }
+    const model = await this.categoriesService.createNew(data);
+    if (uploadedFiles && uploadedFiles.files && uploadedFiles.files.length) {
+      this.filesService.uploadImagesFor('CATEGORY', model.id, uploadedFiles.files);
+    }
+    return model;
   }
 
   @Post("update")
@@ -49,8 +83,18 @@ export class CategoriesController {
     description: 'Sucessfuly Updated',
     type: Category
   })
-  async update(@Body() updateCategoryDto: UpdateCategoryDTO): Promise<Category> {
+  @UseInterceptors(FileInterceptor('thumbnail', {
+    storage: diskStorage({
+      destination: 'uploads/categories/',
+      filename: editFileName,
+    }),
+    fileFilter: imageFileFilter,
+  }))
+  async update(@Body() updateCategoryDto: UpdateCategoryDTO,  @UploadedFile() thumbnail): Promise<Category> {
     const { id, ...data } = updateCategoryDto;
+    if (thumbnail) {
+      data.thumbnail = thumbnail.filename;
+    }
     return this.categoriesService.updateOne(id, data);
   }
 

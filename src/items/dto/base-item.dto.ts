@@ -1,4 +1,5 @@
 import { IsNotEmpty, Length, Validate, IsNumber } from 'class-validator';
+import { Type } from 'class-transformer';
 import { IsCategoryExists } from 'src/categories/validators';
 
 export class BaseItemDTO {
@@ -28,10 +29,14 @@ export class BaseItemDTO {
   uz_description: string;
 
   @IsNotEmpty()
+  @Type(() => Number)
   @IsNumber()
   price: number;
 
   @IsNotEmpty()
+  @Type(() => Number)
   @IsNumber()
   amount: number;
+
+  thumbnail: string;
 }

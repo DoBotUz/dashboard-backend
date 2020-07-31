@@ -18,7 +18,7 @@ export class File extends Model<File> {
   };
 
   public static TYPES = {
-    PHOTO: 1,
+    IMAGE: 1,
     VIDEO: 2,
     AUDIO: 3,
     DOCUMENT: 4,

@@ -29,4 +29,6 @@ export class BaseOrganizationDTO {
 
   @IsNotEmpty()
   fixed_delivery_price: string;
+
+  thumbnail: string;
 }

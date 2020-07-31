@@ -34,4 +34,6 @@ export class BaseCategoryDTO {
 
   @IsOptional()
   pos: number;
+
+  thumbnail: string;
 }
