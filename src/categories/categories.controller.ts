@@ -21,9 +21,19 @@ export class CategoriesController {
     isArray: true,
     type: Category
   })
-  async listAll(@UserD() user, @Param("bot_id") bot_id): Promise<Category[]> {
+  async list(@UserD() user, @Param("bot_id") bot_id): Promise<Category[]> {
     return this.categoriesService.listAll(bot_id);
   }
+
+  @Get(':id')
+  @ApiOkResponse({
+    description: 'Get category by id',
+    type: Category
+  })
+  async get(@UserD() user, @Param("id") id): Promise<Category> {
+    return await this.categoriesService.findOne(id);
+  }
+
 
   @Post()
   @ApiOkResponse({
@@ -39,7 +49,7 @@ export class CategoriesController {
     description: 'Sucessfuly Updated',
     type: Category
   })
-  async updateOne(@Body() updateCategoryDto: UpdateCategoryDTO): Promise<Category> {
+  async update(@Body() updateCategoryDto: UpdateCategoryDTO): Promise<Category> {
     const { id, ...data } = updateCategoryDto;
     return this.categoriesService.updateOne(id, data);
   }

@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { UsersService } from './users.service';
-import { User } from "./user.entity";
-import { UniqueEmail, IsUserExists } from "./validators";
+import { User } from './user.entity';
+import { UniqueEmail, IsUserExists } from './validators';
 import { UsersController } from './users.controller';
 
 @Module({

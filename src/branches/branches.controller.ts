@@ -25,6 +25,15 @@ export class BranchesController {
     return this.branchesService.listAll(organization_id);
   }
 
+  @Get(':id')
+  @ApiOkResponse({
+    description: 'Get branch by id',
+    type: Branch
+  })
+  async getBranch(@UserD() user, @Param("id") id): Promise<Branch> {
+    return await this.branchesService.findOne(id);
+  }
+
   @Post()
   @ApiOkResponse({
     description: 'Sucessfuly Created',

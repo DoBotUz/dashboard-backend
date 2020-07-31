@@ -46,7 +46,7 @@ export class OrganizationsController {
     isArray: true,
     type: Organization
   })
-  async index(@UserD() user): Promise<Organization[]> {
+  async list(@UserD() user): Promise<Organization[]> {
     return await this.organizationsService.listAllUsers(user.id);
   }
 
@@ -55,7 +55,7 @@ export class OrganizationsController {
     description: 'Get organization by id',
     type: Organization
   })
-  async getOrganization(@UserD() user, @Param("id") id): Promise<Organization> {
+  async get(@UserD() user, @Param("id") id): Promise<Organization> {
     return await this.organizationsService.findOneUsersById(user.id, id);
   }
 

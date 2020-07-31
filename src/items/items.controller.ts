@@ -21,8 +21,17 @@ export class ItemsController {
     isArray: true,
     type: Item
   })
-  async listAll(@UserD() user, @Param("bot_id") bot_id): Promise<Item[]> {
+  async list(@UserD() user, @Param("bot_id") bot_id): Promise<Item[]> {
     return this.itemsService.listAll(bot_id);
+  }
+
+  @Get(':id')
+  @ApiOkResponse({
+    description: 'Get item by id',
+    type: Item
+  })
+  async get(@UserD() user, @Param("id") id): Promise<Item> {
+    return await this.itemsService.findOne(id);
   }
 
   @Post()
@@ -39,7 +48,7 @@ export class ItemsController {
     description: 'Sucessfuly Updated',
     type: Item
   })
-  async updateOne(@Body() updateItemDto: UpdateItemDTO): Promise<Item> {
+  async update(@Body() updateItemDto: UpdateItemDTO): Promise<Item> {
     const { id, ...data } = updateItemDto;
     return this.itemsService.updateOne(id, data);
   }
