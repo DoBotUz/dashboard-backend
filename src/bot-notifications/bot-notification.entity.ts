@@ -1,6 +1,7 @@
-import { Column, Model, Table, BelongsTo, ForeignKey } from 'sequelize-typescript';
+import { Column, Model, Table, BelongsTo, ForeignKey, DataType } from 'sequelize-typescript';
 import { BotNotificationTemplate } from './bot-notification-template.entity';
 import { BotUser } from 'src/bot-users/bot-user.entity';
+import { Bot } from 'src/bots/bot.entity';
 
 @Table({
   tableName: 'bot_notification',
@@ -26,6 +27,16 @@ export class BotNotification extends Model<BotNotification> {
 
   @Column
   status: number;
+
+  @Column(DataType.DATE)
+  after_date_time: number;
+
+  @ForeignKey(() => Bot)
+  @Column
+  bot_id: number;
+
+  @BelongsTo(() => Bot)
+  bot: Bot;
 
   @ForeignKey(() => BotNotificationTemplate)
   @Column

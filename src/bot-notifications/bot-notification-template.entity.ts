@@ -9,6 +9,10 @@ import { Bot } from '../bots/bot.entity';
   updatedAt: 'updated_at'
 })
 export class BotNotificationTemplate extends Model<BotNotificationTemplate> {
+  public static STATUSES = {
+    ACTIVE: 10,
+    DELETED: 0,
+  };
   public static TYPES = {
     MASS_SEND: 10,
     FEEDBACK_ANS: 11,
@@ -45,8 +49,8 @@ export class BotNotificationTemplate extends Model<BotNotificationTemplate> {
   @Column
   thumbnail: string;
 
-  @Column(DataType.DATE)
-  start_time: number;
+  @Column
+  status: number;
 
   @ForeignKey(() => Bot)
   @Column

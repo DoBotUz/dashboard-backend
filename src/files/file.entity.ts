@@ -13,7 +13,7 @@ export class File extends Model<File> {
     BRANCH: 2,
     CATEGORY: 3,
     ITEM: 4,
-    NOTIFICATION: 5,
+    NOTIFICATION_TEMPLATE: 5,
     PROMO: 6,
   };
 

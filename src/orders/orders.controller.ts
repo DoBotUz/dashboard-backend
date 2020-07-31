@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Param, Post, Body, Delete } from '@nestjs/common';
+import { Controller, Get, UseGuards, Param, Post, Body } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
@@ -27,7 +27,7 @@ export class OrdersController {
 
   @Get(':id')
   @ApiOkResponse({
-    description: 'Get bot User by id',
+    description: 'Get order by id',
     type: Order
   })
   async get(@UserD() user, @Param("id") id): Promise<Order> {

@@ -11,7 +11,6 @@ export class FilesService {
   ) {}
   
   async uploadImagesFor(key: string, key_id: number, files: any[]): Promise<void> {
-    console.log(files);
     for (let i = 0; i < files.length; i += 1) {
       fs.rename(files[i].path, `./uploads/files/${files[i].filename}`, (res) => {
         if (res !== null)
