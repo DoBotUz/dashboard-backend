@@ -4,6 +4,7 @@ import { BotNotification } from './bot-notification.entity';
 import { BotNotificationTemplate } from './bot-notification-template.entity';
 import { Bot } from 'src/bots/bot.entity';
 import { BotNotificationBotUser } from './bot-notification-bot-user.entity';
+import { File } from 'src/files/file.entity';
 
 @Injectable()
 export class BotNotificationsService {
@@ -30,6 +31,13 @@ export class BotNotificationsService {
       where: {
         id,
       },
+      include: [{
+        model: File,
+        where: {
+          key: File.KEYS.NOTIFICATION_TEMPLATE
+        },
+        required: false
+      }]
     });
   }
 

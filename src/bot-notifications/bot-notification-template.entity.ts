@@ -1,5 +1,6 @@
-import { Column, Model, Table, BelongsTo, ForeignKey } from 'sequelize-typescript';
-import { Bot } from '../bots/bot.entity';
+import { Column, Model, Table, BelongsTo, ForeignKey, HasMany } from 'sequelize-typescript';
+import { Bot } from 'src/bots/bot.entity';
+import { File } from 'src/files/file.entity';
 
 @Table({
   tableName: 'bot_notification_template',
@@ -58,4 +59,9 @@ export class BotNotificationTemplate extends Model<BotNotificationTemplate> {
 
   @BelongsTo(() => Bot)
   bot: Bot;
+
+  @HasMany(() => File, {
+    foreignKey: 'key_id',
+  })
+  files: File[]
 }

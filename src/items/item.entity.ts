@@ -1,5 +1,6 @@
-import { Column, Model, Table, BelongsTo, ForeignKey } from 'sequelize-typescript';
-import { Category } from '../categories/category.entity';
+import { Column, Model, Table, BelongsTo, ForeignKey, HasMany } from 'sequelize-typescript';
+import { Category } from 'src/categories/category.entity';
+import { File } from 'src/files/file.entity';
 
 @Table({
   tableName: 'item',
@@ -61,4 +62,9 @@ export class Item extends Model<Item> {
 
   @BelongsTo(() => Category)
   category: Category;
+
+  @HasMany(() => File, {
+    foreignKey: 'key_id',
+  })
+  files: File[]
 }

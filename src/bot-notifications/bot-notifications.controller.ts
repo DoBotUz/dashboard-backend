@@ -115,4 +115,31 @@ export class BotNotificationsController {
     this.botNotificationsService.setNotificationBotUsers(model.id, data.bot_user_ids);
     return model;
   }
+
+  @Post(":id/add-file")
+  @ApiOkResponse({
+    description: 'Add file to file list',
+    type: Boolean
+  })
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: 'tmp/uploads',
+      filename: editFileName,
+    }),
+    fileFilter: imageFileFilter,
+  }))
+  async addFile(@Param("id") id, @UploadedFile() file): Promise<boolean> {
+    this.filesService.uploadImagesFor('NOTIFICATION_TEMPLATE', id, [file]);
+    return true;
+  }
+
+  @Post(":id/remove-file")
+  @ApiOkResponse({
+    description: 'Remove file from list',
+    type: Boolean
+  })
+  async removeFile(@Param("id") id): Promise<boolean> {
+    this.filesService.remove(id);
+    return true;
+  }
 }

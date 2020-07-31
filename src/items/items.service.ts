@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Item } from './item.entity';
 import { Category } from 'src/categories/category.entity';
+import { File } from 'src/files/file.entity';
 
 @Injectable()
 export class ItemsService {
@@ -20,7 +21,13 @@ export class ItemsService {
       where: {
         id,
       },
-      include: [Category]
+      include: [Category, {
+        model: File,
+        where: {
+          key: File.KEYS.ITEM
+        },
+        required: false
+      }]
     });
   }
 

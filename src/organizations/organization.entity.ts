@@ -1,6 +1,7 @@
-import { Column, Model, Table, BelongsTo, ForeignKey, HasOne } from 'sequelize-typescript';
-import { User } from '../users/user.entity';
+import { Column, Model, Table, BelongsTo, ForeignKey, HasOne, HasMany } from 'sequelize-typescript';
+import { User } from 'src/users/user.entity';
 import { Bot } from 'src/bots/bot.entity';
+import { File } from 'src/files/file.entity';
 
 @Table({
   tableName: 'organization',
@@ -81,4 +82,9 @@ export class Organization extends Model<Organization> {
 
   @HasOne(() => Bot)
   bot: Bot;
+
+  @HasMany(() => File, {
+    foreignKey: 'key_id',
+  })
+  files: File[]
 }

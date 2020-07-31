@@ -28,4 +28,21 @@ export class FilesService {
       this.fileModel.create(newFile);
     }
   }
+
+  async removeImageFor(key: string, key_id: number): Promise<void> {
+    this.fileModel.destroy({
+      where: {
+        key: File.KEYS[key],
+        key_id
+      }
+    });
+  }
+
+  async remove(id: number): Promise<void> {
+    this.fileModel.destroy({
+      where: {
+        id
+      }
+    });
+  }
 }

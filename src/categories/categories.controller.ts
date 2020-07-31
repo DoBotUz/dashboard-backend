@@ -118,6 +118,33 @@ export class CategoriesController {
     return true;
   }
 
+  @Post(":id/add-file")
+  @ApiOkResponse({
+    description: 'Add file to file list',
+    type: Boolean
+  })
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: 'tmp/uploads',
+      filename: editFileName,
+    }),
+    fileFilter: imageFileFilter,
+  }))
+  async addFile(@Param("id") id, @UploadedFile() file): Promise<boolean> {
+    this.filesService.uploadImagesFor('CATEGORY', id, [file]);
+    return true;
+  }
+
+  @Post(":id/remove-file")
+  @ApiOkResponse({
+    description: 'Remove file from list',
+    type: Boolean
+  })
+  async removeFile(@Param("id") id): Promise<boolean> {
+    this.filesService.remove(id);
+    return true;
+  }
+
   @Delete(":id")
   @ApiOkResponse({
     description: 'Sucessfuly Deleted',

@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Organization } from './organization.entity';
 import { User } from 'src/users/user.entity';
 import { Bot } from 'src/bots/bot.entity';
+import { File } from 'src/files/file.entity';
 
 @Injectable()
 export class OrganizationsService {
@@ -21,6 +22,13 @@ export class OrganizationsService {
       where: {
         id,
       },
+      include: [User, {
+        model: File,
+        where: {
+          key: File.KEYS.ORGANIZATION
+        },
+        required: false
+      }]
     });
   }
 
