@@ -7,6 +7,7 @@ import { OrganizationsService } from './organizations.service';
 import { CreateOrganizationBranchBotDTO, UpdateOrganizationDTO } from './dto';
 import { BranchesService } from 'src/branches/branches.service';
 import { BotsService } from 'src/bots/bots.service';
+import { BotsGateway } from 'src/gateways/bots/bots.gateway';
 import { Organization } from './organization.entity';
 
 @ApiTags('organizations')
@@ -17,6 +18,7 @@ export class OrganizationsController {
     private organizationsService: OrganizationsService,
     private branchesService: BranchesService,
     private botsService: BotsService,
+    private botsGateway: BotsGateway,
   ) {}
   
   @Post()
@@ -34,6 +36,7 @@ export class OrganizationsController {
       organization_id: org.id,
       ...data.bot,
     });
+    this.botsGateway.newBot(bot.id);
     return {
       organization: org,
       bot,

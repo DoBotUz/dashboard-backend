@@ -18,6 +18,7 @@ import { OrdersModule } from './orders/orders.module';
 import { PromosModule } from './promos/promos.module';
 import { PromocodesModule } from './promocodes/promocodes.module';
 import { SubscriptionPlansModule } from './subscription-plans/subscription-plans.module';
+import { GatewaysModule } from './gateways/gateways.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { SubscriptionPlansModule } from './subscription-plans/subscription-plans
     PromosModule,
     PromocodesModule,
     SubscriptionPlansModule,
+    GatewaysModule,
   ],
   controllers: [AppController],
   providers: [AppService],

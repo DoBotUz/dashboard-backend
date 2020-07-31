@@ -15,10 +15,10 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {prefix: '/public/'});
 
   const options = new DocumentBuilder()
-    .setTitle('Tass')
-    .setDescription('Tass API description')
+    .setTitle('DoBot backend')
+    .setDescription('DoBot backend on nestjs kone4no')
     .setVersion('1.0')
-    .addTag('tass')
+    .addTag('dobot')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
