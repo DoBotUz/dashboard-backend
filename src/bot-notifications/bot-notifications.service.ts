@@ -76,4 +76,15 @@ export class BotNotificationsService {
     await model.update(data);
     return model;
   }
+
+  async setNotificationBotUsers(bot_notification_id: number, bot_user_ids: number[]): Promise<void> {
+    await this.deleteBotUsers(bot_notification_id, bot_user_ids);
+    for (let i = 0; i < bot_user_ids.length; i += 1) {
+     await this.assignNotification({
+        bot_notification_id,
+        bot_user_id: bot_user_ids[i],
+        status: BotNotificationBotUser.STATUSES.PENDING
+      });
+    }
+  }
 }

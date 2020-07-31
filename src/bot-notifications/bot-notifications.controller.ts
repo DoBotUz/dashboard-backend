@@ -100,7 +100,7 @@ export class BotNotificationsController {
   })
   async create(@UserD() user, @Body() data: CreateBotNotificationDto): Promise<BotNotification> {
     const model = await this.botNotificationsService.create(data);
-    this.setNotificationBotUsers(model.id, data.bot_user_ids);
+    this.botNotificationsService.setNotificationBotUsers(model.id, data.bot_user_ids);
     return model;
   }
 
@@ -112,18 +112,7 @@ export class BotNotificationsController {
   async update(@UserD() user, @Body() updateNotificationDto: UpdateBotNotificationDto): Promise<BotNotification> {
     const { id, ...data } = updateNotificationDto;
     const model = await this.botNotificationsService.update(id, data);
-    this.setNotificationBotUsers(model.id, data.bot_user_ids);
+    this.botNotificationsService.setNotificationBotUsers(model.id, data.bot_user_ids);
     return model;
-  }
-
-  private async setNotificationBotUsers(bot_notification_id: number, bot_user_ids: number[]): Promise<void> {
-    await this.botNotificationsService.deleteBotUsers(bot_notification_id, bot_user_ids);
-    for (let i = 0; i < bot_user_ids.length; i += 1) {
-     await this.botNotificationsService.assignNotification({
-        bot_notification_id,
-        bot_user_id: bot_user_ids[i],
-        status: BotNotificationBotUser.STATUSES.PENDING
-      });
-    }
   }
 }

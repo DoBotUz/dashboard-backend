@@ -1,4 +1,4 @@
-import { Column, Model, Table, BelongsTo, ForeignKey, DataType } from 'sequelize-typescript';
+import { Column, Model, Table, BelongsTo, ForeignKey } from 'sequelize-typescript';
 import { Bot } from '../bots/bot.entity';
 
 @Table({
