@@ -21,7 +21,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"email\": \"email@com\",\r\n    \"password\": \"123\"\r\n}",
+							"raw": "{\r\n    \"email\": \"123@mail.com\",\r\n    \"password\": \"123\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -170,14 +170,75 @@
 						"auth": {
 							"type": "bearer",
 							"bearer": {
-								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVtYWlsQGNvbSIsInN1YiI6MSwiaWF0IjoxNTk1NjA4NTE0LCJleHAiOjE1OTYyMTMzMTR9.nKGCxHLD5j9jB9wnwoSO99-cNXWY5meFm0aderDobl4"
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IjEyM0BtYWlsLmNvbSIsInN1YiI6MSwiaWF0IjoxNTk2MjEzMzQyLCJleHAiOjE1OTY4MTgxNDJ9.ErQnpFUKwac7rFoSwXVM-QbT6ZTSDwZktYSkolGHRkM"
 							}
 						},
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"ru_title\": \"Cat\",\r\n    \"ru_description\": \"Cat\",\r\n    \"en_title\": \"Cat\",\r\n    \"en_description\": \"Cat\",\r\n    \"uz_title\": \"Cat\",\r\n    \"uz_description\": \"Cat\",\r\n    \"price\": 213,\r\n    \"amount\": 1,\r\n    \"category_id\": 1\r\n}",
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "category_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "ru_title",
+									"value": "123",
+									"type": "text"
+								},
+								{
+									"key": "en_title",
+									"value": "321",
+									"type": "text"
+								},
+								{
+									"key": "ru_description",
+									"value": "123",
+									"type": "text"
+								},
+								{
+									"key": "en_description",
+									"value": "123",
+									"type": "text"
+								},
+								{
+									"key": "uz_title",
+									"value": "123",
+									"type": "text"
+								},
+								{
+									"key": "uz_description",
+									"value": "123",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "123",
+									"type": "text"
+								},
+								{
+									"key": "amount",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "thumbnail",
+									"type": "file",
+									"src": "/C:/Users/User/Desktop/db_term/images/doctor.jpg"
+								},
+								{
+									"key": "files",
+									"type": "file",
+									"src": [
+										"/C:/Users/User/Desktop/db_term/images/comarch_diagram.png",
+										"/C:/Users/User/Desktop/db_term/images/comarch_interface.png",
+										"/C:/Users/User/Desktop/db_term/images/dash_index.png",
+										"/C:/Users/User/Desktop/db_term/images/dash_sign.png"
+									]
+								}
+							],
 							"options": {
 								"raw": {
 									"language": "json"
@@ -310,6 +371,36 @@
 						"url": "http://localhost:3000/rest/v1/organizations/update"
 					},
 					"response": []
+				},
+				{
+					"name": "Get users organizations list",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IjEyM0BtYWlsLmNvbSIsInN1YiI6MSwiaWF0IjoxNTk1OTQ1MjY3LCJleHAiOjE1OTY1NTAwNjd9.gIxc00yaDCO32PnSIyIGhZnPSXiy_C_eYLhH1lGjyLg"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:3000/rest/v1/organizations"
+					},
+					"response": []
+				},
+				{
+					"name": "Get One organization by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IjEyM0BtYWlsLmNvbSIsInN1YiI6MSwiaWF0IjoxNTk1OTQ1MjY3LCJleHAiOjE1OTY1NTAwNjd9.gIxc00yaDCO32PnSIyIGhZnPSXiy_C_eYLhH1lGjyLg"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:3000/rest/v1/organizations/1"
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -437,6 +528,101 @@
 						"method": "GET",
 						"header": [],
 						"url": "http://localhost:3000/rest/v1/branches/1/list"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "BotNotification",
+			"item": [
+				{
+					"name": "Create Bot Notification Template",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IjEyM0BtYWlsLmNvbSIsInN1YiI6MSwiaWF0IjoxNTk2MjEzMzQyLCJleHAiOjE1OTY4MTgxNDJ9.ErQnpFUKwac7rFoSwXVM-QbT6ZTSDwZktYSkolGHRkM"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "ru_title",
+									"value": "123",
+									"type": "text"
+								},
+								{
+									"key": "ru_description",
+									"value": "123",
+									"type": "text"
+								},
+								{
+									"key": "en_title",
+									"value": "123",
+									"type": "text"
+								},
+								{
+									"key": "uz_title",
+									"value": "123",
+									"type": "text"
+								},
+								{
+									"key": "en_description",
+									"value": "123",
+									"type": "text"
+								},
+								{
+									"key": "uz_description",
+									"value": "123",
+									"type": "text"
+								},
+								{
+									"key": "thumbnail",
+									"type": "file",
+									"src": "/C:/Users/User/Desktop/db_term/images/doctor.jpg"
+								},
+								{
+									"key": "files",
+									"type": "file",
+									"src": "/C:/Users/User/Desktop/db_term/images/dep_med_org.png"
+								},
+								{
+									"key": "bot_id",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": "localhost:3000/rest/v1/bot-notifications/template"
+					},
+					"response": []
+				},
+				{
+					"name": "Creat Bot Notification (Рассылка)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6IjEyM0BtYWlsLmNvbSIsInN1YiI6MSwiaWF0IjoxNTk2MjEzMzQyLCJleHAiOjE1OTY4MTgxNDJ9.ErQnpFUKwac7rFoSwXVM-QbT6ZTSDwZktYSkolGHRkM"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"bot_id\": 1,\r\n    \"bot_notification_template_id\": 1,\r\n    \"after_date_time\": 0,\r\n    \"bot_user_ids\": [1]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "localhost:3000/rest/v1/bot-notifications"
 					},
 					"response": []
 				}

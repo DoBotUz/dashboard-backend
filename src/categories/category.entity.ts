@@ -57,7 +57,11 @@ export class Category extends Model<Category> {
   @Column
   parent_category_id: number;
 
-  @BelongsTo(() => Category)
+  @BelongsTo(() => Category, {
+    foreignKey: {
+      allowNull: true
+    }
+  })
   parent_category: Category;
 
   

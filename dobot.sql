@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 24, 2020 at 10:37 PM
+-- Generation Time: Aug 01, 2020 at 12:57 PM
 -- Server version: 5.7.28
 -- PHP Version: 7.1.28
 
@@ -47,7 +47,13 @@ INSERT INTO `bot` (`id`, `organization_id`, `token`, `title`, `last_container_po
 (1, 1, '123', NULL, NULL, 10, '2020-07-24 16:37:37', '2020-07-24 16:37:37'),
 (2, 2, '123', NULL, NULL, 10, '2020-07-24 16:40:51', '2020-07-24 16:40:51'),
 (3, 3, '123', NULL, NULL, 10, '2020-07-24 16:58:59', '2020-07-24 16:58:59'),
-(4, 4, '123', NULL, NULL, 10, '2020-07-24 20:35:07', '2020-07-24 20:35:07');
+(4, 4, '123', NULL, NULL, 10, '2020-07-24 20:35:07', '2020-07-24 20:35:07'),
+(5, 5, '1359519562:AAEC_4x3DSWuDZQClGJ12F6S0rVOf2s7ZBw', NULL, NULL, 10, '2020-07-28 15:05:10', '2020-07-28 15:05:10'),
+(6, 6, 'asd', NULL, NULL, 10, '2020-07-28 15:26:47', '2020-07-28 15:26:47'),
+(7, 7, '123', NULL, NULL, 10, '2020-07-31 11:28:39', '2020-07-31 11:28:39'),
+(8, 8, '123', NULL, NULL, 10, '2020-07-31 11:29:03', '2020-07-31 11:29:03'),
+(9, 9, '123', NULL, NULL, 10, '2020-07-31 11:29:46', '2020-07-31 11:29:46'),
+(10, 10, '123', NULL, NULL, 10, '2020-07-31 11:30:43', '2020-07-31 11:30:43');
 
 -- --------------------------------------------------------
 
@@ -57,12 +63,46 @@ INSERT INTO `bot` (`id`, `organization_id`, `token`, `title`, `last_container_po
 
 CREATE TABLE `bot_notification` (
   `id` int(11) NOT NULL,
+  `bot_id` int(11) NOT NULL,
   `bot_notification_template_id` int(11) DEFAULT NULL,
-  `bot_user_id` int(11) NOT NULL,
+  `after_date_time` datetime NOT NULL,
   `status` tinyint(4) NOT NULL COMMENT '10 - sent, 9 - pending, 0 - error',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `bot_notification`
+--
+
+INSERT INTO `bot_notification` (`id`, `bot_id`, `bot_notification_template_id`, `after_date_time`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, '1970-01-01 00:00:00', 9, '2020-07-31 18:54:55', '2020-07-31 18:54:55'),
+(2, 1, 1, '1970-01-01 00:00:00', 9, '2020-07-31 18:55:23', '2020-07-31 18:55:23'),
+(3, 1, 1, '1970-01-01 00:00:00', 9, '2020-07-31 18:57:33', '2020-07-31 18:57:33'),
+(4, 1, 1, '1970-01-01 00:00:00', 9, '2020-07-31 18:59:20', '2020-07-31 18:59:20');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bot_notification_bot_user`
+--
+
+CREATE TABLE `bot_notification_bot_user` (
+  `id` int(11) NOT NULL,
+  `bot_notification_id` int(11) NOT NULL,
+  `bot_user_id` int(11) NOT NULL,
+  `status` tinyint(4) NOT NULL DEFAULT '9' COMMENT '10 - sent, 9 - pending, 0 - error',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `bot_notification_bot_user`
+--
+
+INSERT INTO `bot_notification_bot_user` (`id`, `bot_notification_id`, `bot_user_id`, `status`, `created_at`, `updated_at`) VALUES
+(3, 3, 1, 9, '2020-07-31 18:57:33', '2020-07-31 18:57:33'),
+(4, 4, 1, 9, '2020-07-31 18:59:20', '2020-07-31 18:59:20');
 
 -- --------------------------------------------------------
 
@@ -81,10 +121,17 @@ CREATE TABLE `bot_notification_template` (
   `uz_title` varchar(255) NOT NULL,
   `uz_description` text NOT NULL,
   `thumbnail` varchar(255) DEFAULT NULL,
-  `start_time` datetime NOT NULL,
+  `status` tinyint(4) NOT NULL DEFAULT '10' COMMENT '10 - active, 0 - deleted',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `bot_notification_template`
+--
+
+INSERT INTO `bot_notification_template` (`id`, `bot_id`, `type`, `ru_title`, `ru_description`, `en_title`, `en_description`, `uz_title`, `uz_description`, `thumbnail`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, 10, '123', '123', '123', '123', '123', '123', 'doctor-1468.jpg', 10, '2020-07-31 18:38:57', '2020-07-31 18:38:57');
 
 -- --------------------------------------------------------
 
@@ -104,10 +151,18 @@ CREATE TABLE `bot_user` (
   `avatar` varchar(255) DEFAULT NULL,
   `language` varchar(20) NOT NULL DEFAULT 'ru',
   `last_seen` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `comment` text,
   `status` tinyint(4) NOT NULL COMMENT '10 - active, 0 - banned',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `bot_user`
+--
+
+INSERT INTO `bot_user` (`id`, `bot_id`, `tg_id`, `first_name`, `last_name`, `phone_number`, `username`, `bio`, `avatar`, `language`, `last_seen`, `comment`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 'John', NULL, NULL, NULL, NULL, NULL, 'ru', '2020-07-31 18:52:46', NULL, 10, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -150,7 +205,7 @@ INSERT INTO `branch` (`id`, `organization_id`, `title`, `lat`, `lng`, `timetable
 CREATE TABLE `category` (
   `id` int(11) NOT NULL,
   `bot_id` int(11) NOT NULL,
-  `parent_category_id` int(11) DEFAULT '0',
+  `parent_category_id` int(11) DEFAULT NULL,
   `ru_title` varchar(255) NOT NULL,
   `ru_description` text,
   `en_title` varchar(255) NOT NULL,
@@ -169,7 +224,10 @@ CREATE TABLE `category` (
 --
 
 INSERT INTO `category` (`id`, `bot_id`, `parent_category_id`, `ru_title`, `ru_description`, `en_title`, `en_description`, `uz_title`, `uz_description`, `thumbnail`, `pos`, `status`, `created_at`, `updated_at`) VALUES
-(1, 1, NULL, 'Dag', 'Cat', 'Cat', 'Cat', 'Cat', 'Cat', NULL, 0, 0, '2020-07-24 19:09:25', '2020-07-24 19:25:53');
+(1, 1, NULL, 'Dag', 'Cat', 'Cat', 'Cat', 'Cat', 'Cat', NULL, 0, 0, '2020-07-24 19:09:25', '2020-07-24 19:25:53'),
+(8, 5, NULL, '1111', 'placeholder', '1111', 'placeholder', '1111', 'placeholder', NULL, 0, 10, '2020-08-01 10:38:29', '2020-08-01 10:38:29'),
+(9, 5, NULL, '11111', 'placeholder', '11111', 'placeholder', '11111', 'placeholder', NULL, 0, 10, '2020-08-01 10:39:35', '2020-08-01 10:39:35'),
+(10, 5, NULL, '123123', 'placeholder', '123123', 'placeholder', '123123', 'placeholder', NULL, 0, 10, '2020-08-01 10:39:49', '2020-08-01 10:39:49');
 
 -- --------------------------------------------------------
 
@@ -217,6 +275,17 @@ CREATE TABLE `file` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `file`
+--
+
+INSERT INTO `file` (`id`, `key`, `key_id`, `file`, `original_name`, `size`, `mime`, `type`, `created_at`, `updated_at`) VALUES
+(1, 4, 16, 'comarch_diagram-c2b5.png', 'comarch_diagram.png', 20537, 'image/png', 1, '2020-07-31 17:07:39', '2020-07-31 17:07:39'),
+(2, 4, 16, 'comarch_interface-678a.png', 'comarch_interface.png', 61066, 'image/png', 1, '2020-07-31 17:07:39', '2020-07-31 17:07:39'),
+(3, 4, 16, 'dash_sign-744b.png', 'dash_sign.png', 12951, 'image/png', 1, '2020-07-31 17:07:39', '2020-07-31 17:07:39'),
+(4, 4, 16, 'dash_index-ac61.png', 'dash_index.png', 100200, 'image/png', 1, '2020-07-31 17:07:39', '2020-07-31 17:07:39'),
+(5, 5, 1, 'dep_med_org-1c1f.png', 'dep_med_org.png', 20503, 'image/png', 1, '2020-07-31 18:38:57', '2020-07-31 18:38:57');
+
 -- --------------------------------------------------------
 
 --
@@ -245,7 +314,22 @@ CREATE TABLE `item` (
 --
 
 INSERT INTO `item` (`id`, `category_id`, `ru_title`, `ru_description`, `en_title`, `en_description`, `uz_title`, `uz_description`, `price`, `amount`, `thumbnail`, `status`, `created_at`, `updated_at`) VALUES
-(1, 1, 'Dag', 'Cat', 'Cat', 'Cat', 'Cat', 'Cat', 123, 321, NULL, 0, '2020-07-24 19:59:42', '2020-07-24 20:09:11');
+(1, 1, 'Dag', 'Cat', 'Cat', 'Cat', 'Cat', 'Cat', 123, 321, NULL, 0, '2020-07-24 19:59:42', '2020-07-24 20:09:11'),
+(2, 1, '123', '123', '321', '123', '123', '123', 123, 1, NULL, 10, '2020-07-31 16:25:33', '2020-07-31 16:25:33'),
+(3, 1, '123', '123', '321', '123', '123', '123', 123, 1, NULL, 10, '2020-07-31 16:25:52', '2020-07-31 16:25:52'),
+(4, 1, '123', '123', '321', '123', '123', '123', 123, 1, 'doctor-e372.jpg', 10, '2020-07-31 16:30:24', '2020-07-31 16:30:24'),
+(5, 1, '123', '123', '321', '123', '123', '123', 123, 1, NULL, 10, '2020-07-31 16:40:32', '2020-07-31 16:40:32'),
+(6, 1, '123', '123', '321', '123', '123', '123', 123, 1, NULL, 10, '2020-07-31 16:41:23', '2020-07-31 16:41:23'),
+(7, 1, '123', '123', '321', '123', '123', '123', 123, 1, NULL, 10, '2020-07-31 16:47:55', '2020-07-31 16:47:55'),
+(8, 1, '123', '123', '321', '123', '123', '123', 123, 1, NULL, 10, '2020-07-31 16:49:46', '2020-07-31 16:49:46'),
+(9, 1, '123', '123', '321', '123', '123', '123', 123, 1, NULL, 10, '2020-07-31 16:50:45', '2020-07-31 16:50:45'),
+(10, 1, '123', '123', '321', '123', '123', '123', 123, 1, NULL, 10, '2020-07-31 16:50:57', '2020-07-31 16:50:57'),
+(11, 1, '123', '123', '321', '123', '123', '123', 123, 1, 'doctor-0a64.jpg', 10, '2020-07-31 16:52:55', '2020-07-31 16:52:55'),
+(12, 1, '123', '123', '321', '123', '123', '123', 123, 1, 'doctor-c69f.jpg', 10, '2020-07-31 17:00:49', '2020-07-31 17:00:49'),
+(13, 1, '123', '123', '321', '123', '123', '123', 123, 1, 'doctor-1041f.jpg', 10, '2020-07-31 17:05:22', '2020-07-31 17:05:22'),
+(14, 1, '123', '123', '321', '123', '123', '123', 123, 1, 'doctor-13dc.jpg', 10, '2020-07-31 17:06:10', '2020-07-31 17:06:10'),
+(15, 1, '123', '123', '321', '123', '123', '123', 123, 1, 'doctor-b33d.jpg', 10, '2020-07-31 17:06:58', '2020-07-31 17:06:58'),
+(16, 1, '123', '123', '321', '123', '123', '123', 123, 1, 'doctor-b2f2.jpg', 10, '2020-07-31 17:07:39', '2020-07-31 17:07:39');
 
 -- --------------------------------------------------------
 
@@ -331,7 +415,13 @@ INSERT INTO `organization` (`id`, `user_id`, `ru_title`, `ru_description`, `en_t
 (1, 1, 'Org', 'Org', 'Org', 'Org', 'Org', 'Org', NULL, 0, 0, 0, 1, NULL, NULL, NULL, 10, '2020-07-24 16:37:37', '2020-07-24 16:37:37'),
 (2, 1, 'Org', 'Org', 'Org', 'Org', 'Org', 'Org', NULL, 0, 0, 0, 1, NULL, NULL, NULL, 10, '2020-07-24 16:40:51', '2020-07-24 16:40:51'),
 (3, 1, 'Org', 'Org', 'Org', 'Org', 'Org', 'Org', NULL, 0, 0, 0, 1, NULL, NULL, NULL, 10, '2020-07-24 16:58:59', '2020-07-24 16:58:59'),
-(4, 1, '123', 'Org', 'Org', 'Org', 'Org', 'Org', NULL, 0, 0, 0, 1, NULL, NULL, NULL, 10, '2020-07-24 20:35:07', '2020-07-24 20:36:31');
+(4, 1, '123', 'Org', 'Org', 'Org', 'Org', 'Org', NULL, 0, 0, 0, 1, NULL, NULL, NULL, 10, '2020-07-24 20:35:07', '2020-07-24 20:36:31'),
+(5, 3, 'Tashkent', 'Tashkent Moyo Zavedenies', 'Tashkent', 'Tashkent Moyo Zavedenies', 'Tashkent', 'Tashkent Moyo Zavedenies', NULL, 0, 0, 0, 1, NULL, NULL, NULL, 10, '2020-07-28 15:05:10', '2020-07-28 15:05:10'),
+(6, 3, 'asdsadsad', 'asdasdsad', 'asdsadsad', 'asdasdsad', 'asdsadsad', 'asdasdsad', NULL, 0, 0, 0, 1, NULL, NULL, NULL, 10, '2020-07-28 15:26:47', '2020-07-28 15:26:47'),
+(7, 1, 'Org', 'Org', 'Org', 'Org', 'Org', 'Org', NULL, 0, 0, 0, 1, NULL, NULL, NULL, 10, '2020-07-31 11:28:39', '2020-07-31 11:28:39'),
+(8, 1, 'Org', 'Org', 'Org', 'Org', 'Org', 'Org', NULL, 0, 0, 0, 1, NULL, NULL, NULL, 10, '2020-07-31 11:29:03', '2020-07-31 11:29:03'),
+(9, 1, 'Org', 'Org', 'Org', 'Org', 'Org', 'Org', NULL, 0, 0, 0, 1, NULL, NULL, NULL, 10, '2020-07-31 11:29:46', '2020-07-31 11:29:46'),
+(10, 1, 'Org', 'Org', 'Org', 'Org', 'Org', 'Org', NULL, 0, 0, 0, 1, NULL, NULL, NULL, 10, '2020-07-31 11:30:43', '2020-07-31 11:30:43');
 
 -- --------------------------------------------------------
 
@@ -435,8 +525,9 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `email`, `first_name`, `last_name`, `password_hash`, `last_seen`, `password_reset_token`, `balance`, `status`, `created_at`, `updated_at`) VALUES
-(1, '123@mail.com', '123', '312', '$2b$10$4VC8XDPT.rJ/x/3gRBTR7urb5pw9FSY4E89XkB3MOdrzarsFMV3Oi', '2020-07-24 20:36:31', NULL, 0, 10, '2020-07-24 14:41:00', '2020-07-24 20:36:31'),
-(2, 'asd@mail.com', 'John', 'Green', '$2b$10$yO/IUP4S5zi8uEBPAvcq/OpwDw3M.FbVyQAczQKwJhVBD3mzOah2q', NULL, NULL, 0, 10, '2020-07-24 17:02:04', '2020-07-24 17:02:04');
+(1, '123@mail.com', '123', '312', '$2b$10$4VC8XDPT.rJ/x/3gRBTR7urb5pw9FSY4E89XkB3MOdrzarsFMV3Oi', '2020-07-31 20:19:31', NULL, 0, 10, '2020-07-24 14:41:00', '2020-07-31 20:19:31'),
+(2, 'asd@mail.com', 'John', 'Green', '$2b$10$yO/IUP4S5zi8uEBPAvcq/OpwDw3M.FbVyQAczQKwJhVBD3mzOah2q', NULL, NULL, 0, 10, '2020-07-24 17:02:04', '2020-07-24 17:02:04'),
+(3, 'asdd@mail.com', 'John', 'Green', '$2b$10$FlWXDdjruZNWr4fZd39Qqep9QDQsXD8RYSIY8RDM.Q.n/yuc757xu', '2020-08-01 10:39:49', NULL, 0, 10, '2020-07-28 15:04:25', '2020-08-01 10:39:49');
 
 --
 -- Indexes for dumped tables
@@ -453,7 +544,16 @@ ALTER TABLE `bot`
 -- Indexes for table `bot_notification`
 --
 ALTER TABLE `bot_notification`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `bot_notification_template` (`bot_notification_template_id`),
+  ADD KEY `bot_id` (`bot_id`);
+
+--
+-- Indexes for table `bot_notification_bot_user`
+--
+ALTER TABLE `bot_notification_bot_user`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `bot_notification_id` (`bot_notification_id`),
   ADD KEY `bot_user_id` (`bot_user_id`);
 
 --
@@ -497,6 +597,12 @@ ALTER TABLE `category_upsell_item`
 -- Indexes for table `feedback`
 --
 ALTER TABLE `feedback`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `file`
+--
+ALTER TABLE `file`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -577,19 +683,31 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `bot`
 --
 ALTER TABLE `bot`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT for table `bot_notification`
+--
+ALTER TABLE `bot_notification`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `bot_notification_bot_user`
+--
+ALTER TABLE `bot_notification_bot_user`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `bot_notification_template`
 --
 ALTER TABLE `bot_notification_template`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `bot_user`
 --
 ALTER TABLE `bot_user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `branch`
@@ -601,7 +719,7 @@ ALTER TABLE `branch`
 -- AUTO_INCREMENT for table `category`
 --
 ALTER TABLE `category`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `category_upsell_item`
@@ -616,10 +734,16 @@ ALTER TABLE `feedback`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `file`
+--
+ALTER TABLE `file`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT for table `item`
 --
 ALTER TABLE `item`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `item_upsell_item`
@@ -643,7 +767,7 @@ ALTER TABLE `order_item`
 -- AUTO_INCREMENT for table `organization`
 --
 ALTER TABLE `organization`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `promocode`
@@ -667,7 +791,7 @@ ALTER TABLE `subscription_plan_user`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
@@ -684,7 +808,14 @@ ALTER TABLE `bot`
 --
 ALTER TABLE `bot_notification`
   ADD CONSTRAINT `bot_notification_ibfk_1` FOREIGN KEY (`bot_notification_template_id`) REFERENCES `bot_notification_template` (`id`),
-  ADD CONSTRAINT `bot_notification_ibfk_2` FOREIGN KEY (`bot_user_id`) REFERENCES `bot_user` (`id`);
+  ADD CONSTRAINT `bot_notification_ibfk_3` FOREIGN KEY (`bot_id`) REFERENCES `bot` (`id`);
+
+--
+-- Constraints for table `bot_notification_bot_user`
+--
+ALTER TABLE `bot_notification_bot_user`
+  ADD CONSTRAINT `bot_notification_bot_user_ibfk_1` FOREIGN KEY (`bot_notification_id`) REFERENCES `bot_notification` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `bot_notification_bot_user_ibfk_2` FOREIGN KEY (`bot_user_id`) REFERENCES `bot_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `bot_notification_template`
