@@ -1,5 +1,6 @@
 import { Column, Model, Table, BelongsTo, ForeignKey, DataType } from 'sequelize-typescript';
 import { BotUser } from '../bot-users/bot-user.entity';
+import { Organization } from 'src/organizations/organization.entity';
 
 @Table({
   tableName: 'order',
@@ -60,10 +61,20 @@ export class Order extends Model<Order> {
   @Column
   status: number;
 
+  @Column
+  is_paid: boolean;
+
   @ForeignKey(() => BotUser)
   @Column
   bot_user_id: number;
 
   @BelongsTo(() => BotUser)
   bot_user: BotUser;
+
+  @ForeignKey(() => Organization)
+  @Column
+  organization_id: number;
+
+  @BelongsTo(() => Organization)
+  organization: Organization;
 }

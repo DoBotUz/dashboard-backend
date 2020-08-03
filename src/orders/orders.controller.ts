@@ -15,14 +15,14 @@ export class OrdersController {
     private ordersService: OrdersService,
   ) {}
 
-  @Get(':bot_id/list')
+  @Get(':organization_id/list')
   @ApiOkResponse({
     description: 'Array of Orders',
     isArray: true,
     type: Order
   })
-  async listAll(@UserD() user, @Param("bot_id") bot_id): Promise<Order[]> {
-    return this.ordersService.listAll(bot_id);
+  async listAll(@UserD() user, @Param('organization_id') organization_id): Promise<Order[]> {
+    return this.ordersService.listAll(organization_id);
   }
 
   @Get(':id')
@@ -30,11 +30,11 @@ export class OrdersController {
     description: 'Get order by id',
     type: Order
   })
-  async get(@UserD() user, @Param("id") id): Promise<Order> {
+  async get(@UserD() user, @Param('id') id): Promise<Order> {
     return await this.ordersService.findOne(id);
   }
 
-  @Post("update")
+  @Post('update')
   @ApiOkResponse({
     description: 'Sucessfuly Updated',
     type: Order

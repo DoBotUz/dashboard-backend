@@ -10,10 +10,10 @@ export class OrdersService {
     private orderModel: typeof Order,
   ) {}
   
-  async listAll(bot_id: number): Promise<Order[]> {
+  async listAll(organization_id: number): Promise<Order[]> {
     return this.orderModel.findAll({
       where: {
-        bot_id
+        organization_id
       },
       include: [BotUser]
     })
