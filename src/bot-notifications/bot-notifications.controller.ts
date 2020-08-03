@@ -7,11 +7,12 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
 import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
 import { BotNotificationsService } from './bot-notifications.service';
-import { CreateBotNotificationDto, UpdateBotNotificationDto, CreateBotNotificationTemplateDto, UpdateBotNotificationTemplateDto } from './dto';
+import { CreateBotNotificationDto, UpdateBotNotificationDto, CreateBotNotificationTemplateDto, UpdateBotNotificationTemplateDto, CreateMassSendDto } from './dto';
 import { BotNotification } from './bot-notification.entity';
 import { BotNotificationTemplate } from './bot-notification-template.entity';
 import { FilesService } from 'src/files/files.service';
 import { BotNotificationBotUser } from './bot-notification-bot-user.entity';
+import { BotUsersService } from 'src/bot-users/bot-users.service';
 
 @ApiTags('bot-notifications')
 @Controller('bot-notifications')
@@ -19,6 +20,7 @@ import { BotNotificationBotUser } from './bot-notification-bot-user.entity';
 export class BotNotificationsController {
   constructor(
     private botNotificationsService: BotNotificationsService,
+    private botUsersService: BotUsersService,
     private filesService: FilesService,
   ) {}
 
@@ -114,6 +116,56 @@ export class BotNotificationsController {
     const model = await this.botNotificationsService.update(id, data);
     this.botNotificationsService.setNotificationBotUsers(model.id, data.bot_user_ids);
     return model;
+  }
+
+  @Post('mass-send')
+  @ApiOkResponse({
+    description: 'BotNotification',
+    type: BotNotification
+  })
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      {
+        name: 'thumbnail',
+        maxCount: 1,
+      },
+      {
+        name: 'files',
+        maxCount: 20,
+      }
+    ], {
+      storage: diskStorage({
+        destination: 'tmp/uploads',
+        filename: editFileName,
+      }),
+      fileFilter: imageFileFilter,
+    }),
+  )
+  async createMassSend(@UserD() user, @Body() data: CreateMassSendDto, @UploadedFiles() uploadedFiles): Promise<BotNotification> {
+    data.template.type = BotNotificationTemplate.TYPES.MASS_SEND;
+    if (uploadedFiles && uploadedFiles.thumbnail && typeof uploadedFiles.thumbnail[0] !== 'undefined') {
+      const thumbnail = uploadedFiles.thumbnail[0];
+      data.template.thumbnail = thumbnail.filename;
+      fs.rename(thumbnail.path, `./uploads/bot-notifications/${thumbnail.filename}`, (res) => {
+        if (res !== null)
+          console.log(res);
+      });
+    }
+    console.log(data.template);
+    const notificationTemplate = await this.botNotificationsService.createTemplate(data.template);
+    if (uploadedFiles && uploadedFiles.files && uploadedFiles.files.length) {
+      this.filesService.uploadImagesFor('NOTIFICATION_TEMPLATE', notificationTemplate.id, uploadedFiles.files);
+    }
+    const model = await this.botNotificationsService.create({
+      bot_id: data.bot_id,
+      bot_notification_template_id: notificationTemplate.id,
+      after_date_time: data.after_date_time
+    });
+    const bot_user_ids = (await this.botUsersService.listAll(data.bot_id)).map((botUser) => {
+      return botUser.id;
+    })
+    this.botNotificationsService.setNotificationBotUsers(model.id, bot_user_ids);
+    return this.botNotificationsService.findOne(model.id);
   }
 
   @Post(":id/add-file")
