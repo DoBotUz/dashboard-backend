@@ -1,6 +1,12 @@
 import { IsNotEmpty, Length, Validate } from 'class-validator';
 import { IsUserExists } from 'src/users/validators';
 
+export class BaseBotDto {
+  @IsNotEmpty()
+  @Length(3, 512)
+  token: string;
+}
+
 export class BaseOrganizationDTO {
   @IsNotEmpty()
   @Validate(IsUserExists)

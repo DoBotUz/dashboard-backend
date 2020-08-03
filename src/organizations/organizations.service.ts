@@ -22,7 +22,7 @@ export class OrganizationsService {
       where: {
         id,
       },
-      include: [User, {
+      include: [User, Bot, {
         model: File,
         where: {
           key: File.KEYS.ORGANIZATION

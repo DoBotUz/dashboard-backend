@@ -102,7 +102,7 @@ export class OrganizationsController {
   })
   @UseInterceptors(FileInterceptor('thumbnail', {
     storage: diskStorage({
-      destination: 'uploads/categories/',
+      destination: 'uploads/organizations/',
       filename: editFileName,
     }),
     fileFilter: imageFileFilter,
@@ -112,7 +112,11 @@ export class OrganizationsController {
     if (thumbnail) {
       data.thumbnail = thumbnail.filename;
     }
-    return this.organizationsService.updateOne(id, data);
+    const model = await this.organizationsService.updateOne(id, data);
+    const bot_id = data.bot.id;
+    delete data.bot.id;
+    this.botsService.updateOne(bot_id, data.bot);
+    return model;
   }
 
   @Post(":id/add-file")

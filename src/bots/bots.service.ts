@@ -21,4 +21,10 @@ export class BotsService {
       },
     });
   }
+
+  async updateOne(id: number, data: any): Promise<Bot> {
+    const model = await this.findOne(id);
+    await model.update(data);
+    return model;
+  }
 }

@@ -1,6 +1,6 @@
 import { ValidateNested, IsNotEmpty, IsOptional, Length } from 'class-validator';
 import { Type } from 'class-transformer';
-import { BaseOrganizationDTO } from './base-organization.dto';
+import { BaseOrganizationDTO, BaseBotDto } from './base-organization.dto';
 
 class Branch {
   @IsNotEmpty()
@@ -17,11 +17,7 @@ class Branch {
   is_all_day: number;
 }
 
-class Bot {
-  @IsNotEmpty()
-  @Length(3, 512)
-  token: string;
-}
+
 
 
 export class CreateOrganizationBranchBotDTO extends BaseOrganizationDTO {
@@ -30,6 +26,6 @@ export class CreateOrganizationBranchBotDTO extends BaseOrganizationDTO {
 
   @IsNotEmpty()
   @ValidateNested()
-  @Type(() => Bot)
-  bot: Bot;
+  @Type(() => BaseBotDto)
+  bot: BaseBotDto;
 }
