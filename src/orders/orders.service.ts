@@ -21,7 +21,7 @@ export class OrdersService {
       where: {
         organization_id
       },
-      include: [BotUser]
+      include: [BotUser, Branch, Organization]
     })
   }
 

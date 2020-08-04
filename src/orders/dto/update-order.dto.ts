@@ -37,7 +37,7 @@ export class UpdateOrderDTO {
   @IsNumber()
   delivery_charge: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   for_datetime: string;
 
   @IsOptional()
