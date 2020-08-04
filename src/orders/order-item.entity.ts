@@ -5,9 +5,7 @@ import { Order } from './order.entity';
 @Table({
   tableName: 'order_item',
   underscored: true,
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at'
+  timestamps: false,
 })
 export class OrderItem extends Model<OrderItem> {
   @Column({

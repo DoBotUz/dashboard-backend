@@ -1,6 +1,8 @@
-import { Column, Model, Table, BelongsTo, ForeignKey, DataType } from 'sequelize-typescript';
+import { Column, Model, Table, BelongsTo, ForeignKey, DataType, HasMany } from 'sequelize-typescript';
 import { BotUser } from '../bot-users/bot-user.entity';
 import { Organization } from 'src/organizations/organization.entity';
+import { Branch } from 'src/branches/branch.entity';
+import { OrderItem } from './order-item.entity';
 
 @Table({
   tableName: 'order',
@@ -77,4 +79,14 @@ export class Order extends Model<Order> {
 
   @BelongsTo(() => Organization)
   organization: Organization;
+
+  @ForeignKey(() => Branch)
+  @Column
+  branch_id: number;
+
+  @BelongsTo(() => Branch)
+  branch: Branch;
+
+  @HasMany(() => OrderItem)
+  order_items: OrderItem[]
 }
