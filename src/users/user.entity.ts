@@ -54,6 +54,8 @@ export class User  {
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
 
-  @OneToMany(type => Organization, orgnization => orgnization.user)
+  @OneToMany(type => Organization, orgnization => orgnization.user, {
+    eager: true
+  })
   organizations: Organization[];
 }

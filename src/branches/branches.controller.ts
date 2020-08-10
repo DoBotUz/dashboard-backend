@@ -9,13 +9,14 @@ import { BranchesCrudService } from './branches-crud.service';
 import { CreateBranchDto } from './dto';
 import { UserD } from 'src/auth/user.decorator';
 import { User } from 'src/users/user.entity';
+import { OrganizationGuard } from '../common/guards/OrganizationsGuard';
 
 @Crud({
   model: {
     type: Branch
   },
   dto: {
-    create: CreateBranchDto,
+    // create: CreateBranchDto,
   },
   query: {
     join: {
@@ -43,7 +44,10 @@ import { User } from 'src/users/user.entity';
 })
 @ApiTags('branches')
 @Controller('/:organizationId/branches')
-@UseGuards(JwtAuthGuard)
+@UseGuards(
+  JwtAuthGuard,
+  OrganizationGuard
+)
 export class BranchesController implements CrudController<Branch> {
   constructor(
     public service: BranchesCrudService,
