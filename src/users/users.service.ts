@@ -78,4 +78,18 @@ export class UsersService {
     await this.usersRepository.save(model);
     return model;
   }
+
+  async findOneWithOrganizations(id: number): Promise<User> {
+    return this.usersRepository.findOne({
+      where: {
+        id: id
+      },
+      join: {
+        alias: 'user',
+        leftJoin: {
+          organizations: 'user.organizations'
+        }
+      }
+    })
+  }
 }
