@@ -41,10 +41,16 @@ export class BotNotification {
   })
   bot: Bot;
 
+  @Column('int')
+  botId: number;
+
   @ManyToOne(type => BotNotificationTemplate, template => template.bot_notifications,  {
     nullable: false
   })
   template: BotNotificationTemplate;
+
+  @Column('int')
+  templateId: number;
 
   @ManyToMany(type => BotUser)
   @JoinTable()

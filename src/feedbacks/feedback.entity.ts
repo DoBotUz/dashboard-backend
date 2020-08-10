@@ -33,8 +33,14 @@ export class Feedback{
   })
   bot_user: BotUser;
 
+  @Column('int')
+  botUserId: number;
+
   @ManyToOne(type => Bot, bot => bot.feedbacks,  {
     nullable: false
   })
   bot: Bot;
+
+  @Column('int')
+  botId: number;
 }

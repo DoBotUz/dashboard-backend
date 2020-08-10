@@ -76,6 +76,9 @@ export class Organization {
   })
   user: User;
 
+  @Column('int')
+  userId: number;
+
   @OneToOne(type => Bot)
   bot: Bot;
 

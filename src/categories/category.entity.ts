@@ -53,6 +53,9 @@ export class Category {
   @ManyToOne(type => Category, category => category.children, { nullable: true })
   parent_category: Category;
 
+  @Column('int', { nullable: true })
+  parentCategoryId?: number;
+
   @OneToMany(type => Category, category => category.parent_category)
   children: Category[];
 
@@ -63,4 +66,7 @@ export class Category {
     nullable: false
   })
   bot: Bot;
+
+  @Column('int')
+  botId: number;
 }

@@ -59,6 +59,9 @@ export class BotUser {
   })
   bot: Bot;
 
+  @Column('int')
+  botId: number;
+
   @OneToMany(type => Feedback, feedback => feedback.bot)
   feedbacks: Feedback[];
 
@@ -67,4 +70,5 @@ export class BotUser {
 
   @ManyToMany(type => BotNotification)
   bot_notifications: BotNotification[];
+  
 }

@@ -59,8 +59,14 @@ export class Item {
   })
   category: Category;
 
+  @Column('int')
+  categoryId: number;
+
   @ManyToOne(type => Bot, bot => bot.items,  {
     nullable: false
   })
   bot: Bot;
+
+  @Column('int')
+  botId: number;
 }

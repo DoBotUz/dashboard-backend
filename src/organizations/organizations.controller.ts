@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { Controller, UseGuards, Body, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
+import { Controller, UseGuards, Body, UseInterceptors, UploadedFile, UploadedFiles, ValidationPipe, UsePipes } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController, Override, CrudAuth } from "@nestjsx/crud";
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -16,6 +16,8 @@ import { Organization } from './organization.entity';
 import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
 import { FilesService } from 'src/files/files.service';
 import { User } from 'src/users/user.entity';
+import { ValidationError } from 'class-validator';
+import { ValidationException } from 'src/validation-exception';
 
 @Crud({
   model: {
@@ -70,6 +72,15 @@ export class OrganizationsController  implements CrudController<Organization> {
       fileFilter: imageFileFilter,
     }),
   )
+  @UsePipes(new ValidationPipe(
+    {
+      transform: true,
+      whitelist: true,
+      exceptionFactory: (validationErrors: ValidationError[] = []) => {
+         return new ValidationException(validationErrors);
+       }
+    }
+  ))
   async createOne(@UserD() user, @Body() data: CreateOrganizationBranchBotDTO, @UploadedFiles() uploadedFiles): Promise<any> {
     if (uploadedFiles && uploadedFiles.thumbnail && typeof uploadedFiles.thumbnail[0] !== 'undefined') {
       const thumbnail = uploadedFiles.thumbnail[0];

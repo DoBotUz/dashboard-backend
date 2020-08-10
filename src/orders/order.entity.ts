@@ -75,15 +75,24 @@ export class Order {
   })
   bot_user: BotUser;
 
+  @Column('int')
+  botUserId: number;
+
   @ManyToOne(type => Organization, organization => organization.orders,  {
     nullable: false
   })
   organization: Organization;
 
+  @Column('int')
+  organizationId: number;
+
   @ManyToOne(type => Branch, branch => branch.orders,  {
     nullable: false
   })
   branch: Branch;
+
+  @Column('int')
+  branchId: number;
   
   @ManyToMany(type => Item)
   @JoinTable()

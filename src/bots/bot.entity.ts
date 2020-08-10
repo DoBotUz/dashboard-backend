@@ -41,6 +41,9 @@ export class Bot{
   })
   organization: Organization;
 
+  @Column('int')
+  organizationId: number;
+
   @OneToMany(type => BotNotification, botNotification => botNotification.template)
   bot_notifications: BotNotification[];
 
