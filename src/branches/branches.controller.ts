@@ -32,33 +32,23 @@ export class BranchesController implements CrudController<Branch> {
   }
 
 
-  // @Post("deactivate/:id")
-  // @ApiOkResponse({
-  //   description: 'Sucessfuly Updated',
-  //   type: Boolean
-  // })
-  // async deactivate(@Param("id") id): Promise<boolean> {
-  //   await this.branchesService.deactivate(id);
-  //   return true;
-  // }
-
-  @Override()
-  createOne(
-    @ParsedRequest() req: CrudRequest,
-    @ParsedBody() dto: Branch,
-  ) {
-    console.log(dto);
-    return this.base.createOneBase(req, dto);
+  @Post("deactivate/:id")
+  @ApiOkResponse({
+    description: 'Sucessfuly Updated',
+    type: Boolean
+  })
+  async deactivate(@Param("id") id): Promise<boolean> {
+    await this.branchesService.deactivate(id);
+    return true;
   }
 
-
-  // @Post("activate/:id")
-  // @ApiOkResponse({
-  //   description: 'Sucessfuly Updated',
-  //   type: Boolean
-  // })
-  // async activate(@Param("id") id): Promise<boolean> {
-  //   await this.branchesService.activate(id);
-  //   return true;
-  // }
+  @Post("activate/:id")
+  @ApiOkResponse({
+    description: 'Sucessfuly Updated',
+    type: Boolean
+  })
+  async activate(@Param("id") id): Promise<boolean> {
+    await this.branchesService.activate(id);
+    return true;
+  }
 }
