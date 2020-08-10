@@ -47,6 +47,9 @@ export class Branch {
   })
   organization: Organization;
 
+  @Column()
+  organizationId?: number;
+
   @OneToMany(type => Order, order => order.branch)
   orders: Order[];
 }
