@@ -54,9 +54,13 @@ export class Item {
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
 
-  @ManyToOne(type => Category, category => category.items)
+  @ManyToOne(type => Category, category => category.items,  {
+    nullable: false
+  })
   category: Category;
 
-  @ManyToOne(type => Bot, bot => bot.items)
+  @ManyToOne(type => Bot, bot => bot.items,  {
+    nullable: false
+  })
   bot: Bot;
 }

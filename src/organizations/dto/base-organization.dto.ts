@@ -1,4 +1,4 @@
-import { IsNotEmpty, Length, Validate } from 'class-validator';
+import { IsNotEmpty, Length, Validate, ValidateNested } from 'class-validator';
 import { IsUserExists } from 'src/users/validators';
 
 export class BaseBotDto {
@@ -7,10 +7,16 @@ export class BaseBotDto {
   token: string;
 }
 
-export class BaseOrganizationDTO {
+class User {
   @IsNotEmpty()
   @Validate(IsUserExists)
-  user_id: number;
+  id: number;
+}
+
+export class BaseOrganizationDTO {
+  @IsNotEmpty()
+  @ValidateNested()
+  user: User;
 
   @IsNotEmpty()
   @Length(3, 255)

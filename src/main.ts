@@ -23,14 +23,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
 
-  // app.useGlobalPipes(new ValidationPipe({
-  //     transform: true,
-  //     whitelist: true,
-  //     exceptionFactory: (validationErrors: ValidationError[] = []) => {
-  //        return new ValidationException(validationErrors);
-  //      }
-  //   }
-  // ));
 
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalFilters(new ValidationExceptionFilter());

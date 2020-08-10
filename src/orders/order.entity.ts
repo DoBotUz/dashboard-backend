@@ -70,13 +70,19 @@ export class Order {
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
 
-  @ManyToOne(type => BotUser, botUser => botUser.orders)
+  @ManyToOne(type => BotUser, botUser => botUser.orders,  {
+    nullable: false
+  })
   bot_user: BotUser;
 
-  @ManyToOne(type => Organization, organization => organization.orders)
+  @ManyToOne(type => Organization, organization => organization.orders,  {
+    nullable: false
+  })
   organization: Organization;
 
-  @ManyToOne(type => Branch, branch => branch.orders)
+  @ManyToOne(type => Branch, branch => branch.orders,  {
+    nullable: false
+  })
   branch: Branch;
   
   @ManyToMany(type => Item)

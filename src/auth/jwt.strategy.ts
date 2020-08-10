@@ -25,10 +25,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
     user.last_seen = new Date();
     await this.usersService.updateOne(user.id, user);
-    return { 
-      id: userId,
-      email: user.email,
-      name: `${user.first_name} ${user.last_name}`,
-    };
+    return user;
   }
 }

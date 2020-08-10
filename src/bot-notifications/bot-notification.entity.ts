@@ -36,10 +36,14 @@ export class BotNotification {
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
 
-  @ManyToOne(type => Bot, bot => bot.bot_notifications)
+  @ManyToOne(type => Bot, bot => bot.bot_notifications,  {
+    nullable: false
+  })
   bot: Bot;
 
-  @ManyToOne(type => BotNotificationTemplate, template => template.bot_notifications)
+  @ManyToOne(type => BotNotificationTemplate, template => template.bot_notifications,  {
+    nullable: false
+  })
   template: BotNotificationTemplate;
 
   @ManyToMany(type => BotUser)

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { Controller, Get, UseGuards, Param, Post, Body, Delete, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Crud, CrudController, Override, } from '@nestjsx/crud';
+import { Crud, CrudController, Override, CrudAuth } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
 import { FileInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express";
@@ -12,15 +12,43 @@ import { Category } from './category.entity';
 import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
 import { FilesService } from 'src/files/files.service';
 import { CategoriesCrudService } from './categories-crud.service';
+import { User } from 'src/users/user.entity';
 
 
 @Crud({
   model: {
     type: Category
-  }
+  },
+  query: {
+    join: {
+      bot: {
+        eager: true,
+      },
+      'bot.organization': {
+        eager: true,
+        select: false,
+      },
+      'bot.organization.user': {
+        eager: true,
+        select: false,
+      },
+    },
+  },
+  params: {
+    organizationId: {
+      field: 'organizationId',
+      type: 'number'
+    },
+  },
+})
+@CrudAuth({
+  property: 'user',
+  filter: (user: User) => ({
+    'bot.organization.user.id': user.id,
+  })
 })
 @ApiTags('categories')
-@Controller('categories')
+@Controller('/:organizationId/categories')
 @UseGuards(JwtAuthGuard)
 export class CategoriesController implements CrudController<Category> {
   constructor(

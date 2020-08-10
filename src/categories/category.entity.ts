@@ -59,6 +59,8 @@ export class Category {
   @OneToMany(type => Item, item => item.category)
   items: Item[];
 
-  @ManyToOne(type => Bot, bot => bot.categories)
+  @ManyToOne(type => Bot, bot => bot.categories,  {
+    nullable: false
+  })
   bot: Bot;
 }

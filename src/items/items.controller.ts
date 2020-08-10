@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { Controller, UseGuards, Param, Post, Body, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Crud, CrudController, Override, } from '@nestjsx/crud';
+import { Crud, CrudController, Override, CrudAuth, } from '@nestjsx/crud';
 import { FileInterceptor, FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -12,15 +12,37 @@ import { CreateItemDTO, UpdateItemDTO } from './dto';
 import { Item } from './item.entity';
 import { FilesService } from 'src/files/files.service';
 import { ItemsCrudService } from './items-crud.service';
+import { User } from 'src/users/user.entity';
 
 
 @Crud({
   model: {
     type: Item
-  }
+  },
+  query: {
+    join: {
+      bot: {
+        eager: true,
+      },
+      'bot.organization': {
+        eager: true,
+        select: false,
+      },
+      'bot.organization.user': {
+        eager: true,
+        select: false,
+      },
+    },
+  },
+})
+@CrudAuth({
+  property: 'user',
+  filter: (user: User) => ({
+    'bot.organization.user.id': user.id,
+  })
 })
 @ApiTags('items')
-@Controller('items')
+@Controller('/:organizationId/items')
 @UseGuards(JwtAuthGuard)
 export class ItemsController implements CrudController<Item> {
   constructor(

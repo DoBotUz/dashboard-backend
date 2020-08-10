@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { Controller, UseGuards, Body, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Crud, CrudController, Override } from "@nestjsx/crud";
+import { Crud, CrudController, Override, CrudAuth } from "@nestjsx/crud";
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
 import { FileInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express";
@@ -15,16 +15,11 @@ import { BotsGateway } from 'src/gateways/bots/bots.gateway';
 import { Organization } from './organization.entity';
 import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
 import { FilesService } from 'src/files/files.service';
+import { User } from 'src/users/user.entity';
 
 @Crud({
   model: {
     type: Organization
-  },
-  params: {
-    organizationId: {
-      field: 'organizationId',
-      type: 'number'
-    },
   },
   query: {
     join: {
@@ -32,10 +27,16 @@ import { FilesService } from 'src/files/files.service';
         eager: true,
       },
       user: {
-        eager: true
+        eager: true,
       }
     },
   },
+})
+@CrudAuth({
+  property: 'user',
+  filter: (user: User) => ({
+    'user.id': user.id,
+  })
 })
 @ApiTags('organizations')
 @Controller('organizations')

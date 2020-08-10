@@ -28,9 +28,13 @@ export class Feedback{
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
 
-  @ManyToOne(type => BotUser, botuser => botuser.feedbacks)
+  @ManyToOne(type => BotUser, botuser => botuser.feedbacks,  {
+    nullable: false
+  })
   bot_user: BotUser;
 
-  @ManyToOne(type => Bot, bot => bot.feedbacks)
+  @ManyToOne(type => Bot, bot => bot.feedbacks,  {
+    nullable: false
+  })
   bot: Bot;
 }

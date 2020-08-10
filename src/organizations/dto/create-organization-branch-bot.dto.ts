@@ -19,11 +19,7 @@ class Branch {
 
 
 
-
 export class CreateOrganizationBranchBotDTO extends BaseOrganizationDTO {
-  @IsOptional()
-  user_id: number;
-
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => BaseBotDto)

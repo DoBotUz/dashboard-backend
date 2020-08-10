@@ -1,25 +1,48 @@
-import { Controller, UseGuards, Param, Post, } from '@nestjs/common';
+import { Controller, UseGuards, Param, Post, Get, } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Crud, CrudController, Override, ParsedBody, ParsedRequest, CrudRequest, } from '@nestjsx/crud';
+import { Crud, CrudController, CrudAuth } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 import { BranchesService } from './branches.service';
 import { Branch } from './branch.entity';
 import { BranchesCrudService } from './branches-crud.service';
+import { CreateBranchDto } from './dto';
+import { UserD } from 'src/auth/user.decorator';
+import { User } from 'src/users/user.entity';
 
 @Crud({
   model: {
     type: Branch
   },
+  dto: {
+    create: CreateBranchDto,
+  },
+  query: {
+    join: {
+      organization: {
+        eager: true,
+      },
+      'organization.user': {
+        eager: true,
+        select: false,
+      },
+    },
+  },
   params: {
     organizationId: {
       field: 'organizationId',
       type: 'number'
-    }
-  }
+    },
+  },
+})
+@CrudAuth({
+  property: 'user',
+  filter: (user: User) => ({
+    'organization.user.id': user.id,
+  })
 })
 @ApiTags('branches')
-@Controller('/organizations/:organizationId/branches')
+@Controller('/:organizationId/branches')
 @UseGuards(JwtAuthGuard)
 export class BranchesController implements CrudController<Branch> {
   constructor(
@@ -31,6 +54,11 @@ export class BranchesController implements CrudController<Branch> {
     return this;
   }
 
+
+  @Get('test')
+  async test(@UserD() user) {
+    return 'hello';
+  }
 
   @Post("deactivate/:id")
   @ApiOkResponse({

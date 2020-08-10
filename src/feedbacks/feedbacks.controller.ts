@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { Controller, Get, UseGuards, Param, Post, Body, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Crud, CrudController, Override, } from '@nestjsx/crud';
+import { Crud, CrudController, Override, CrudAuth, } from '@nestjsx/crud';
 import { FileInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from 'multer';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -14,14 +14,42 @@ import { FilesService } from 'src/files/files.service';
 import { Feedback } from './feedback.entity';
 import { BotNotificationTemplate, TYPES } from 'src/bot-notifications/bot-notification-template.entity';
 import { FeedbacksCrudService } from './feedbacks-crud.service';
+import { User } from 'src/users/user.entity';
 
 @Crud({
   model: {
     type: Feedback
-  }
+  },
+  query: {
+    join: {
+      bot: {
+        eager: true,
+      },
+      'bot.organization': {
+        eager: true,
+        select: false,
+      },
+      'bot.organization.user': {
+        eager: true,
+        select: false,
+      },
+    },
+  },
+  params: {
+    organizationId: {
+      field: 'organizationId',
+      type: 'number'
+    },
+  },
+})
+@CrudAuth({
+  property: 'user',
+  filter: (user: User) => ({
+    'bot.organization.user.id': user.id,
+  })
 })
 @ApiTags('feedbacks')
-@Controller('feedbacks')
+@Controller('/:organizationId/feedbacks')
 @UseGuards(JwtAuthGuard)
 export class FeedbacksController implements CrudController<Feedback> {
   constructor(

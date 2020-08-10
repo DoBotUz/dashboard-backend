@@ -54,7 +54,9 @@ export class BotUser {
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
 
-  @ManyToOne(type => Bot, bot => bot.bot_notifications)
+  @ManyToOne(type => Bot, bot => bot.bot_notifications,  {
+    nullable: false
+  })
   bot: Bot;
 
   @OneToMany(type => Feedback, feedback => feedback.bot)
