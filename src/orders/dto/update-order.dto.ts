@@ -1,9 +1,8 @@
 import { IsNotEmpty, Validate, IsNumber, IsIn, IsOptional, IsString, Length, IsArray, ValidateNested, IsInt } from 'class-validator';
 import { IsOrderExists } from '../validators';
-import { Order } from '../order.entity';
+import { PAYMENT_TYPES, STATUSES } from '../order.entity';
 import { IsBranchExists } from 'src/branches/validators';
 import { Type, Transform, plainToClass } from 'class-transformer';
-import { OrderItem } from '../order-item.entity';
 import { IsItemExists } from 'src/items/validators';
 
 class OrderItemDto {
@@ -55,7 +54,7 @@ export class UpdateOrderDTO {
 
   @IsNotEmpty()
   @IsNumber()
-  @IsIn(Object.values(Order.PAYMENT_TYPES))
+  @IsIn(Object.values(PAYMENT_TYPES))
   payment_type: number;
 
   @IsNotEmpty()
@@ -70,11 +69,7 @@ export class UpdateOrderDTO {
 
   @IsNotEmpty()
   @IsNumber()
-  @IsIn(Object.values(Order.STATUSES))
+  @IsIn(Object.values(STATUSES))
   status: number;
 
-  @IsNotEmpty()
-  @Type(() => OrderItemDto)
-  @ValidateNested({ each: true })
-  order_items: OrderItemDto[];
 }

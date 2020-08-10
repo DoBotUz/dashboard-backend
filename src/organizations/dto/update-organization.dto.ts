@@ -3,7 +3,7 @@ import { BaseOrganizationDTO } from './base-organization.dto';
 import { IsOrganizationExists } from '../validators';
 import { Transform, plainToClass } from 'class-transformer';
 import { IsBotExists } from 'src/bots/validators';
-import { Organization } from '../organization.entity';
+import { STATUSES } from '../organization.entity';
 
 class Bot{
   @IsNotEmpty()
@@ -35,6 +35,6 @@ export class UpdateOrganizationDTO extends BaseOrganizationDTO {
     return Number(value)
   })
   @IsNumber()
-  @IsIn(Object.values(Organization.STATUSES))
+  @IsIn(Object.values(STATUSES))
   status: number;
 }

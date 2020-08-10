@@ -1,22 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { User } from './user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User, STATUSES } from './user.entity';
 import { hash as bcryptHash, compare as bcryptCompare } from 'bcrypt';
+
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User)
-    private userModel: typeof User,
+    @InjectRepository(User)
+    private usersRepository: Repository<User>,
   ) {}
 
   async createNew(data: any): Promise<User> {
-    data.status = this.userModel.STATUSES.ACTIVE;
+    data.status = STATUSES.ACTIVE;
     data.password_hash = await this.hashPassword(data.password);
-    return await this.userModel.create(data);
+    const user = new User();
+    Object.assign(user, data);
+    return await this.usersRepository.save(user);
   }
   
   async findOne(id: number): Promise<User> {
-    return await this.userModel.findOne({
+    return await this.usersRepository.findOne({
       where: {
         id,
       },
@@ -24,7 +28,7 @@ export class UsersService {
   }
 
   async findOneByEmail(email: string): Promise<User> {
-    return await this.userModel.findOne({
+    return await this.usersRepository.findOne({
       where: {
         email,
       },
@@ -70,7 +74,8 @@ export class UsersService {
 
   async updateOne(id: number, data: any): Promise<User> {
     const model = await this.findOne(id);
-    await model.update(data);
+    Object.assign(model, data);
+    await this.usersRepository.save(model);
     return model;
   }
 }

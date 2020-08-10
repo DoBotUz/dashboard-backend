@@ -1,68 +1,59 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Item } from './item.entity';
-import { Category } from 'src/categories/category.entity';
-import { File } from 'src/files/file.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Item, STATUSES } from './item.entity';
 
 @Injectable()
 export class ItemsService {
   constructor(
-    @InjectModel(Item)
-    private itemModel: typeof Item,
+    @InjectRepository(Item)
+    private itemsRepository: Repository<Item>,
   ) {}
   
   async createNew(data: any): Promise<Item> {
-    data.status = this.itemModel.STATUSES.ACTIVE;
-    return await this.itemModel.create(data);
+    data.status = STATUSES.ACTIVE;
+    const model = new Item();
+    Object.assign(model, data);
+    return await this.itemsRepository.save(model);
   }
 
   async findOne(id: number): Promise<Item> {
-    return this.itemModel.findOne({
+    return this.itemsRepository.findOne({
       where: {
         id,
       },
-      include: [Category, {
-        model: File,
-        where: {
-          key: File.KEYS.ITEM
-        },
-        required: false
-      }]
     });
   }
 
   async listAll(bot_id: number): Promise<Item[]> {
-    return this.itemModel.findAll({
-      include: [{
-        model: Category,
-        required: true,
-        where: {
-            bot_id,
-        },
-      }]
+    return this.itemsRepository.find({
+      where: {
+        bot_id
+      }
     });
   }
 
   async updateOne(id: number, data: any): Promise<Item> {
     const model = await this.findOne(id);
-    await model.update(data);
-    return model;
+    Object.assign(model, data);
+    return await this.itemsRepository.save(model);
   }
 
-  async activate(id: number): Promise<void> {
+  async activate(id: number): Promise<Item> {
     const model = await this.findOne(id);
-    model.status = Item.STATUSES.ACTIVE;
-    await model.save();
+    model.status = STATUSES.ACTIVE;
+    return await this.itemsRepository.save(model);
   }
 
-  async deactivate(id: number): Promise<void> {
+  async deactivate(id: number): Promise<Item> {
     const model = await this.findOne(id);
-    model.status = Item.STATUSES.INACTIVE;
-    await model.save();
+    model.status = STATUSES.INACTIVE;
+    return await this.itemsRepository.save(model);
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: number): Promise<boolean> {
     const model = await this.findOne(id);
-    await model.destroy();
+    await this.itemsRepository.remove(model);
+    return true;
   }
 }

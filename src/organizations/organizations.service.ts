@@ -1,59 +1,53 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Organization } from './organization.entity';
-import { User } from 'src/users/user.entity';
-import { Bot } from 'src/bots/bot.entity';
-import { File } from 'src/files/file.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { TypeOrmCrudService } from "@nestjsx/crud-typeorm";
+import { Organization, STATUSES } from './organization.entity';
 
 @Injectable()
-export class OrganizationsService {
+export class OrganizationsService extends TypeOrmCrudService<Organization> {
   constructor(
-    @InjectModel(Organization)
-    private organizationModel: typeof Organization,
-  ) {}
+    @InjectRepository(Organization)
+    private organizationsRepository: Repository<Organization>,
+  ) {
+    super(organizationsRepository);
+  }
 
   async createNew(data: any): Promise<Organization> {
-    data.status = this.organizationModel.STATUSES.ACTIVE;
-    return await this.organizationModel.create(data);
+    data.status = STATUSES.ACTIVE;
+    const organization = new Organization();
+    Object.assign(organization, data);
+    return await this.organizationsRepository.save(organization);
   }
 
   async findOne(id: number): Promise<Organization> {
-    return this.organizationModel.findOne({
+    return this.organizationsRepository.findOne({
       where: {
         id,
       },
-      include: [User, Bot, {
-        model: File,
-        where: {
-          key: File.KEYS.ORGANIZATION
-        },
-        required: false
-      }]
     });
   }
 
   async updateOne(id: number, data: any): Promise<Organization> {
     const model = await this.findOne(id);
-    await model.update(data);
-    return model;
+    Object.assign(model, data);
+    return await this.organizationsRepository.save(model);
   }
 
   async listAllUsers(user_id: number): Promise<Organization[]> {
-    return this.organizationModel.findAll({
+    return this.organizationsRepository.find({
       where: {
         user_id
       },
-      include: [User, Bot],
     });
   }
   
   async findOneUsersById(user_id: number, id: number): Promise<Organization> {
-    return this.organizationModel.findOne({
+    return this.organizationsRepository.findOne({
       where: {
         user_id,
         id
       },
-      include: [User, Bot],
     });
   }
 }

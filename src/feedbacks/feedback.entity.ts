@@ -1,37 +1,32 @@
-import { Column, Model, Table, BelongsTo, ForeignKey } from 'sequelize-typescript';
-import { BotUser } from '../bot-users/bot-user.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Bot } from 'src/bots/bot.entity';
+import { BotUser } from 'src/bot-users/bot-user.entity';
 
-@Table({
-  tableName: 'feedback',
-  underscored: true,
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at'
-})
-export class Feedback extends Model<Feedback> {
-  public static STATUSES = {
-    ANSWERED: 10,
-    PENDING: 11,
-  };
+export const STATUSES = {
+  ANSWERED: 10,
+  PENDING: 11,
+};
 
-  public static searchable = ['comment'];
-
-  @Column({
-    primaryKey: true,
-    autoIncrement: true
-  })
+@Entity()
+export class Feedback{
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column
+  @Column('text')
   comment: string;
 
-  @Column
+  @Column('int', { default: STATUSES.PENDING })
   status: number;
 
-  @ForeignKey(() => BotUser)
-  @Column
-  bot_user_id: number;
+  @CreateDateColumn({ name: 'created_at' })
+  created_at: Date;
 
-  @BelongsTo(() => BotUser)
+  @UpdateDateColumn({ name: 'updated_at' })
+  updated_at: Date;
+
+  @ManyToOne(type => BotUser, botuser => botuser.feedbacks)
   bot_user: BotUser;
+
+  @ManyToOne(type => Bot, bot => bot.feedbacks)
+  bot: Bot;
 }

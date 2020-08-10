@@ -1,58 +1,59 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Branch } from './branch.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Branch, STATUSES } from './branch.entity';
 import { Organization } from 'src/organizations/organization.entity';
 
 @Injectable()
 export class BranchesService {
   constructor(
-    @InjectModel(Branch)
-    private branchesModel: typeof Branch,
+    @InjectRepository(Branch)
+    private branchesRepository: Repository<Branch>,
   ) {}
 
   async createNew(data: any): Promise<Branch> {
-    data.status = this.branchesModel.STATUSES.ACTIVE;
-    return await this.branchesModel.create(data);
+    data.status = STATUSES.ACTIVE;
+    const branch = new Branch();
+    Object.assign(branch, data);
+    return await this.branchesRepository.save(branch);
   }
 
   async findOne(id: number): Promise<Branch> {
-    return this.branchesModel.findOne({
+    return this.branchesRepository.findOne({
       where: {
         id,
       },
-      include: [Organization]
     });
   }
 
   async listAll(organization_id: number): Promise<Branch[]> {
-    return this.branchesModel.findAll({
+    return this.branchesRepository.find({
       where: {
         organization_id,
       },
-      include: [Organization]
     });
   }
 
   async updateOne(id: number, data: any): Promise<Branch> {
     const model = await this.findOne(id);
-    await model.update(data);
-    return model;
+    Object.assign(model, data);
+    return await this.branchesRepository.save(model);
   }
 
   async activate(id: number): Promise<void> {
     const model = await this.findOne(id);
-    model.status = Branch.STATUSES.ACTIVE;
-    await model.save();
+    model.status = STATUSES.ACTIVE;
+    await this.branchesRepository.save(model);
   }
 
   async deactivate(id: number): Promise<void> {
     const model = await this.findOne(id);
-    model.status = Branch.STATUSES.INACTIVE;
-    await model.save();
+    model.status = STATUSES.INACTIVE;
+    await this.branchesRepository.save(model);
   }
 
   async delete(id: number): Promise<void> {
     const model = await this.findOne(id);
-    await model.destroy();
+    await this.branchesRepository.remove(model);
   }
 }

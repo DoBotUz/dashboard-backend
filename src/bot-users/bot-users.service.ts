@@ -1,36 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { BotUser } from './bot-user.entity';
-import { Bot } from 'src/bots/bot.entity';
 
 @Injectable()
 export class BotUsersService {
   constructor(
-    @InjectModel(BotUser)
-    private botUserModel: typeof BotUser,
+    @InjectRepository(BotUser)
+    private botUsersRepository: Repository<BotUser>,
   ) {}
   
   async listAll(bot_id: number): Promise<BotUser[]> {
-    return this.botUserModel.findAll({
+    return this.botUsersRepository.find({
       where: {
         bot_id
       },
-      include: [Bot]
     })
   }
 
   async findOne(id: number): Promise<BotUser> {
-    return this.botUserModel.findOne({
+    return this.botUsersRepository.findOne({
       where: {
         id,
       },
-      include: [Bot]
     });
   }
 
   async updateOne(id: number, data: any): Promise<BotUser> {
     const model = await this.findOne(id);
-    await model.update(data);
-    return model;
+    Object.assign(model, data);
+    return await this.botUsersRepository.save(model);
   }
 }

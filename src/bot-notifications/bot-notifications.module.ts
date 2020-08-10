@@ -1,15 +1,14 @@
 import { Module, Global } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { BotNotificationsService } from './bot-notifications.service';
 import { BotNotificationsController } from './bot-notifications.controller';
 import { BotNotification } from './bot-notification.entity';
 import { BotNotificationTemplate } from './bot-notification-template.entity';
 import { isBotNotificationExists, isBotNotificationTemplateExists } from './validators';
-import { BotNotificationBotUser } from './bot-notification-bot-user.entity';
 
 @Global()
 @Module({
-  imports: [SequelizeModule.forFeature([BotNotification]), SequelizeModule.forFeature([BotNotificationTemplate]), SequelizeModule.forFeature([BotNotificationBotUser])],
+  imports: [TypeOrmModule.forFeature([BotNotification]), TypeOrmModule.forFeature([BotNotificationTemplate])],
   providers: [BotNotificationsService, isBotNotificationExists, isBotNotificationTemplateExists],
   controllers: [BotNotificationsController],
   exports: [BotNotificationsService]

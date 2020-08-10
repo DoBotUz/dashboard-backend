@@ -1,21 +1,24 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { Bot } from './bot.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Bot, STATUSES } from './bot.entity';
 
 @Injectable()
 export class BotsService {
   constructor(
-    @InjectModel(Bot)
-    private botModel: typeof Bot,
+    @InjectRepository(Bot)
+    private botsRepository: Repository<Bot>,
   ) {}
   
   async createNew(data: any): Promise<Bot> {
-    data.status = this.botModel.STATUSES.ACTIVE;
-    return await this.botModel.create(data);
+    data.status = STATUSES.ACTIVE;
+    const bot = new Bot();
+    Object.assign(bot, data);
+    return await this.botsRepository.save(bot);
   }
 
   async findOne(id: number): Promise<Bot> {
-    return this.botModel.findOne({
+    return this.botsRepository.findOne({
       where: {
         id,
       },
@@ -24,7 +27,7 @@ export class BotsService {
 
   async updateOne(id: number, data: any): Promise<Bot> {
     const model = await this.findOne(id);
-    await model.update(data);
-    return model;
+    Object.assign(model, data);
+    return await this.botsRepository.save(model);
   }
 }

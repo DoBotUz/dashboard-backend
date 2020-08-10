@@ -1,53 +1,46 @@
-import { Column, Model, Table, BelongsTo, ForeignKey } from 'sequelize-typescript';
-import { Organization } from '../organizations/organization.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Organization } from 'src/organizations/organization.entity';
+import { Order } from 'src/orders/order.entity';
 
-@Table({
-  tableName: 'branch',
-  underscored: true,
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at'
-})
-export class Branch extends Model<Branch> {
-  public static STATUSES = {
-    ACTIVE: 10,
-    INACTIVE: 11,
-    MODERATION: 9,
-    DELETED: 0,
-  };
+export const STATUSES = {
+  ACTIVE: 10,
+  INACTIVE: 11,
+  MODERATION: 9,
+  DELETED: 0,
+};
 
-  public static searchable = [
-    'title'
-  ];
-
-  @Column({
-    primaryKey: true,
-    autoIncrement: true
-  })
+@Entity()
+export class Branch {
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column
+  @Column('double')
   lat: number;
 
-  @Column
+  @Column('double')
   lng: number;
 
-  @Column
+  @Column('varchar', { 'length': 255 })
   title: string;
 
-  @Column
+  @Column('json', { 'nullable': true })
   timetable: string;
 
-  @Column
+  @Column('boolean', { 'default': true })
   is_all_day: number;
 
-  @Column
+  @Column('int', { 'default': STATUSES.ACTIVE })
   status: number;
 
-  @ForeignKey(() => Organization)
-  @Column
-  organization_id: number;
+  @CreateDateColumn({ name: 'created_at' })
+  created_at: Date;
 
-  @BelongsTo(() => Organization)
+  @UpdateDateColumn({ name: 'updated_at' })
+  updated_at: Date;
+  
+  @ManyToOne(type => Organization, organization => organization.branches)
   organization: Organization;
+
+  @OneToMany(type => Order, order => order.branch)
+  orders: Order[];
 }

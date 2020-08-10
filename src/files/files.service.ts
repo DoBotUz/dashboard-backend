@@ -1,13 +1,14 @@
 import * as fs from 'fs';
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { File } from './file.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { File, KEYS, TYPES } from './file.entity';
 
 @Injectable()
 export class FilesService {
   constructor(
-    @InjectModel(File)
-    private fileModel: typeof File,
+    @InjectRepository(File)
+    private filesRepository: Repository<File>,
   ) {}
   
   async uploadImagesFor(key: string, key_id: number, files: any[]): Promise<void> {
@@ -17,32 +18,30 @@ export class FilesService {
           console.log(res);
       });
       const newFile = {
-        key: File.KEYS[key],
+        key: KEYS[key],
         key_id: key_id,
         file: files[i].filename,
         original_name: files[i].originalname,
         size: files[i].size,
         mime: files[i].mimetype,
-        type: File.TYPES.IMAGE,
+        type: TYPES.IMAGE,
       };
-      this.fileModel.create(newFile);
+      this.filesRepository.create(newFile);
     }
   }
 
   async removeImageFor(key: string, key_id: number): Promise<void> {
-    this.fileModel.destroy({
+    const model = await this.filesRepository.findOne({
       where: {
-        key: File.KEYS[key],
+        key: KEYS[key],
         key_id
       }
     });
+    this.filesRepository.remove(model);
   }
 
   async remove(id: number): Promise<void> {
-    this.fileModel.destroy({
-      where: {
-        id
-      }
-    });
+    const model = await this.filesRepository.findOne(id);
+    this.filesRepository.remove(model);
   }
 }

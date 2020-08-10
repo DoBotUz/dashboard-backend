@@ -1,33 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Feedback } from './feedback.entity';
-import { BotUser } from 'src/bot-users/bot-user.entity';
-import { Bot } from 'src/bots/bot.entity';
 
 @Injectable()
 export class FeedbacksService {
   constructor(
-    @InjectModel(Feedback)
-    private feedbackModel: typeof Feedback,
+    @InjectRepository(Feedback)
+    private feedbacksRepository: Repository<Feedback>,
   ) {}
   
   listAllBots(bot_id: number): Promise<Feedback[]> {
-    return this.feedbackModel.findAll({
-      include: [{
-        model: BotUser,
-        include: [{
-          model: Bot,
-          required: true,
-          where: {
-            id: bot_id
-          }
-        }]
-      }]
+    return this.feedbacksRepository.find({
+      where: {
+        bot_id
+      }
     })
   }
 
   async findOne(id: number): Promise<Feedback> {
-    return this.feedbackModel.findOne({
+    return this.feedbacksRepository.findOne({
       where: {
         id,
       },

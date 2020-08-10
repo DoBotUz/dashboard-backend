@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Order } from './order.entity';
 import { Item } from 'src/items/item.entity';
-import { OrderItem } from './order-item.entity';
 import { BotUser } from 'src/bot-users/bot-user.entity';
 import { Branch } from 'src/branches/branch.entity';
 import { Organization } from 'src/organizations/organization.entity';
@@ -10,48 +10,42 @@ import { Organization } from 'src/organizations/organization.entity';
 @Injectable()
 export class OrdersService {
   constructor(
-    @InjectModel(Order)
-    private orderModel: typeof Order,
-    @InjectModel(OrderItem)
-    private orderItemModel: typeof OrderItem,
+    @InjectRepository(Order)
+    private ordersRepository: Repository<Order>,
   ) {}
   
   async listAll(organization_id: number): Promise<Order[]> {
-    return this.orderModel.findAll({
+    return this.ordersRepository.find({
       where: {
         organization_id
       },
-      include: [BotUser, Branch, Organization]
     })
   }
 
   async findOne(id: number): Promise<Order> {
-    return this.orderModel.findOne({
+    return this.ordersRepository.findOne({
       where: {
         id,
       },
-      include: [BotUser, Branch, Organization, {
-        model: OrderItem,
-        include: [Item]
-      }]
     });
   }
 
   async updateOne(id: number, data: any): Promise<Order> {
     const model = await this.findOne(id);
-    await model.update(data);
-    return model;
+    Object.assign(model, data);
+    return await this.ordersRepository.save(model);
   }
 
   async updateItems(order_id: number, orderItems: any[]): Promise<any[]> {
-    await this.orderItemModel.destroy({
-      where: {
-        order_id
-      }
-    });
-    orderItems.forEach(async (orderItem) => {
-      await this.orderItemModel.create(orderItem.toJSON())
-    });
-    return orderItems;
+    // await this.orderItemModel.destroy({
+    //   where: {
+    //     order_id
+    //   }
+    // });
+    // orderItems.forEach(async (orderItem) => {
+    //   await this.orderItemModel.create(orderItem.toJSON())
+    // });
+    // return orderItems;
+    return [];
   }
 }

@@ -1,92 +1,77 @@
-import { Column, Model, Table, BelongsTo, ForeignKey, DataType, HasMany } from 'sequelize-typescript';
-import { BotUser } from '../bot-users/bot-user.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
+import { BotUser } from 'src/bot-users/bot-user.entity';
 import { Organization } from 'src/organizations/organization.entity';
 import { Branch } from 'src/branches/branch.entity';
-import { OrderItem } from './order-item.entity';
+import { Item } from 'src/items/item.entity';
 
-@Table({
-  tableName: 'order',
-  underscored: true,
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at'
-})
-export class Order extends Model<Order> {
-  public static STATUSES = {
-    ACTIVE: 10,
-    MODERATION: 9,
-    CANCELED: 0,
-    PAID: 11,
-    DELIVERED: 12,
-  };
+export const STATUSES = {
+  ACTIVE: 10,
+  MODERATION: 9,
+  CANCELED: 0,
+  PAID: 11,
+  DELIVERED: 12,
+};
 
-  public static PAYMENT_TYPES = {
-    CASH: 10,
-    CARD: 0,
-  };
+export const PAYMENT_TYPES = {
+  CASH: 10,
+  CARD: 0,
+};
 
-  public static searchable = [];
+@Entity()
+export class Order {
 
-  @Column({
-    primaryKey: true,
-    autoIncrement: true
-  })
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column
+  @Column('double')
   total_charge: number;
 
-  @Column
+  @Column('double')
   delivery_charge: number;
 
-  @Column(DataType.DATE)
-  for_datetime: number;
+  @Column('datetime')
+  for_datetime: Date;
 
-  @Column
+  @Column('double', { nullable: true })
   lat: number;
 
-  @Column
+  @Column('double', { nullable: true })
   lng: number;
 
-  @Column
+  @Column('text', { nullable: true })
   address: string;
 
-  @Column
+  @Column('int')
   payment_type: number;
 
-  @Column
+  @Column('varchar', { length: 255 })
   phone: string;
 
-  @Column
+  @Column('text', { nullable: true })
   comment: string;
 
-  @Column
+  @Column('int', { default: STATUSES.MODERATION })
   status: number;
 
-  @Column
+  @Column('boolean', { default: false })
   is_paid: boolean;
 
-  @ForeignKey(() => BotUser)
-  @Column
-  bot_user_id: number;
+  @CreateDateColumn({ name: 'created_at' })
+  created_at: Date;
 
-  @BelongsTo(() => BotUser)
+  @UpdateDateColumn({ name: 'updated_at' })
+  updated_at: Date;
+  
+  @ManyToOne(type => BotUser, botUser => botUser.orders)
   bot_user: BotUser;
 
-  @ForeignKey(() => Organization)
-  @Column
-  organization_id: number;
-
-  @BelongsTo(() => Organization)
+  @ManyToOne(type => Organization, organization => organization.orders)
   organization: Organization;
 
-  @ForeignKey(() => Branch)
-  @Column
-  branch_id: number;
-
-  @BelongsTo(() => Branch)
+  @ManyToOne(type => Branch, branch => branch.orders)
   branch: Branch;
-
-  @HasMany(() => OrderItem)
-  order_items: OrderItem[]
+  
+  @ManyToMany(type => Item)
+  @JoinTable()
+  items: Item[];
 }

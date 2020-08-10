@@ -29,10 +29,14 @@
     "@nestjs/platform-socket.io": "^7.4.2",
     "@nestjs/sequelize": "^0.1.0",
     "@nestjs/swagger": "^4.5.12",
+    "@nestjs/typeorm": "^7.1.0",
     "@nestjs/websockets": "^7.4.2",
+    "@nestjsx/crud": "^4.6.2",
+    "@nestjsx/crud-typeorm": "^4.6.2",
     "bcrypt": "^5.0.0",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.12.2",
+    "mysql": "^2.18.1",
     "mysql2": "^2.1.0",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
@@ -43,7 +47,8 @@
     "rxjs-compat": "^6.6.0",
     "sequelize": "^5.11.0",
     "sequelize-typescript": "^1.1.0",
-    "swagger-ui-express": "^4.1.4"
+    "swagger-ui-express": "^4.1.4",
+    "typeorm": "^0.2.25"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.0.0",

@@ -1,90 +1,81 @@
-import { Column, Model, Table, BelongsTo, ForeignKey, HasOne, HasMany } from 'sequelize-typescript';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToOne, OneToMany } from 'typeorm';
 import { User } from 'src/users/user.entity';
 import { Bot } from 'src/bots/bot.entity';
-import { File } from 'src/files/file.entity';
+import { Branch } from 'src/branches/branch.entity';
+import { Order } from 'src/orders/order.entity';
 
-@Table({
-  tableName: 'organization',
-  underscored: true,
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at'
-})
-export class Organization extends Model<Organization> {
-  public static STATUSES = {
-    ACTIVE: 10,
-    INACTIVE: 11,
-    MODERATION: 9,
-    DELETED: 0,
-  };
+export const STATUSES = {
+  ACTIVE: 10,
+  INACTIVE: 11,
+  MODERATION: 9,
+  DELETED: 0,
+};
 
-  public static searchable = [
-    'ru_title', 'ru_description', 'en_title', 'en_description', 'uz_title', 'uz_description',
-  ];
-
-  @Column({
-    primaryKey: true,
-    autoIncrement: true
-  })
+@Entity()
+export class Organization {
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column
+  @Column('varchar', { 'length': 255 })
   ru_title: string;
 
-  @Column
+  @Column('text')
   ru_description: string;
 
-  @Column
+  @Column('varchar', { 'length': 255 })
   en_title: string;
 
-  @Column
+  @Column('text')
   en_description: string;
 
-  @Column
+  @Column('varchar', { 'length': 255 })
   uz_title: string;
 
-  @Column
+  @Column('text')
   uz_description: string;
 
-  @Column
+  @Column('varchar', { 'length': 255, 'nullable': true })
   thumbnail: string;
 
-  @Column
+  @Column('boolean', { 'default': false })
   is_multilanguage: number;
 
-  @Column
+  @Column('double', { 'default': 0 })
   min_order_charge: number;
 
-  @Column
+  @Column('double', { 'default': 0 })
   free_distance: number;
 
-  @Column
+  @Column('double')
   fixed_delivery_price: number;
 
-  @Column
+  @Column('double', { 'nullable': true })
   per_km_deliver_price: number;
 
-  @Column
+  @Column('int', { 'nullable': true })
   delivery_time_range_start: number;
 
-  @Column
+  @Column('int', { 'nullable': true })
   delivery_time_range_end: number;
 
-  @Column
+  @Column('int', { 'default': STATUSES.ACTIVE })
   status: number;
 
-  @ForeignKey(() => User)
-  @Column
-  user_id: number;
+  @CreateDateColumn({ name: 'created_at' })
+  created_at: Date;
 
-  @BelongsTo(() => User)
+  @UpdateDateColumn({ name: 'updated_at' })
+  updated_at: Date;
+  
+  @ManyToOne(type => User, user => user.organizations)
   user: User;
 
-  @HasOne(() => Bot)
+  @OneToOne(type => Bot)
   bot: Bot;
 
-  @HasMany(() => File, {
-    foreignKey: 'key_id',
-  })
-  files: File[]
+  @OneToMany(type => Branch, branch => branch.organization)
+  branches: Branch[];
+
+  @OneToMany(type => Order, order => order.organization)
+  orders: Order[];
 }

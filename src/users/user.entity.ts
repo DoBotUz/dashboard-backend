@@ -1,57 +1,55 @@
-import { Column, Model, Table, DataType, Unique, } from 'sequelize-typescript';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import { Organization } from 'src/organizations/organization.entity';
 
-@Table({
-  tableName: 'user',
-  underscored: true,
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at'
-})
-export class User extends Model<User> {
-  public static STATUSES = {
-    ACTIVE: 10,
-    MODERATION: 9,
-    DELETED: 0
-  };
+export const STATUSES = {
+  ACTIVE: 10,
+  MODERATION: 9,
+  DELETED: 0
+};
 
-  public static searchable = [
-    'email', 'first_name', 'last_name',
-  ];
+@Entity()
+export class User  {
 
-  @Column({
-    primaryKey: true,
-    autoIncrement: true
-  })
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Unique
-  @Column
+  @Column('varchar', {
+    unique: true,
+    length: 255
+  })
   email: string;
 
-  @Column
+  @Column('varchar', { length: 255 })
   first_name: string;
 
-  @Column
+  @Column('varchar', { length: 255 })
   last_name: string;
 
-  @Column
+  @Column('varchar', { length: 255 })
+  @Exclude()
   password_hash: string;
 
-  @Column(DataType.DATE)
-  last_seen: number;
+  @Column({ 'type': 'datetime', 'nullable': true })
+  last_seen: Date;
 
-  @Column
+  @Column('varchar', { length: 255, 'nullable': true })
   password_reset_token: string;
 
-  @Column
+  @Column('double', {
+    'default': 0
+  })
   balance: number;
 
-  @Column
+  @Column('int')
   status: number;
 
-  public toJSON(): any{
-    const values = <any>Object.assign({}, this.get());
-    delete values.password_hash;
-    return values;
-  }
+  @CreateDateColumn({ name: 'created_at' })
+  created_at: Date;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updated_at: Date;
+
+  @OneToMany(type => Organization, orgnization => orgnization.user)
+  organizations: Organization[];
 }

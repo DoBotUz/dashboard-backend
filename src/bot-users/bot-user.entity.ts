@@ -1,64 +1,64 @@
-import { Column, Model, Table, BelongsTo, ForeignKey, DataType } from 'sequelize-typescript';
-import { Bot } from '../bots/bot.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, ManyToMany } from 'typeorm';
+import { Bot } from 'src/bots/bot.entity';
+import { Feedback } from 'src/feedbacks/feedback.entity';
+import { Order } from 'src/orders/order.entity';
+import { BotNotification } from 'src/bot-notifications/bot-notification.entity';
 
+export const STATUSES = {
+  ACTIVE: 10,
+  BANNED: 0,
+};
 
-@Table({
-  tableName: 'bot_user',
-  underscored: true,
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at'
-})
-export class BotUser extends Model<BotUser> {
-  public static STATUSES = {
-    ACTIVE: 10,
-    BANNED: 0,
-  };
-
-  public static searchable = [
-    'first_name', 'last_name', 'phone_number', 'username', 'bio', 'tg_id',
-  ];
-
-  @Column({
-    primaryKey: true,
-    autoIncrement: true
-  })
+@Entity()
+export class BotUser {
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column
+  @Column('bigint')
   tg_id: number;
 
-  @Column
+  @Column('varchar', { length: 255 })
   first_name: string;
 
-  @Column
+  @Column('varchar', { length: 255, nullable: true })
   last_name: string;
 
-  @Column
+  @Column('varchar', { length: 255, nullable: true })
   phone_number: string;
 
-  @Column
+  @Column('varchar', { length: 255, nullable: true })
   username: string;
 
-  @Column
+  @Column('text', { nullable: true })
   bio: string;
 
-  @Column
+  @Column('varchar', { length: 255, nullable: true })
   avatar: string;
 
-  @Column
+  @Column('varchar', { length: 20 })
   language: string;
 
-  @Column(DataType.DATE)
-  last_seen: number;
+  @Column('datetime')
+  last_seen: Date;
 
-  @Column
+  @Column('int', { default: STATUSES.ACTIVE })
   status: number;
 
-  @ForeignKey(() => Bot)
-  @Column
-  bot_id: number;
+  @CreateDateColumn({ name: 'created_at' })
+  created_at: Date;
 
-  @BelongsTo(() => Bot)
+  @UpdateDateColumn({ name: 'updated_at' })
+  updated_at: Date;
+
+  @ManyToOne(type => Bot, bot => bot.bot_notifications)
   bot: Bot;
+
+  @OneToMany(type => Feedback, feedback => feedback.bot)
+  feedbacks: Feedback[];
+
+  @OneToMany(type => Order, order => order.bot_user)
+  orders: Order[];
+
+  @ManyToMany(type => BotNotification)
+  bot_notifications: BotNotification[];
 }

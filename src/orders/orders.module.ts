@@ -1,14 +1,13 @@
 import { Module, Global } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { OrdersService } from './orders.service';
 import { OrdersController } from './orders.controller';
 import { Order } from './order.entity';
-import { OrderItem } from './order-item.entity';
 import { IsOrderExists } from './validators';
 
 @Global()
 @Module({
-  imports: [SequelizeModule.forFeature([Order]), SequelizeModule.forFeature([OrderItem])],
+  imports: [TypeOrmModule.forFeature([Order])],
   providers: [OrdersService, IsOrderExists],
   controllers: [OrdersController],
   exports: [OrdersService],

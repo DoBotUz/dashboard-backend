@@ -1,70 +1,58 @@
-import { Column, Model, Table, BelongsTo, ForeignKey, HasMany } from 'sequelize-typescript';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
 import { Category } from 'src/categories/category.entity';
-import { File } from 'src/files/file.entity';
+import { Bot } from 'src/bots/bot.entity';
 
-@Table({
-  tableName: 'item',
-  underscored: true,
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at'
-})
-export class Item extends Model<Item> {
-  public static STATUSES = {
-    ACTIVE: 10,
-    MODERATION: 9,
-    INACTIVE: 0,
-  };
+export const STATUSES = {
+  ACTIVE: 10,
+  MODERATION: 9,
+  INACTIVE: 0,
+};
 
-  public static searchable = [
-    'ru_title', 'ru_description', 'en_title', 'en_description', 'uz_title', 'uz_description',
-  ];
+@Entity()
+export class Item {
 
-  @Column({
-    primaryKey: true,
-    autoIncrement: true
-  })
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column
+  @Column('varchar', { length: 255 })
   ru_title: string;
 
-  @Column
+  @Column('text')
   ru_description: string;
 
-  @Column
+  @Column('varchar', { length: 255 })
   en_title: string;
 
-  @Column
+  @Column('text')
   en_description: string;
 
-  @Column
+  @Column('varchar', { length: 255 })
   uz_title: string;
 
-  @Column
+  @Column('text')
   uz_description: string;
 
-  @Column
+  @Column('varchar', { length: 255, nullable: true })
   thumbnail: string;
 
-  @Column
+  @Column('double')
   price: number;
 
-  @Column
+  @Column('int', { default: 1 })
   amount: number;
 
-  @Column
+  @Column('int', { default: STATUSES.ACTIVE })
   status: number;
 
-  @ForeignKey(() => Category)
-  @Column
-  category_id: number;
+  @CreateDateColumn({ name: 'created_at' })
+  created_at: Date;
 
-  @BelongsTo(() => Category)
+  @UpdateDateColumn({ name: 'updated_at' })
+  updated_at: Date;
+  
+  @ManyToOne(type => Category, category => category.items)
   category: Category;
 
-  @HasMany(() => File, {
-    foreignKey: 'key_id',
-  })
-  files: File[]
+  @ManyToOne(type => Bot, bot => bot.items)
+  bot: Bot;
 }

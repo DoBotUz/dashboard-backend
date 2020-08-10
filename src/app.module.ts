@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { MulterModule } from "@nestjs/platform-express";
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -25,17 +25,16 @@ import { GatewaysModule } from './gateways/gateways.module';
     MulterModule.register({
       dest: './uploads',
     }),
-    SequelizeModule.forRoot({
-      dialect: 'mysql',
+    TypeOrmModule.forRoot({
+      type: 'mysql',
       host: 'localhost',
       port: 3306,
       username: 'dobot',
       password: '04aOnb4yWUtRavTb',
       database: 'dobot',
-      autoLoadModels: true,
+      entities: [],
       synchronize: true,
-      models: [],
-      logging: false
+      autoLoadEntities: true,
     }),
     AuthModule,
     UsersModule,

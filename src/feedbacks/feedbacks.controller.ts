@@ -11,7 +11,7 @@ import { AnswerFeedbackDto } from './dto';
 import { BotNotificationsService } from 'src/bot-notifications/bot-notifications.service';
 import { FilesService } from 'src/files/files.service';
 import { Feedback } from './feedback.entity';
-import { BotNotificationTemplate } from 'src/bot-notifications/bot-notification-template.entity';
+import { BotNotificationTemplate, TYPES } from 'src/bot-notifications/bot-notification-template.entity';
 
 @ApiTags('feedbacks')
 @Controller('feedbacks')
@@ -66,7 +66,7 @@ export class FeedbacksController {
     }),
   )
   async answer(@UserD() user, @Body() data: AnswerFeedbackDto, @UploadedFiles() uploadedFiles): Promise<BotNotificationTemplate> {
-    data.template.type = BotNotificationTemplate.TYPES.FEEDBACK_ANS
+    data.template.type = TYPES.FEEDBACK_ANS
     if (uploadedFiles && uploadedFiles.thumbnail && typeof uploadedFiles.thumbnail[0] !== 'undefined') {
       const thumbnail = uploadedFiles.thumbnail[0];
       data.template.thumbnail = thumbnail.filename;
@@ -80,12 +80,12 @@ export class FeedbacksController {
       this.filesService.uploadImagesFor('NOTIFICATION_TEMPLATE', model.id, uploadedFiles.files);
     }
     const notification = await this.botNotificationsService.create({
-      bot_id: model.bot_id,
+      bot_id: model.bot.id,
       bot_notification_template_id: model.id,
       after_date_time: 0,
       bot_user_ids: [data.bot_user_id]
     });
-    this.botNotificationsService.setNotificationBotUsers(notification.id, [data.bot_user_id]);
+    // this.botNotificationsService.setNotificationBotUsers(notification.id, [data.bot_user_id]);
     return model;
   }
 

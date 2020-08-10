@@ -11,7 +11,6 @@ import { CreateBotNotificationDto, UpdateBotNotificationDto, CreateBotNotificati
 import { BotNotification } from './bot-notification.entity';
 import { BotNotificationTemplate } from './bot-notification-template.entity';
 import { FilesService } from 'src/files/files.service';
-import { BotNotificationBotUser } from './bot-notification-bot-user.entity';
 import { BotUsersService } from 'src/bot-users/bot-users.service';
 
 @ApiTags('bot-notifications')
@@ -58,7 +57,6 @@ export class BotNotificationsController {
     }),
   )
   async createTemplate(@UserD() user, @Body() data: CreateBotNotificationTemplateDto, @UploadedFiles() uploadedFiles): Promise<BotNotificationTemplate> {
-    data.type = BotNotificationTemplate.TYPES.MASS_SEND;
     if (uploadedFiles && uploadedFiles.thumbnail && typeof uploadedFiles.thumbnail[0] !== 'undefined') {
       const thumbnail = uploadedFiles.thumbnail[0];
       data.thumbnail = thumbnail.filename;
@@ -91,32 +89,31 @@ export class BotNotificationsController {
     if (thumbnail) {
       data.thumbnail = thumbnail.filename;
     }
-    data.type = BotNotificationTemplate.TYPES.MASS_SEND;
     return this.botNotificationsService.updateTemplate(id, data);
   }
 
-  @Post()
-  @ApiOkResponse({
-    description: 'BotNotification',
-    type: BotNotification
-  })
-  async create(@UserD() user, @Body() data: CreateBotNotificationDto): Promise<BotNotification> {
-    const model = await this.botNotificationsService.create(data);
-    this.botNotificationsService.setNotificationBotUsers(model.id, data.bot_user_ids);
-    return model;
-  }
+  // @Post()
+  // @ApiOkResponse({
+  //   description: 'BotNotification',
+  //   type: BotNotification
+  // })
+  // async create(@UserD() user, @Body() data: CreateBotNotificationDto): Promise<BotNotification> {
+  //   const model = await this.botNotificationsService.create(data);
+  //   this.botNotificationsService.setNotificationBotUsers(model.id, data.bot_user_ids);
+  //   return model;
+  // }
 
-  @Post('update')
-  @ApiOkResponse({
-    description: 'BotNotification',
-    type: BotNotification
-  })
-  async update(@UserD() user, @Body() updateNotificationDto: UpdateBotNotificationDto): Promise<BotNotification> {
-    const { id, ...data } = updateNotificationDto;
-    const model = await this.botNotificationsService.update(id, data);
-    this.botNotificationsService.setNotificationBotUsers(model.id, data.bot_user_ids);
-    return model;
-  }
+  // @Post('update')
+  // @ApiOkResponse({
+  //   description: 'BotNotification',
+  //   type: BotNotification
+  // })
+  // async update(@UserD() user, @Body() updateNotificationDto: UpdateBotNotificationDto): Promise<BotNotification> {
+  //   const { id, ...data } = updateNotificationDto;
+  //   const model = await this.botNotificationsService.update(id, data);
+  //   this.botNotificationsService.setNotificationBotUsers(model.id, data.bot_user_ids);
+  //   return model;
+  // }
 
   @Post('mass-send')
   @ApiOkResponse({
@@ -142,7 +139,6 @@ export class BotNotificationsController {
     }),
   )
   async createMassSend(@UserD() user, @Body() data: CreateMassSendDto, @UploadedFiles() uploadedFiles): Promise<BotNotification> {
-    data.template.type = BotNotificationTemplate.TYPES.MASS_SEND;
     if (uploadedFiles && uploadedFiles.thumbnail && typeof uploadedFiles.thumbnail[0] !== 'undefined') {
       const thumbnail = uploadedFiles.thumbnail[0];
       data.template.thumbnail = thumbnail.filename;
@@ -151,7 +147,6 @@ export class BotNotificationsController {
           console.log(res);
       });
     }
-    console.log(data.template);
     const notificationTemplate = await this.botNotificationsService.createTemplate(data.template);
     if (uploadedFiles && uploadedFiles.files && uploadedFiles.files.length) {
       this.filesService.uploadImagesFor('NOTIFICATION_TEMPLATE', notificationTemplate.id, uploadedFiles.files);
@@ -164,7 +159,7 @@ export class BotNotificationsController {
     const bot_user_ids = (await this.botUsersService.listAll(data.bot_id)).map((botUser) => {
       return botUser.id;
     })
-    this.botNotificationsService.setNotificationBotUsers(model.id, bot_user_ids);
+    // this.botNotificationsService.setNotificationBotUsers(model.id, bot_user_ids);
     return this.botNotificationsService.findOne(model.id);
   }
 

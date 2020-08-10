@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { UniqueEmail, IsUserExists } from './validators';
 import { UsersController } from './users.controller';
 
 @Module({
-  imports: [SequelizeModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([User])],
   providers: [UsersService, UniqueEmail, IsUserExists],
-  exports: [UsersService, SequelizeModule],
+  exports: [UsersService, TypeOrmModule],
   controllers: [UsersController],
 })
 export class UsersModule {}

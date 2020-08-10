@@ -1,47 +1,52 @@
-import { Column, Model, Table, BelongsTo, ForeignKey, DataType } from 'sequelize-typescript';
-import { Organization } from '../organizations/organization.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne, OneToMany } from 'typeorm';
+import { Organization } from 'src/organizations/organization.entity';
+import { BotNotification } from 'src/bot-notifications/bot-notification.entity';
+import { Category } from 'src/categories/category.entity';
+import { Feedback } from 'src/feedbacks/feedback.entity';
+import { Item } from 'src/items/item.entity';
 
-@Table({
-  tableName: 'bot',
-  underscored: true,
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at'
-})
-export class Bot extends Model<Bot> {
-  public static STATUSES = {
-    ACTIVE: 10,
-    INACTIVE: 11,
-    MODERATION: 9,
-    DELETED: 0,
-  };
+export const STATUSES = {
+  ACTIVE: 10,
+  INACTIVE: 11,
+  MODERATION: 9,
+  DELETED: 0,
+};
 
-  public static searchable = [
-    'title'
-  ];
-
-  @Column({
-    primaryKey: true,
-    autoIncrement: true
-  })
+@Entity()
+export class Bot{
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column
+  @Column('varchar', { 'length': 255 })
   title: string;
 
-  @Column
+  @Column('varchar', { 'length': 1024 })
   token: string;
 
-  @Column(DataType.DATE)
-  last_container_poke: number;
+  @Column('datetime')
+  last_container_poke: Date;
 
-  @Column
+  @Column('int')
   status: number;
 
-  @ForeignKey(() => Organization)
-  @Column
-  organization_id: number;
+  @CreateDateColumn({ name: 'created_at' })
+  created_at: Date;
 
-  @BelongsTo(() => Organization)
+  @UpdateDateColumn({ name: 'updated_at' })
+  updated_at: Date;
+  
+  @OneToOne(type => Organization)
   organization: Organization;
+
+  @OneToMany(type => BotNotification, botNotification => botNotification.template)
+  bot_notifications: BotNotification[];
+
+  @OneToMany(type => Category, category => category.bot)
+  categories: Category[];
+
+  @OneToMany(type => Feedback, feedback => feedback.bot)
+  feedbacks: Feedback[];
+
+  @OneToMany(type => Item, item => item.bot)
+  items: Item[];
 }

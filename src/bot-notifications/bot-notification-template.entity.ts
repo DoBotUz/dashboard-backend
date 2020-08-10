@@ -1,67 +1,55 @@
-import { Column, Model, Table, BelongsTo, ForeignKey, HasMany } from 'sequelize-typescript';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Bot } from 'src/bots/bot.entity';
-import { File } from 'src/files/file.entity';
+import { BotNotification } from './bot-notification.entity';
 
-@Table({
-  tableName: 'bot_notification_template',
-  underscored: true,
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at'
-})
-export class BotNotificationTemplate extends Model<BotNotificationTemplate> {
-  public static STATUSES = {
-    ACTIVE: 10,
-    DELETED: 0,
-  };
-  public static TYPES = {
-    MASS_SEND: 10,
-    FEEDBACK_ANS: 11,
-  };
+export const STATUSES = {
+  ACTIVE: 10,
+  DELETED: 0,
+};
 
-  public static searchable = [
-    'ru_title', 'ru_description', 'en_title', 'en_description', 'uz_title', 'uz_description',
-  ];
+export const TYPES = {
+  MASS_SEND: 10,
+  FEEDBACK_ANS: 11,
+}
 
-  @Column({
-    primaryKey: true,
-    autoIncrement: true
-  })
+@Entity()
+export class BotNotificationTemplate {
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column
+  @Column('varchar', { length: 255 })
   ru_title: string;
 
-  @Column
+  @Column('text')
   ru_description: string;
 
-  @Column
+  @Column('varchar', { length: 255 })
   en_title: string;
 
-  @Column
+  @Column('text')
   en_description: string;
 
-  @Column
+  @Column('varchar', { length: 255 })
   uz_title: string;
 
-  @Column
+  @Column('text')
   uz_description: string;
 
-  @Column
+  @Column('varchar', { length: 255, nullable: true })
   thumbnail: string;
 
-  @Column
+  @Column('int', { default: STATUSES.ACTIVE })
   status: number;
 
-  @ForeignKey(() => Bot)
-  @Column
-  bot_id: number;
+  @CreateDateColumn({ name: 'created_at' })
+  created_at: Date;
 
-  @BelongsTo(() => Bot)
+  @UpdateDateColumn({ name: 'updated_at' })
+  updated_at: Date;
+  
+  @ManyToOne(type => Bot, bot => bot.bot_notifications)
   bot: Bot;
 
-  @HasMany(() => File, {
-    foreignKey: 'key_id',
-  })
-  files: File[]
+  @OneToMany(type => BotNotification, botNotification => botNotification.template)
+  bot_notifications: BotNotification[];
 }

@@ -41,8 +41,7 @@ export class OrdersController {
   })
   async updateOne(@Body() updateOrderDTO: UpdateOrderDTO): Promise<Order> {
     const { id, ...data } = updateOrderDTO;
-    console.log(data.order_items);
-    this.ordersService.updateItems(id, data.order_items);
+    // this.ordersService.updateItems(id, data.order_items);
     return this.ordersService.updateOne(id, data);
   }
 

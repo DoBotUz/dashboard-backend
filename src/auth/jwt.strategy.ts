@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { jwtConstants } from './constants';
 import { UsersService } from '../users/users.service';
-import { User } from '../users/user.entity';
+import { STATUSES } from '../users/user.entity';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -20,11 +20,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any): Promise<any> {
     const userId = payload.sub;
     const user = await this.usersService.findOne(userId);
-    if (!user || user.status !== User.STATUSES.ACTIVE){
+    if (!user || user.status !== STATUSES.ACTIVE){
       return false;
     }
-    user.last_seen = Math.floor((new Date().getTime()));
-    await user.save();
+    user.last_seen = new Date();
+    await this.usersService.updateOne(user.id, user);
     return { 
       id: userId,
       email: user.email,

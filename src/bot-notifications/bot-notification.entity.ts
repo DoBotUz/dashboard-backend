@@ -1,46 +1,44 @@
-import { Column, Model, Table, BelongsTo, ForeignKey, DataType } from 'sequelize-typescript';
-import { BotNotificationTemplate } from './bot-notification-template.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinTable, ManyToMany } from 'typeorm';
 import { Bot } from 'src/bots/bot.entity';
+import { BotNotificationTemplate } from './bot-notification-template.entity';
+import { BotUser } from 'src/bot-users/bot-user.entity';
 
-@Table({
-  tableName: 'bot_notification',
-  underscored: true,
-  timestamps: true,
-  createdAt: 'created_at',
-  updatedAt: 'updated_at'
-})
-export class BotNotification extends Model<BotNotification> {
+export const STATUSES = {
+  SENT: 10,
+  PENDING: 9,
+  ERROR: 0,
+};
+
+@Entity()
+export class BotNotification {
   public static STATUSES = {
     SENT: 10,
     PENDING: 9,
     ERROR: 0,
   };
 
-  public static searchable = [];
-
-  @Column({
-    primaryKey: true,
-    autoIncrement: true
-  })
+  @PrimaryGeneratedColumn()
   id: number;
 
-  @Column
+  @Column('int', { default: STATUSES.PENDING })
   status: number;
 
-  @Column(DataType.DATE)
-  after_date_time: number;
+  @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
+  after_date_time: Date;
 
-  @ForeignKey(() => Bot)
-  @Column
-  bot_id: number;
+  @CreateDateColumn({ name: 'created_at' })
+  created_at: Date;
 
-  @BelongsTo(() => Bot)
+  @UpdateDateColumn({ name: 'updated_at' })
+  updated_at: Date;
+
+  @ManyToOne(type => Bot, bot => bot.bot_notifications)
   bot: Bot;
 
-  @ForeignKey(() => BotNotificationTemplate)
-  @Column
-  bot_notification_template_id: number;
-
-  @BelongsTo(() => BotNotificationTemplate)
+  @ManyToOne(type => BotNotificationTemplate, template => template.bot_notifications)
   template: BotNotificationTemplate;
+
+  @ManyToMany(type => BotUser)
+  @JoinTable()
+  bot_users: BotUser[];
 }
