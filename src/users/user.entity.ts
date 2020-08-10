@@ -41,7 +41,11 @@ export class User  {
   })
   balance: number;
 
-  @Column('int')
+  @Column({
+    type: 'enum',
+    enum: Object.values(STATUSES),
+    default: STATUSES.ACTIVE
+  })
   status: number;
 
   @CreateDateColumn({ name: 'created_at' })

@@ -15,7 +15,11 @@ export class Feedback{
   @Column('text')
   comment: string;
 
-  @Column('int', { default: STATUSES.PENDING })
+  @Column({
+    type: 'enum',
+    enum: Object.values(STATUSES),
+    default: STATUSES.PENDING
+  })
   status: number;
 
   @CreateDateColumn({ name: 'created_at' })

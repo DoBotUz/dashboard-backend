@@ -1,21 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { TypeOrmCrudService } from "@nestjsx/crud-typeorm";
 import { Feedback } from './feedback.entity';
 
 @Injectable()
-export class FeedbacksService {
+export class FeedbacksCrudService extends TypeOrmCrudService<Feedback> {
   constructor(
     @InjectRepository(Feedback)
-    private feedbacksRepository: Repository<Feedback>,
-  ) {}
-
-  async findOne(id: number): Promise<Feedback> {
-    return this.feedbacksRepository.findOne({
-      where: {
-        id,
-      },
-    });
+    public repo: Repository<Feedback>,
+  ) {
+    super(repo)
   }
-
 }

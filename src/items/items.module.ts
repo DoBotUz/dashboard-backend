@@ -4,10 +4,11 @@ import { ItemsService } from './items.service';
 import { ItemsController } from './items.controller';
 import { Item } from './item.entity';
 import { IsItemExists } from './validators';
+import { ItemsCrudService } from './items-crud.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Item])],
-  providers: [ItemsService, IsItemExists],
+  providers: [ItemsCrudService, ItemsService, IsItemExists],
   controllers: [ItemsController]
 })
 export class ItemsModule {}

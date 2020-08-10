@@ -41,7 +41,11 @@ export class Item {
   @Column('int', { default: 1 })
   amount: number;
 
-  @Column('int', { default: STATUSES.ACTIVE })
+  @Column({
+    type: 'enum',
+    enum: Object.values(STATUSES),
+    default: STATUSES.ACTIVE
+  })
   status: number;
 
   @CreateDateColumn({ name: 'created_at' })
@@ -49,7 +53,7 @@ export class Item {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
-  
+
   @ManyToOne(type => Category, category => category.items)
   category: Category;
 

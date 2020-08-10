@@ -6,10 +6,11 @@ import { BranchesModule } from 'src/branches/branches.module';
 import { BotsModule } from 'src/bots/bots.module';
 import { Organization } from './organization.entity';
 import { IsOrganizationExists } from './validators';
+import { OrgCrudService } from './org-crud.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Organization]), BranchesModule, BotsModule],
-  providers: [OrganizationsService, IsOrganizationExists],
+  providers: [OrgCrudService, OrganizationsService, IsOrganizationExists],
   controllers: [OrganizationsController]
 })
 export class OrganizationsModule {}

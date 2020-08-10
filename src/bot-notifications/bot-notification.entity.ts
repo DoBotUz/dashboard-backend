@@ -20,7 +20,11 @@ export class BotNotification {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('int', { default: STATUSES.PENDING })
+  @Column({
+    type: 'enum',
+    enum: Object.values(STATUSES),
+    default: STATUSES.PENDING
+  })
   status: number;
 
   @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })

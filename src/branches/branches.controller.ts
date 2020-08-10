@@ -1,57 +1,25 @@
-import { Controller, Get, UseGuards, Param, Post, Body, Delete } from '@nestjs/common';
+import { Controller, UseGuards, Param, Post, } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Crud, CrudController, } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { UserD } from 'src/auth/user.decorator';
 
 import { BranchesService } from './branches.service';
-import { CreateBranchDTO, UpdateBranchDTO } from './dto';
 import { Branch } from './branch.entity';
+import { BranchesCrudService } from './branches-crud.service';
 
+@Crud({
+  model: {
+    type: Branch
+  }
+})
 @ApiTags('branches')
 @Controller('branches')
 @UseGuards(JwtAuthGuard)
-export class BranchesController {
+export class BranchesController implements CrudController<Branch> {
   constructor(
+    public service: BranchesCrudService,
     private branchesService: BranchesService,
   ) {}
-
-  @Get(':organization_id/list')
-  @ApiOkResponse({
-    description: 'Array of Branches',
-    isArray: true,
-    type: Branch
-  })
-  async listAll(@UserD() user, @Param("organization_id") organization_id): Promise<Branch[]> {
-    return this.branchesService.listAll(organization_id);
-  }
-
-  @Get(':id')
-  @ApiOkResponse({
-    description: 'Get branch by id',
-    type: Branch
-  })
-  async getBranch(@UserD() user, @Param("id") id): Promise<Branch> {
-    return await this.branchesService.findOne(id);
-  }
-
-  @Post()
-  @ApiOkResponse({
-    description: 'Sucessfuly Created',
-    type: Branch
-  })
-  async create(@UserD() user, @Body() data: CreateBranchDTO): Promise<Branch> {
-    return this.branchesService.createNew(data);
-  }
-
-  @Post("update")
-  @ApiOkResponse({
-    description: 'Sucessfuly Updated',
-    type: Branch
-  })
-  async updateOne(@Body() updateBranchDto: UpdateBranchDTO): Promise<Branch> {
-    const { id, ...data } = updateBranchDto;
-    return this.branchesService.updateOne(id, data);
-  }
 
   @Post("deactivate/:id")
   @ApiOkResponse({
@@ -70,16 +38,6 @@ export class BranchesController {
   })
   async activate(@Param("id") id): Promise<boolean> {
     await this.branchesService.activate(id);
-    return true;
-  }
-
-  @Delete(":id")
-  @ApiOkResponse({
-    description: 'Sucessfuly Deleted',
-    type: Boolean
-  })
-  async delete(@Param("id") id): Promise<boolean> {
-    await this.branchesService.delete(id);
     return true;
   }
 }

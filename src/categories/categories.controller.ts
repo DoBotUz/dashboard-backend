@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import { Controller, Get, UseGuards, Param, Post, Body, Delete, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Crud, CrudController, Override, } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
 import { FileInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express";
@@ -10,40 +11,25 @@ import { CreateCategoryDTO, UpdateCategoryDTO } from './dto';
 import { Category } from './category.entity';
 import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
 import { FilesService } from 'src/files/files.service';
+import { CategoriesCrudService } from './categories-crud.service';
 
+
+@Crud({
+  model: {
+    type: Category
+  }
+})
 @ApiTags('categories')
 @Controller('categories')
 @UseGuards(JwtAuthGuard)
-export class CategoriesController {
+export class CategoriesController implements CrudController<Category> {
   constructor(
+    public service: CategoriesCrudService,
     private categoriesService: CategoriesService,
     private filesService: FilesService
   ) {}
 
-  @Get(':bot_id/list')
-  @ApiOkResponse({
-    description: 'Array of Categories',
-    isArray: true,
-    type: Category
-  })
-  async list(@UserD() user, @Param("bot_id") bot_id): Promise<Category[]> {
-    return this.categoriesService.listAll(bot_id);
-  }
-
-  @Get(':id')
-  @ApiOkResponse({
-    description: 'Get category by id',
-    type: Category
-  })
-  async get(@UserD() user, @Param("id") id): Promise<Category> {
-    return await this.categoriesService.findOne(id);
-  }
-
-  @Post()
-  @ApiOkResponse({
-    description: 'Sucessfuly Created',
-    type: Category
-  })
+  @Override()
   @UseInterceptors(
     FileFieldsInterceptor([
       {
@@ -62,7 +48,7 @@ export class CategoriesController {
       fileFilter: imageFileFilter,
     }),
   )
-  async create(@UserD() user, @Body() data: CreateCategoryDTO, @UploadedFiles() uploadedFiles): Promise<Category> {
+  async createOne(@UserD() user, @Body() data: CreateCategoryDTO, @UploadedFiles() uploadedFiles): Promise<Category> {
     if (uploadedFiles && uploadedFiles.thumbnail && typeof uploadedFiles.thumbnail[0] !== 'undefined') {
       const thumbnail = uploadedFiles.thumbnail[0];
       data.thumbnail = thumbnail.filename;
@@ -78,11 +64,7 @@ export class CategoriesController {
     return model;
   }
 
-  @Post("update")
-  @ApiOkResponse({
-    description: 'Sucessfuly Updated',
-    type: Category
-  })
+  @Override()
   @UseInterceptors(FileInterceptor('thumbnail', {
     storage: diskStorage({
       destination: 'uploads/categories/',
@@ -90,7 +72,7 @@ export class CategoriesController {
     }),
     fileFilter: imageFileFilter,
   }))
-  async update(@Body() updateCategoryDto: UpdateCategoryDTO,  @UploadedFile() thumbnail): Promise<Category> {
+  async updateOne(@Body() updateCategoryDto: UpdateCategoryDTO,  @UploadedFile() thumbnail): Promise<Category> {
     const { id, ...data } = updateCategoryDto;
     if (thumbnail) {
       data.thumbnail = thumbnail.filename;
@@ -142,16 +124,6 @@ export class CategoriesController {
   })
   async removeFile(@Param("id") id): Promise<boolean> {
     this.filesService.remove(id);
-    return true;
-  }
-
-  @Delete(":id")
-  @ApiOkResponse({
-    description: 'Sucessfuly Deleted',
-    type: Boolean
-  })
-  async delete(@Param("id") id): Promise<boolean> {
-    await this.categoriesService.delete(id);
     return true;
   }
 }

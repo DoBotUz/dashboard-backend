@@ -22,7 +22,11 @@ export class File{
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('int')
+  @Column({
+    type: 'enum',
+    enum: Object.values(KEYS),
+    default: KEYS.ORGANIZATION
+  })
   key: number;
 
   @Column('int')
@@ -40,7 +44,11 @@ export class File{
   @Column('varchar', { length: 255 })
   mime: string;
 
-  @Column('int')
+  @Column({
+    type: 'enum',
+    enum: Object.values(TYPES),
+    default: TYPES.IMAGE
+  })
   type: number;
 
   @CreateDateColumn({ name: 'created_at' })

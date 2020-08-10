@@ -10,7 +10,7 @@ export class BotUsersService {
     private botUsersRepository: Repository<BotUser>,
   ) {}
   
-  async listAll(bot_id: number): Promise<BotUser[]> {
+  async listAllByBotId(bot_id: number): Promise<BotUser[]> {
     return this.botUsersRepository.find({
       where: {
         bot_id
@@ -24,11 +24,5 @@ export class BotUsersService {
         id,
       },
     });
-  }
-
-  async updateOne(id: number, data: any): Promise<BotUser> {
-    const model = await this.findOne(id);
-    Object.assign(model, data);
-    return await this.botUsersRepository.save(model);
   }
 }

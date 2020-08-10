@@ -1,37 +1,36 @@
 import * as fs from 'fs';
-import { Controller, Get, UseGuards, Param, Post, Body, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
+import { Controller, UseGuards, Param, Post, Body, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Crud, CrudController, } from '@nestjsx/crud';
 import { FileInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from 'multer';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
 import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
 import { BotNotificationsService } from './bot-notifications.service';
-import { CreateBotNotificationDto, UpdateBotNotificationDto, CreateBotNotificationTemplateDto, UpdateBotNotificationTemplateDto, CreateMassSendDto } from './dto';
+import { CreateBotNotificationTemplateDto, UpdateBotNotificationTemplateDto, CreateMassSendDto } from './dto';
 import { BotNotification } from './bot-notification.entity';
 import { BotNotificationTemplate } from './bot-notification-template.entity';
 import { FilesService } from 'src/files/files.service';
 import { BotUsersService } from 'src/bot-users/bot-users.service';
+import { BotNotificationsCrudService } from './bot-notifications-crud.service';
 
+
+@Crud({
+  model: {
+    type: BotNotification
+  }
+})
 @ApiTags('bot-notifications')
 @Controller('bot-notifications')
 @UseGuards(JwtAuthGuard)
-export class BotNotificationsController {
+export class BotNotificationsController implements CrudController<BotNotification>{
   constructor(
+    public service: BotNotificationsCrudService,
     private botNotificationsService: BotNotificationsService,
     private botUsersService: BotUsersService,
     private filesService: FilesService,
   ) {}
-
-  @Get(':bot_id/list')
-  @ApiOkResponse({
-    description: 'Array of BotNotifications',
-    isArray: true,
-    type: BotNotification
-  })
-  async list(@UserD() user, @Param("bot_id") bot_id): Promise<BotNotification[]> {
-    return this.botNotificationsService.listAllBots(bot_id);
-  }
 
   @Post('template')
   @ApiOkResponse({
@@ -156,7 +155,7 @@ export class BotNotificationsController {
       bot_notification_template_id: notificationTemplate.id,
       after_date_time: data.after_date_time
     });
-    const bot_user_ids = (await this.botUsersService.listAll(data.bot_id)).map((botUser) => {
+    const bot_user_ids = (await this.botUsersService.listAllByBotId(data.bot_id)).map((botUser) => {
       return botUser.id;
     })
     // this.botNotificationsService.setNotificationBotUsers(model.id, bot_user_ids);

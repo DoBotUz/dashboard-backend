@@ -4,10 +4,11 @@ import { CategoriesService } from './categories.service';
 import { CategoriesController } from './categories.controller';
 import { Category } from './category.entity';
 import { IsCategoryExists } from './validators';
+import { CategoriesCrudService } from './categories-crud.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Category])],
-  providers: [CategoriesService, IsCategoryExists],
+  providers: [CategoriesCrudService, CategoriesService, IsCategoryExists],
   controllers: [CategoriesController]
 })
 export class CategoriesModule {}

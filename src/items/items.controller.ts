@@ -1,7 +1,8 @@
 import * as fs from 'fs';
-import { Controller, Get, UseGuards, Param, Post, Body, Delete, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
+import { Controller, UseGuards, Param, Post, Body, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { FileInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express";
+import { Crud, CrudController, Override, } from '@nestjsx/crud';
+import { FileInterceptor, FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
@@ -10,40 +11,25 @@ import { ItemsService } from './items.service';
 import { CreateItemDTO, UpdateItemDTO } from './dto';
 import { Item } from './item.entity';
 import { FilesService } from 'src/files/files.service';
+import { ItemsCrudService } from './items-crud.service';
 
+
+@Crud({
+  model: {
+    type: Item
+  }
+})
 @ApiTags('items')
 @Controller('items')
 @UseGuards(JwtAuthGuard)
-export class ItemsController {
+export class ItemsController implements CrudController<Item> {
   constructor(
+    public service: ItemsCrudService,
     private itemsService: ItemsService,
     private filesService: FilesService,
   ) {}
 
-  @Get(':bot_id/list')
-  @ApiOkResponse({
-    description: 'Array of Items',
-    isArray: true,
-    type: Item
-  })
-  async list(@UserD() user, @Param("bot_id") bot_id): Promise<Item[]> {
-    return this.itemsService.listAll(bot_id);
-  }
-
-  @Get(':id')
-  @ApiOkResponse({
-    description: 'Get item by id',
-    type: Item
-  })
-  async get(@UserD() user, @Param("id") id): Promise<Item> {
-    return await this.itemsService.findOne(id);
-  }
-
-  @Post()
-  @ApiOkResponse({
-    description: 'Sucessfuly Created',
-    type: Item
-  })
+  @Override()
   @UseInterceptors(
     FileFieldsInterceptor([
       {
@@ -62,7 +48,7 @@ export class ItemsController {
       fileFilter: imageFileFilter,
     }),
   )
-  async create(@UserD() user, @Body() data: CreateItemDTO, @UploadedFiles() uploadedFiles): Promise<Item> {
+  async createOne(@UserD() user, @Body() data: CreateItemDTO, @UploadedFiles() uploadedFiles): Promise<Item> {
     if (uploadedFiles && uploadedFiles.thumbnail && typeof uploadedFiles.thumbnail[0] !== 'undefined') {
       const thumbnail = uploadedFiles.thumbnail[0];
       data.thumbnail = thumbnail.filename;
@@ -78,11 +64,7 @@ export class ItemsController {
     return model;
   }
 
-  @Post("update")
-  @ApiOkResponse({
-    description: 'Sucessfuly Updated',
-    type: Item
-  })
+  @Override()
   @UseInterceptors(FileInterceptor('thumbnail', {
     storage: diskStorage({
       destination: 'uploads/items/',
@@ -90,7 +72,7 @@ export class ItemsController {
     }),
     fileFilter: imageFileFilter,
   }))
-  async update(@Body() updateItemDto: UpdateItemDTO, @UploadedFile() thumbnail): Promise<Item> {
+  async updateOne(@Body() updateItemDto: UpdateItemDTO, @UploadedFile() thumbnail): Promise<Item> {
     const { id, ...data } = updateItemDto;
     if (thumbnail) {
       data.thumbnail = thumbnail.filename;
@@ -98,27 +80,27 @@ export class ItemsController {
     return this.itemsService.updateOne(id, data);
   }
 
-  @Post("deactivate/:id")
+  @Post('deactivate/:id')
   @ApiOkResponse({
     description: 'Sucessfuly Updated',
     type: Boolean
   })
-  async deactivate(@Param("id") id): Promise<boolean> {
+  async deactivate(@Param('id') id): Promise<boolean> {
     await this.itemsService.deactivate(id);
     return true;
   }
 
-  @Post("activate/:id")
+  @Post('activate/:id')
   @ApiOkResponse({
     description: 'Sucessfuly Updated',
     type: Boolean
   })
-  async activate(@Param("id") id): Promise<boolean> {
+  async activate(@Param('id') id): Promise<boolean> {
     await this.itemsService.activate(id);
     return true;
   }
 
-  @Post(":id/add-file")
+  @Post(':id/add-file')
   @ApiOkResponse({
     description: 'Add file to file list',
     type: Boolean
@@ -130,28 +112,18 @@ export class ItemsController {
     }),
     fileFilter: imageFileFilter,
   }))
-  async addFile(@Param("id") id, @UploadedFile() file): Promise<boolean> {
+  async addFile(@Param('id') id, @UploadedFile() file): Promise<boolean> {
     this.filesService.uploadImagesFor('ITEM', id, [file]);
     return true;
   }
 
-  @Post(":id/remove-file")
+  @Post(':id/remove-file')
   @ApiOkResponse({
     description: 'Remove file from list',
     type: Boolean
   })
-  async removeFile(@Param("id") id): Promise<boolean> {
+  async removeFile(@Param('id') id): Promise<boolean> {
     this.filesService.remove(id);
-    return true;
-  }
-
-  @Delete(":id")
-  @ApiOkResponse({
-    description: 'Sucessfuly Deleted',
-    type: Boolean
-  })
-  async delete(@Param("id") id): Promise<boolean> {
-    await this.itemsService.delete(id);
     return true;
   }
 }

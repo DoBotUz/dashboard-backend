@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import { Controller, Get, UseGuards, Param, Post, Body, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Crud, CrudController, Override, } from '@nestjsx/crud';
 import { FileInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from 'multer';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -12,35 +13,23 @@ import { BotNotificationsService } from 'src/bot-notifications/bot-notifications
 import { FilesService } from 'src/files/files.service';
 import { Feedback } from './feedback.entity';
 import { BotNotificationTemplate, TYPES } from 'src/bot-notifications/bot-notification-template.entity';
+import { FeedbacksCrudService } from './feedbacks-crud.service';
 
+@Crud({
+  model: {
+    type: Feedback
+  }
+})
 @ApiTags('feedbacks')
 @Controller('feedbacks')
 @UseGuards(JwtAuthGuard)
-export class FeedbacksController {
+export class FeedbacksController implements CrudController<Feedback> {
   constructor(
+    public service: FeedbacksCrudService,
     private feedbackService: FeedbacksService,
     private botNotificationsService: BotNotificationsService,
     private filesService: FilesService,
   ) {}
-
-  @Get(':bot_id/list')
-  @ApiOkResponse({
-    description: 'Array of feedbacks',
-    isArray: true,
-    type: Feedback
-  })
-  async list(@UserD() user, @Param("bot_id") bot_id): Promise<Feedback[]> {
-    return this.feedbackService.listAllBots(bot_id);
-  }
-
-  @Get(':id')
-  @ApiOkResponse({
-    description: 'Get feedback by id',
-    type: Feedback
-  })
-  async get(@UserD() user, @Param("id") id): Promise<Feedback> {
-    return await this.feedbackService.findOne(id);
-  }
 
   @Post('answer')
   @ApiOkResponse({

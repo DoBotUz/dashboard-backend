@@ -38,8 +38,19 @@ export class BotNotificationTemplate {
   @Column('varchar', { length: 255, nullable: true })
   thumbnail: string;
 
-  @Column('int', { default: STATUSES.ACTIVE })
+  @Column({
+    type: 'enum',
+    enum: Object.values(STATUSES),
+    default: STATUSES.ACTIVE
+  })
   status: number;
+
+  @Column({
+    type: 'enum',
+    enum: Object.values(TYPES),
+    default: TYPES.MASS_SEND
+  })
+  type: number;
 
   @CreateDateColumn({ name: 'created_at' })
   created_at: Date;
