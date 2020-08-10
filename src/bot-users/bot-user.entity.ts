@@ -41,7 +41,11 @@ export class BotUser {
   @Column('datetime')
   last_seen: Date;
 
-  @Column('int', { default: STATUSES.ACTIVE })
+  @Column({
+    type: 'enum',
+    enum: Object.values(STATUSES),
+    default: STATUSES.ACTIVE
+  })
   status: number;
 
   @CreateDateColumn({ name: 'created_at' })

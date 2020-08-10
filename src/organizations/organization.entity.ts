@@ -58,7 +58,11 @@ export class Organization {
   @Column('int', { 'nullable': true })
   delivery_time_range_end: number;
 
-  @Column('int', { 'default': STATUSES.ACTIVE })
+  @Column({
+    type: 'enum',
+    enum: Object.values(STATUSES),
+    default: STATUSES.ACTIVE
+  })
   status: number;
 
   @CreateDateColumn({ name: 'created_at' })
@@ -67,13 +71,17 @@ export class Organization {
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
   
-  @ManyToOne(type => User, user => user.organizations)
+  @ManyToOne(type => User, user => user.organizations, {
+    nullable: false
+  })
   user: User;
 
   @OneToOne(type => Bot)
   bot: Bot;
 
-  @OneToMany(type => Branch, branch => branch.organization)
+  @OneToMany(type => Branch, branch => branch.organization, {
+    eager: true
+  })
   branches: Branch[];
 
   @OneToMany(type => Order, order => order.organization)

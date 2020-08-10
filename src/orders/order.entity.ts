@@ -41,7 +41,11 @@ export class Order {
   @Column('text', { nullable: true })
   address: string;
 
-  @Column('int')
+  @Column({
+    type: 'enum',
+    enum: Object.values(PAYMENT_TYPES),
+    default: PAYMENT_TYPES.CASH
+  })
   payment_type: number;
 
   @Column('varchar', { length: 255 })
@@ -50,7 +54,11 @@ export class Order {
   @Column('text', { nullable: true })
   comment: string;
 
-  @Column('int', { default: STATUSES.MODERATION })
+  @Column({
+    type: 'enum',
+    enum: Object.values(STATUSES),
+    default: STATUSES.MODERATION
+  })
   status: number;
 
   @Column('boolean', { default: false })
@@ -61,7 +69,7 @@ export class Order {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
-  
+
   @ManyToOne(type => BotUser, botUser => botUser.orders)
   bot_user: BotUser;
 

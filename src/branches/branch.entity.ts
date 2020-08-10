@@ -29,7 +29,11 @@ export class Branch {
   @Column('boolean', { 'default': true })
   is_all_day: number;
 
-  @Column('int', { 'default': STATUSES.ACTIVE })
+  @Column({
+    type: 'enum',
+    enum: Object.values(STATUSES),
+    default: STATUSES.ACTIVE
+  })
   status: number;
 
   @CreateDateColumn({ name: 'created_at' })
@@ -38,7 +42,9 @@ export class Branch {
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
   
-  @ManyToOne(type => Organization, organization => organization.branches)
+  @ManyToOne(type => Organization, organization => organization.branches, {
+    nullable: false
+  })
   organization: Organization;
 
   @OneToMany(type => Order, order => order.branch)

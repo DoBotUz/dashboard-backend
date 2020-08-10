@@ -17,16 +17,17 @@ export class Bot{
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', { 'length': 255 })
-  title: string;
-
   @Column('varchar', { 'length': 1024 })
   token: string;
 
-  @Column('datetime')
+  @Column('datetime', { nullable: true })
   last_container_poke: Date;
 
-  @Column('int')
+  @Column({
+    type: 'enum',
+    enum: Object.values(STATUSES),
+    default: STATUSES.ACTIVE
+  })
   status: number;
 
   @CreateDateColumn({ name: 'created_at' })
@@ -35,7 +36,9 @@ export class Bot{
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
   
-  @OneToOne(type => Organization)
+  @OneToOne(type => Organization, {
+    nullable: false
+  })
   organization: Organization;
 
   @OneToMany(type => BotNotification, botNotification => botNotification.template)

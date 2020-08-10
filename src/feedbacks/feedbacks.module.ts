@@ -4,10 +4,11 @@ import { FeedbacksController } from './feedbacks.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Feedback } from './feedback.entity';
 import { isFeedbackExists } from './validators';
+import { FeedbacksCrudService } from './feedbacks-crud.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Feedback])],
-  providers: [FeedbacksService, isFeedbackExists],
+  providers: [FeedbacksCrudService, FeedbacksService, isFeedbackExists],
   controllers: [FeedbacksController]
 })
 export class FeedbacksModule {}

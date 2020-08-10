@@ -4,12 +4,13 @@ import { BotUsersController } from './bot-users.controller';
 import { BotUsersService } from './bot-users.service';
 import { BotUser } from './bot-user.entity';
 import { IsBotUserExists } from './validators';
+import { BotUsersCrudService } from './bot-users-crud.service';
 
 @Global()
 @Module({
   imports: [TypeOrmModule.forFeature([BotUser])],
   controllers: [BotUsersController],
-  providers: [BotUsersService, IsBotUserExists],
+  providers: [BotUsersCrudService, BotUsersService, IsBotUserExists],
   exports: [BotUsersService],
 })
 export class BotUsersModule {}

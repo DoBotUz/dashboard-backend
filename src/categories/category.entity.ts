@@ -37,7 +37,11 @@ export class Category {
   @Column('int', { default: 0 } )
   pos: number;
 
-  @Column('int', { default: STATUSES.ACTIVE })
+  @Column({
+    type: 'enum',
+    enum: Object.values(STATUSES),
+    default: STATUSES.ACTIVE
+  })
   status: number;
 
   @CreateDateColumn({ name: 'created_at' })
