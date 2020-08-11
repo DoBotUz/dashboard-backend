@@ -35,6 +35,8 @@ import { GatewaysModule } from './gateways/gateways.module';
       entities: [],
       synchronize: true,
       autoLoadEntities: true,
+      charset: 'utf8mb4_general_ci'
+
     }),
     AuthModule,
     UsersModule,
