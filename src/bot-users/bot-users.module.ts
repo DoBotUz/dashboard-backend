@@ -3,8 +3,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BotUsersController } from './bot-users.controller';
 import { BotUsersService } from './bot-users.service';
 import { BotUser } from './bot-user.entity';
-import { IsBotUserExists } from './validators';
 import { BotUsersCrudService } from './bot-users-crud.service';
+import { IsBotUserExists } from './validators/isBotUserExists';
 
 @Global()
 @Module({

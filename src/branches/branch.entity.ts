@@ -1,6 +1,12 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Organization } from 'src/organizations/organization.entity';
 import { Order } from 'src/orders/order.entity';
+import { Exclude } from 'class-transformer';
+import { CrudValidationGroups } from "@nestjsx/crud";
+import { IsEmpty } from 'class-validator';
+
+
+const { CREATE, UPDATE } = CrudValidationGroups;
 
 export const STATUSES = {
   ACTIVE: 10,
@@ -45,9 +51,11 @@ export class Branch {
   @ManyToOne(type => Organization, organization => organization.branches, {
     nullable: false
   })
+  @IsEmpty({ groups: [CREATE, UPDATE] })
   organization: Organization;
 
   @Column()
+  @IsEmpty({ groups: [CREATE, UPDATE] })
   organizationId: number;
 
   @OneToMany(type => Order, order => order.branch)

@@ -1,9 +1,9 @@
 import { IsNotEmpty, Validate, IsNumber, IsIn, IsOptional, IsString, Length, IsArray, ValidateNested, IsInt } from 'class-validator';
-import { IsOrderExists } from '../validators';
 import { PAYMENT_TYPES, STATUSES } from '../order.entity';
 import { IsBranchExists } from 'src/branches/validators';
 import { Type, Transform, plainToClass } from 'class-transformer';
 import { IsItemExists } from 'src/items/validators';
+import { IsOrderExists } from '../validators/isOrderExists';
 
 class OrderItemDto {
   @IsNotEmpty()

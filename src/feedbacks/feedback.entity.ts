@@ -36,7 +36,7 @@ export class Feedback{
   @Column('int')
   botUserId: number;
 
-  @ManyToOne(type => Bot, bot => bot.feedbacks,  {
+  @ManyToOne(type => Bot, bot => bot.bot_notifications,  {
     nullable: false
   })
   bot: Bot;

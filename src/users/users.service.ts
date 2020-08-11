@@ -86,10 +86,26 @@ export class UsersService {
       },
       join: {
         alias: 'user',
-        leftJoin: {
+        leftJoinAndSelect: {
           organizations: 'user.organizations'
         }
       }
     })
   }
+
+  async findOneWithBots(id: number): Promise<User> {
+    return this.usersRepository.findOne({
+      where: {
+        id: id
+      },
+      join: {
+        alias: 'user',
+        leftJoinAndSelect: {
+          organizations: 'user.organizations',
+          bot: 'organizations.bot',
+        }
+      }
+    })
+  }
+  
 }

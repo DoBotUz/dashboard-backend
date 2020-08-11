@@ -17,10 +17,6 @@ import { User } from 'src/users/user.entity';
       organization: {
         eager: true,
       },
-      'organization.user': {
-        eager: true,
-        select: false,
-      },
     },
   },
   params: {
@@ -33,7 +29,7 @@ import { User } from 'src/users/user.entity';
 @CrudAuth({
   property: 'user',
   filter: (user: User) => ({
-    'organization.user.id': user.id,
+    'organization.userId': user.id,
   })
 })
 @ApiTags('orders')

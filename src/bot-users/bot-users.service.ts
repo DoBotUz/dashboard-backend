@@ -25,4 +25,18 @@ export class BotUsersService {
       },
     });
   }
+
+  async findOneWithBot(id: number): Promise<BotUser> {
+    return this.botUsersRepository.findOne({
+      where: {
+        id,
+      },
+      join: {
+        alias: 'botUser',
+        leftJoinAndSelect: {
+          bot: 'botUser.bot',
+        }
+      }
+    });
+  }
 }

@@ -26,18 +26,21 @@ export class User  {
   @Column('varchar', { length: 255 })
   last_name: string;
 
-  @Column('varchar', { length: 255 })
+  @Column({ type: 'varchar', length: 255, readonly: true, })
   @Exclude()
   password_hash: string;
 
-  @Column({ 'type': 'datetime', 'nullable': true })
+  @Column({ type: 'datetime', nullable: true, readonly: true, })
   last_seen: Date;
 
-  @Column('varchar', { length: 255, 'nullable': true })
+  @Column({ type: 'varchar', length: 255, nullable: true, readonly: true, })
+  @Exclude()
   password_reset_token: string;
 
-  @Column('double', {
-    'default': 0
+  @Column({
+    type: 'double',
+    default: 0,
+    readonly: true,
   })
   balance: number;
 
@@ -48,14 +51,12 @@ export class User  {
   })
   status: number;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at', readonly: true })
   created_at: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn({ name: 'updated_at', readonly: true })
   updated_at: Date;
 
-  @OneToMany(type => Organization, orgnization => orgnization.user, {
-    eager: true
-  })
+  @OneToMany(type => Organization, orgnization => orgnization.user)
   organizations: Organization[];
 }

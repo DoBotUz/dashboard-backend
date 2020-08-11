@@ -2,7 +2,7 @@ import { IsNotEmpty, Validate, IsDate, IsArray, IsOptional } from 'class-validat
 import { Type } from 'class-transformer';
 import { IsBotExists } from 'src/bots/validators';
 import { isBotNotificationTemplateExists } from '../validators';
-import { IsBotUserExists } from 'src/bot-users/validators';
+import { IsBotUserExists } from 'src/bot-users/validators/isBotUserExists';
 
 export class BaseBotNotificationDto {
   @IsNotEmpty()

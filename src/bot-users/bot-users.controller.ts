@@ -7,6 +7,7 @@ import { BotUsersService } from './bot-users.service';
 import { BotUser } from './bot-user.entity';
 import { BotUsersCrudService } from './bot-users-crud.service';
 import { User } from 'src/users/user.entity';
+import { BotGuard } from 'src/common/guards/BotsGuard';
 
 @Crud({
   model: {
@@ -24,15 +25,11 @@ import { User } from 'src/users/user.entity';
         eager: true,
         select: false,
       },
-      'bot.organization.user': {
-        eager: true,
-        select: false,
-      },
     },
   },
   params: {
-    organizationId: {
-      field: 'organizationId',
+    botId: {
+      field: 'botId',
       type: 'number'
     },
   },
@@ -40,12 +37,15 @@ import { User } from 'src/users/user.entity';
 @CrudAuth({
   property: 'user',
   filter: (user: User) => ({
-    'bot.organization.user.id': user.id,
+    'organization.userId': user.id,
   })
 })
 @ApiTags('bot-users')
-@Controller('/:organizationId/bot-users')
-@UseGuards(JwtAuthGuard)
+@Controller('/:botId/bot-users')
+@UseGuards(
+  JwtAuthGuard,
+  BotGuard
+)
 export class BotUsersController implements CrudController<BotUser> {
   constructor(
     public service: BotUsersCrudService,

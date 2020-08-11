@@ -1,6 +1,6 @@
 import { ValidateNested, IsNotEmpty, IsOptional, Length } from 'class-validator';
 import { Type } from 'class-transformer';
-import { BaseOrganizationDTO, BaseBotDto } from './base-organization.dto';
+import { BaseOrganizationDTO } from './base-organization.dto';
 
 class Branch {
   @IsNotEmpty()
@@ -15,6 +15,12 @@ class Branch {
 
   @IsNotEmpty()
   is_all_day: number;
+}
+
+export class BaseBotDto {
+  @IsNotEmpty()
+  @Length(3, 512)
+  token: string;
 }
 
 

@@ -1,6 +1,11 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Bot } from 'src/bots/bot.entity';
 import { BotNotification } from './bot-notification.entity';
+import { IsEmpty } from 'class-validator';
+import { CrudValidationGroups } from "@nestjsx/crud";
+
+
+const { CREATE, UPDATE } = CrudValidationGroups;
 
 export const STATUSES = {
   ACTIVE: 10,
@@ -61,7 +66,12 @@ export class BotNotificationTemplate {
   @ManyToOne(type => Bot, bot => bot.bot_notifications,  {
     nullable: false
   })
+  @IsEmpty({ groups: [CREATE, UPDATE] })
   bot: Bot;
+
+  @Column('int')
+  @IsEmpty({ groups: [CREATE, UPDATE] })
+  botId: number;
 
   @OneToMany(type => BotNotification, botNotification => botNotification.template)
   bot_notifications: BotNotification[];

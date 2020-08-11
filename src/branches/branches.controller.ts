@@ -23,10 +23,6 @@ import { OrganizationGuard } from '../common/guards/OrganizationsGuard';
       organization: {
         eager: true,
       },
-      'organization.user': {
-        eager: true,
-        select: false,
-      },
     },
   },
   params: {
@@ -39,7 +35,7 @@ import { OrganizationGuard } from '../common/guards/OrganizationsGuard';
 @CrudAuth({
   property: 'user',
   filter: (user: User) => ({
-    'organization.user.id': user.id,
+    'organization.userId': user.id,
   })
 })
 @ApiTags('branches')

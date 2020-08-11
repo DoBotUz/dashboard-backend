@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
-import { Bot } from 'src/bots/bot.entity';
 import { Item } from 'src/items/item.entity';
+import { Organization } from 'src/organizations/organization.entity';
+
 
 export const STATUSES = {
   ACTIVE: 10,
@@ -62,11 +63,11 @@ export class Category {
   @OneToMany(type => Item, item => item.category)
   items: Item[];
 
-  @ManyToOne(type => Bot, bot => bot.categories,  {
+  @ManyToOne(type => Organization, org => org.categories,  {
     nullable: false
   })
-  bot: Bot;
+  organization: Organization;
 
   @Column('int')
-  botId: number;
+  organizationId: number;
 }

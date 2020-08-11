@@ -4,6 +4,7 @@ import { Organization } from 'src/organizations/organization.entity';
 import { Branch } from 'src/branches/branch.entity';
 import { Item } from 'src/items/item.entity';
 
+
 export const STATUSES = {
   ACTIVE: 10,
   MODERATION: 9,
@@ -64,10 +65,10 @@ export class Order {
   @Column('boolean', { default: false })
   is_paid: boolean;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at', readonly: true })
   created_at: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn({ name: 'updated_at', readonly: true })
   updated_at: Date;
 
   @ManyToOne(type => BotUser, botUser => botUser.orders,  {

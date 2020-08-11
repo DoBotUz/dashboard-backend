@@ -38,7 +38,7 @@ export class BotUser {
   @Column('varchar', { length: 20 })
   language: string;
 
-  @Column('datetime')
+  @Column('datetime', { nullable: true })
   last_seen: Date;
 
   @Column({

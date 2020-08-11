@@ -1,46 +1,73 @@
-import { IsNotEmpty, Length, Validate, ValidateNested } from 'class-validator';
+import { IsNotEmpty, Length, Validate, ValidateNested, IsNumber, IsString, IsBoolean, IsInt, IsIn, IsOptional } from 'class-validator';
 import { IsUserExists } from 'src/users/validators';
+import { IsLoggedInUser } from 'src/users/validators/IsLoggedInUser';
+import { STATUSES } from '../organization.entity';
 
-export class BaseBotDto {
-  @IsNotEmpty()
-  @Length(3, 512)
-  token: string;
-}
-
-class User {
-  @IsNotEmpty()
-  @Validate(IsUserExists)
-  id: number;
-}
 
 export class BaseOrganizationDTO {
   @IsNotEmpty()
-  @ValidateNested()
-  user: User;
+  @Validate(IsLoggedInUser)
+  userId: number;
 
   @IsNotEmpty()
+  @IsString()
   @Length(3, 255)
   ru_title: string;
 
   @IsNotEmpty()
+  @IsString()
   ru_description: string;
 
   @IsNotEmpty()
+  @IsString()
   @Length(3, 255)
   en_title: string;
 
   @IsNotEmpty()
+  @IsString()
   en_description: string;
 
   @IsNotEmpty()
+  @IsString()
   @Length(3, 255)
   uz_title: string;
 
   @IsNotEmpty()
+  @IsString()
   uz_description: string;
 
   @IsNotEmpty()
-  fixed_delivery_price: string;
+  @IsNumber()
+  fixed_delivery_price: number;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  is_multilanguage: boolean;
+
+  @IsNotEmpty()
+  @IsNumber()
+  min_order_charge: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  free_distance: number;
+
+  @IsOptional()
+  @IsNumber()
+  per_km_deliver_price: number;
+
+  @IsOptional()
+  @IsInt()
+  delivery_time_range_start: number;
+
+  @IsOptional()
+  @IsInt()
+  delivery_time_range_end: number;
+
+  @IsOptional()
+  @IsInt()
+  @IsIn(Object.values(STATUSES))
+  status: number;
 
   thumbnail: string;
 }

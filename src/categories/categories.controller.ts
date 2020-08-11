@@ -13,6 +13,7 @@ import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils
 import { FilesService } from 'src/files/files.service';
 import { CategoriesCrudService } from './categories-crud.service';
 import { User } from 'src/users/user.entity';
+import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
 
 
 @Crud({
@@ -21,16 +22,8 @@ import { User } from 'src/users/user.entity';
   },
   query: {
     join: {
-      bot: {
+      organization: {
         eager: true,
-      },
-      'bot.organization': {
-        eager: true,
-        select: false,
-      },
-      'bot.organization.user': {
-        eager: true,
-        select: false,
       },
     },
   },
@@ -44,12 +37,15 @@ import { User } from 'src/users/user.entity';
 @CrudAuth({
   property: 'user',
   filter: (user: User) => ({
-    'bot.organization.user.id': user.id,
+    'organization.userId': user.id,
   })
 })
 @ApiTags('categories')
 @Controller('/:organizationId/categories')
-@UseGuards(JwtAuthGuard)
+@UseGuards(
+  JwtAuthGuard,
+  OrganizationGuard
+)
 export class CategoriesController implements CrudController<Category> {
   constructor(
     public service: CategoriesCrudService,

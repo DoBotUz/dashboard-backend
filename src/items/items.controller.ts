@@ -13,6 +13,7 @@ import { Item } from './item.entity';
 import { FilesService } from 'src/files/files.service';
 import { ItemsCrudService } from './items-crud.service';
 import { User } from 'src/users/user.entity';
+import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
 
 
 @Crud({
@@ -21,16 +22,8 @@ import { User } from 'src/users/user.entity';
   },
   query: {
     join: {
-      bot: {
+      organization: {
         eager: true,
-      },
-      'bot.organization': {
-        eager: true,
-        select: false,
-      },
-      'bot.organization.user': {
-        eager: true,
-        select: false,
       },
     },
   },
@@ -38,12 +31,15 @@ import { User } from 'src/users/user.entity';
 @CrudAuth({
   property: 'user',
   filter: (user: User) => ({
-    'bot.organization.user.id': user.id,
+    'organization.userId': user.id,
   })
 })
 @ApiTags('items')
 @Controller('/:organizationId/items')
-@UseGuards(JwtAuthGuard)
+@UseGuards(
+  JwtAuthGuard,
+  OrganizationGuard,
+)
 export class ItemsController implements CrudController<Item> {
   constructor(
     public service: ItemsCrudService,

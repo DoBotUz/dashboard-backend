@@ -11,6 +11,7 @@ import { OrgCrudService } from './org-crud.service';
 @Module({
   imports: [TypeOrmModule.forFeature([Organization]), BranchesModule, BotsModule],
   providers: [OrgCrudService, OrganizationsService, IsOrganizationExists],
-  controllers: [OrganizationsController]
+  controllers: [OrganizationsController],
+  exports: [OrganizationsService],
 })
 export class OrganizationsModule {}

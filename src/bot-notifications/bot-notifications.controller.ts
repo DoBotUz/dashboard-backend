@@ -15,6 +15,7 @@ import { FilesService } from 'src/files/files.service';
 import { BotUsersService } from 'src/bot-users/bot-users.service';
 import { BotNotificationsCrudService } from './bot-notifications-crud.service';
 import { User } from 'src/users/user.entity';
+import { BotGuard } from 'src/common/guards/BotsGuard';
 
 
 @Crud({
@@ -30,15 +31,11 @@ import { User } from 'src/users/user.entity';
         eager: true,
         select: false,
       },
-      'bot.organization.user': {
-        eager: true,
-        select: false,
-      },
     },
   },
   params: {
-    organizationId: {
-      field: 'organizationId',
+    botId: {
+      field: 'botId',
       type: 'number'
     },
   },
@@ -46,12 +43,15 @@ import { User } from 'src/users/user.entity';
 @CrudAuth({
   property: 'user',
   filter: (user: User) => ({
-    'bot.organization.user.id': user.id,
+    'organization.userId': user.id,
   })
 })
 @ApiTags('bot-notifications')
-@Controller('/:organizationId/bot-notifications')
-@UseGuards(JwtAuthGuard)
+@Controller('/:botId/bot-notifications')
+@UseGuards(
+  JwtAuthGuard,
+  BotGuard
+)
 export class BotNotificationsController implements CrudController<BotNotification>{
   constructor(
     public service: BotNotificationsCrudService,

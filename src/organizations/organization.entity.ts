@@ -1,8 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToOne, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToOne, OneToMany, } from 'typeorm';
 import { User } from 'src/users/user.entity';
 import { Bot } from 'src/bots/bot.entity';
 import { Branch } from 'src/branches/branch.entity';
 import { Order } from 'src/orders/order.entity';
+import { Category } from 'src/categories/category.entity';
+import { Item } from 'src/items/item.entity';
+
 
 export const STATUSES = {
   ACTIVE: 10,
@@ -38,7 +41,7 @@ export class Organization {
   thumbnail: string;
 
   @Column('boolean', { 'default': false })
-  is_multilanguage: number;
+  is_multilanguage: boolean;
 
   @Column('double', { 'default': 0 })
   min_order_charge: number;
@@ -65,27 +68,39 @@ export class Organization {
   })
   status: number;
 
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at', readonly: true })
   created_at: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
+  @UpdateDateColumn({ name: 'updated_at', readonly: true })
   updated_at: Date;
   
   @ManyToOne(type => User, user => user.organizations, {
-    nullable: false
+    nullable: false,
+    eager: true
   })
   user: User;
 
-  @Column('int')
+  @Column({
+    type: 'int',
+    readonly: true
+  })
   userId: number;
 
-  @OneToOne(type => Bot)
+  @OneToOne(type => Bot, bot => bot.organization, {
+    eager: true
+  })
   bot: Bot;
 
   @OneToMany(type => Branch, branch => branch.organization, {
     eager: true
   })
   branches: Branch[];
+
+  @OneToMany(type => Category, category => category.organization)
+  categories: Category[];
+
+  @OneToMany(type => Item, item => item.organization)
+  items: Item[];
 
   @OneToMany(type => Order, order => order.organization)
   orders: Order[];

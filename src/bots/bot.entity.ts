@@ -1,9 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToOne, OneToMany, JoinColumn } from 'typeorm';
 import { Organization } from 'src/organizations/organization.entity';
 import { BotNotification } from 'src/bot-notifications/bot-notification.entity';
-import { Category } from 'src/categories/category.entity';
 import { Feedback } from 'src/feedbacks/feedback.entity';
-import { Item } from 'src/items/item.entity';
+import { IsEmpty } from 'class-validator';
+import { CrudValidationGroups } from "@nestjsx/crud";
+
+
+const { CREATE, UPDATE } = CrudValidationGroups;
 
 export const STATUSES = {
   ACTIVE: 10,
@@ -36,23 +39,20 @@ export class Bot{
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
   
-  @OneToOne(type => Organization, {
+  @OneToOne(type => Organization, org => org.bot, {
     nullable: false
   })
+  @IsEmpty({ groups: [CREATE, UPDATE] })
+  @JoinColumn()
   organization: Organization;
 
   @Column('int')
+  @IsEmpty({ groups: [UPDATE] })
   organizationId: number;
 
   @OneToMany(type => BotNotification, botNotification => botNotification.template)
   bot_notifications: BotNotification[];
 
-  @OneToMany(type => Category, category => category.bot)
-  categories: Category[];
-
   @OneToMany(type => Feedback, feedback => feedback.bot)
   feedbacks: Feedback[];
-
-  @OneToMany(type => Item, item => item.bot)
-  items: Item[];
 }
