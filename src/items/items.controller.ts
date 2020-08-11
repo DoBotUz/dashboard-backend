@@ -31,6 +31,12 @@ import { UsersService } from 'src/users/users.service';
       },
     },
   },
+  params: {
+    organizationId: {
+      field: 'organizationId',
+      type: 'number'
+    },
+  },
 })
 @CrudAuth({
   property: 'user',
