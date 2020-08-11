@@ -9,7 +9,7 @@ export class BaseItemDto {
     return Number(value)
   })
   @Validate(IsCategoryExists)
-  category_id: number;
+  categoryId: number;
 
   @IsNotEmpty()
   @IsString()

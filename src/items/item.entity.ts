@@ -70,7 +70,7 @@ export class Item {
   organization: Organization;
 
   @Column('int')
-  organizationId: number;
+  organizationId?: number;
 
   @OneToMany(type => OrderItem, orderItem => orderItem.item)
   order_items: OrderItem[];
