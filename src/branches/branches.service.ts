@@ -19,15 +19,16 @@ export class BranchesService {
     });
   }
 
-  async activate(id: number): Promise<void> {
-    const model = await this.findOne(id);
-    model.status = STATUSES.ACTIVE;
-    await this.branchesRepository.save(model);
+  async createNew(data: any): Promise<Branch> {
+    data.status = STATUSES.ACTIVE;
+    const branch = new Branch();
+    Object.assign(branch, data);
+    return await this.branchesRepository.save(branch);
   }
 
-  async deactivate(id: number): Promise<void> {
-    const model = await this.findOne(id);
-    model.status = STATUSES.INACTIVE;
-    await this.branchesRepository.save(model);
+  async updateOne(id: number, data: any): Promise<Branch> {
+    const branch = await this.findOne(id);
+    Object.assign(branch, data);
+    return await this.branchesRepository.save(branch);
   }
 }

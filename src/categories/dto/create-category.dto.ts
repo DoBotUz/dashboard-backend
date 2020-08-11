@@ -1,3 +1,9 @@
-import { BaseCategoryDTO } from './base-category.dto';
+import { BaseCategoryDto } from './base-category.dto';
+import { IsNotEmpty, Validate } from 'class-validator';
+import { IsOrganizationExists } from 'src/organizations/validators';
 
-export class CreateCategoryDTO extends BaseCategoryDTO {}
+export class CreateCategoryDto extends BaseCategoryDto {
+  @IsNotEmpty()
+  @Validate(IsOrganizationExists)
+  organizationId: number;
+}

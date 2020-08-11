@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Category } from 'src/categories/category.entity';
 import { Organization } from 'src/organizations/organization.entity';
+import { OrderItem } from 'src/orders/order-item';
 
 
 export const STATUSES = {
@@ -70,4 +71,7 @@ export class Item {
 
   @Column('int')
   organizationId: number;
+
+  @OneToMany(type => OrderItem, orderItem => orderItem.item)
+  order_items: OrderItem[];
 }

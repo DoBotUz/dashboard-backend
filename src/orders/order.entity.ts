@@ -1,8 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { BotUser } from 'src/bot-users/bot-user.entity';
 import { Organization } from 'src/organizations/organization.entity';
 import { Branch } from 'src/branches/branch.entity';
 import { Item } from 'src/items/item.entity';
+import { OrderItem } from './order-item';
 
 
 export const STATUSES = {
@@ -95,7 +96,6 @@ export class Order {
   @Column('int')
   branchId: number;
   
-  @ManyToMany(type => Item)
-  @JoinTable()
-  items: Item[];
+  @OneToMany(type => OrderItem, orderItem => orderItem.order)
+  order_items: OrderItem[];
 }

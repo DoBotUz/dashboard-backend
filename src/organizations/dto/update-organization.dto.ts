@@ -16,9 +16,6 @@ class Bot{
 }
 
 export class UpdateOrganizationDTO extends BaseOrganizationDTO {
-  @IsOptional()
-  user_id: number;
-
   @IsNotEmpty()
   @Validate(IsOrganizationExists)
   id: number;

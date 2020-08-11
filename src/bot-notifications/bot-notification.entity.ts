@@ -1,12 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinTable, ManyToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 import { Bot } from 'src/bots/bot.entity';
 import { BotNotificationTemplate } from './bot-notification-template.entity';
 import { BotUser } from 'src/bot-users/bot-user.entity';
-import { IsEmpty } from 'class-validator';
-import { CrudValidationGroups } from "@nestjsx/crud";
-
-
-const { CREATE, UPDATE } = CrudValidationGroups;
+import { BotNotificationBotUser } from './bot-notification-bot-user.entity';
 
 export const STATUSES = {
   SENT: 10,
@@ -16,11 +12,6 @@ export const STATUSES = {
 
 @Entity()
 export class BotNotification {
-  public static STATUSES = {
-    SENT: 10,
-    PENDING: 9,
-    ERROR: 0,
-  };
 
   @PrimaryGeneratedColumn()
   id: number;
@@ -44,11 +35,9 @@ export class BotNotification {
   @ManyToOne(type => Bot, bot => bot.bot_notifications,  {
     nullable: false
   })
-  @IsEmpty({ groups: [CREATE, UPDATE] })
   bot: Bot;
 
   @Column('int')
-  @IsEmpty({ groups: [CREATE, UPDATE] })
   botId: number;
 
   @ManyToOne(type => BotNotificationTemplate, template => template.bot_notifications,  {
@@ -59,7 +48,6 @@ export class BotNotification {
   @Column('int')
   templateId: number;
 
-  @ManyToMany(type => BotUser)
-  @JoinTable()
-  bot_users: BotUser[];
+  @OneToMany(type => BotNotificationBotUser, model => model.notification)
+  bot_notif_bot_users: BotNotificationBotUser[];
 }

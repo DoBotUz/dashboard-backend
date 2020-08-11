@@ -18,4 +18,17 @@ export class FeedbacksService {
     });
   }
 
+  async findOneWithBot(id: number): Promise<Feedback> {
+    return this.feedbacksRepository.findOne({
+      where: {
+        id,
+      },
+      join: {
+        alias: 'feedback',
+        leftJoinAndSelect: {
+          bot: 'feedback.bot',
+        }
+      }
+    });
+  }
 }

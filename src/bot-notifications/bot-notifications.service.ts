@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { BotNotification, STATUSES as BOT_NOTIF_STATUSES } from './bot-notification.entity';
 import { BotNotificationTemplate, STATUSES as TEMPLATE_STATUSES, TYPES } from './bot-notification-template.entity';
+import { BotNotificationBotUser, STATUSES as BOT_NOTIFICATION_BOT_USER_STATUSES } from './bot-notification-bot-user.entity'; 
 
 @Injectable()
 export class BotNotificationsService {
@@ -11,6 +12,8 @@ export class BotNotificationsService {
     private botNotificationsRepository: Repository<BotNotification>,
     @InjectRepository(BotNotificationTemplate)
     private botNotificationTemplatesRepository: Repository<BotNotificationTemplate>,
+    @InjectRepository(BotNotificationBotUser)
+    private botNotificationBotUserRepository: Repository<BotNotificationBotUser>,
   ) {}
   
   async findOne(id: number): Promise<BotNotification> {
@@ -53,7 +56,6 @@ export class BotNotificationsService {
 
   async createTemplate(data: any): Promise<BotNotificationTemplate> {
     data.status = TEMPLATE_STATUSES.ACTIVE;
-    data.type = TYPES.MASS_SEND;
     const model = new BotNotificationTemplate();
     Object.assign(model, data);
     return await this.botNotificationTemplatesRepository.save(model);
@@ -61,8 +63,31 @@ export class BotNotificationsService {
 
   async updateTemplate(id: number, data: any): Promise<BotNotificationTemplate> {
     const model = await this.findOneTemplate(id);
-    data.type = TYPES.MASS_SEND;
     Object.assign(model, data);
     return await this.botNotificationTemplatesRepository.save(model);
+  }
+
+  async deleteBotUsers(botNotificationId: number, bot_user_ids: number[]): Promise<void> {
+    this.botNotificationBotUserRepository.delete({
+      botNotificationId,
+      botUserId: In(bot_user_ids),
+    })
+  }
+
+  async assignNotification(data: any): Promise <BotNotificationBotUser> {
+    const model = new BotNotificationBotUser();
+    Object.assign(model, data);
+    return await this.botNotificationBotUserRepository.save(model);
+  }
+
+  async setNotificationBotUsers(botNotificationId: number, bot_user_ids: number[]): Promise<void> {
+    await this.deleteBotUsers(botNotificationId, bot_user_ids);
+    for (let i = 0; i < bot_user_ids.length; i += 1) {
+     await this.assignNotification({
+        botNotificationId,
+        botUserId: bot_user_ids[i],
+        status: BOT_NOTIFICATION_BOT_USER_STATUSES.PENDING
+      });
+    }
   }
 }

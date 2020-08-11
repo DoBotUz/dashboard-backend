@@ -26,7 +26,9 @@ export class FilesService {
         mime: files[i].mimetype,
         type: TYPES.IMAGE,
       };
-      this.filesRepository.create(newFile);
+      const model = new File();
+      Object.assign(model, newFile);
+      this.filesRepository.insert(model);
     }
   }
 

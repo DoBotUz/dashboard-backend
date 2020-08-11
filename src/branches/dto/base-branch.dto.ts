@@ -1,12 +1,13 @@
-import { IsNotEmpty, IsOptional, Length, Validate, IsNumber, IsJSON } from 'class-validator';
+import { IsNotEmpty, IsOptional, Length, Validate, IsNumber, IsJSON, IsString, IsBoolean } from 'class-validator';
 import { IsOrganizationExists } from 'src/organizations/validators';
 
-export class BaseBranchDTO {
+export class BaseBranchDto {
   @IsNotEmpty()
   @Validate(IsOrganizationExists)
-  organization_id: number;
+  organizationId: number;
 
   @IsNotEmpty()
+  @IsString()
   @Length(3, 255)
   title: string;
 
@@ -23,6 +24,6 @@ export class BaseBranchDTO {
   timetable: string;
 
   @IsOptional()
-  @IsNumber()
-  is_all_day: number;
+  @IsBoolean()
+  is_all_day: boolean;
 }

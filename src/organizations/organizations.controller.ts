@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { Controller, UseGuards, Body, UseInterceptors, UploadedFile, UploadedFiles, ValidationPipe, UsePipes } from '@nestjs/common';
+import { Controller, UseGuards, Body, UseInterceptors, UploadedFile, UploadedFiles, ValidationPipe, UsePipes, BadRequestException } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController, Override, CrudAuth } from "@nestjsx/crud";
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -18,10 +18,14 @@ import { FilesService } from 'src/files/files.service';
 import { User } from 'src/users/user.entity';
 import { ValidationError } from 'class-validator';
 import { ValidationException } from 'src/validation-exception';
+import { UsersService } from 'src/users/users.service';
 
 @Crud({
   model: {
     type: Organization
+  },
+  routes: {
+    only: ['getManyBase', 'getOneBase', 'updateOneBase', 'createOneBase'],
   },
   query: {
     join: {
@@ -50,7 +54,8 @@ export class OrganizationsController  implements CrudController<Organization> {
     private branchesService: BranchesService,
     private botsService: BotsService,
     private botsGateway: BotsGateway,
-    private filesService: FilesService
+    private filesService: FilesService,
+    private usersService: UsersService,
   ) {}
   
   @Override()
@@ -90,10 +95,8 @@ export class OrganizationsController  implements CrudController<Organization> {
           console.log(res);
       });
     }
-    const org = await this.organizationsService.createNew({
-      user,
-      ...data
-    });
+    data.userId = user.id;
+    const org = await this.organizationsService.createNew(data);
     if (uploadedFiles && uploadedFiles.files && uploadedFiles.files.length) {
       this.filesService.uploadImagesFor('ORGANIZATION', org.id, uploadedFiles.files);
     }
@@ -118,6 +121,12 @@ export class OrganizationsController  implements CrudController<Organization> {
   }))
   async updateOne(@UserD() user, @Body() updateOrganizationDTO: UpdateOrganizationDTO, @UploadedFile() thumbnail): Promise<any> {
     const { id, ...data } = updateOrganizationDTO;
+    const userEntity = await this.usersService.findOneWithOrganizations(user.id);
+
+    if(!userEntity.organizations.some(org => org.id == id)) {
+      throw new BadRequestException('Wrong input');
+    }
+
     if (thumbnail) {
       data.thumbnail = thumbnail.filename;
     }

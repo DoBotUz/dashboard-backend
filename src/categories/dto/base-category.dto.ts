@@ -1,38 +1,46 @@
-import { IsNotEmpty, IsOptional, Length, Validate } from 'class-validator';
-import { IsBotExists } from 'src/bots/validators';
+import { IsNotEmpty, IsOptional, Length, Validate, IsString } from 'class-validator';
 import { IsCategoryExists } from '../validators';
+import { Transform } from 'class-transformer';
 
-export class BaseCategoryDTO {
-  @IsNotEmpty()
-  @Validate(IsBotExists)
-  bot_id: number;
-
+export class BaseCategoryDto {
   @IsOptional()
+  @Transform((value) => {
+    return Number(value)
+  })
   @Validate(IsCategoryExists)
-  parent_category_id: number;
+  parentCategoryId: number;
 
   @IsNotEmpty()
+  @IsString()
   @Length(3, 255)
   ru_title: string;
 
   @IsNotEmpty()
+  @IsString()
   ru_description: string;
 
   @IsNotEmpty()
+  @IsString()
   @Length(3, 255)
   en_title: string;
 
   @IsNotEmpty()
+  @IsString()
   en_description: string;
 
   @IsNotEmpty()
+  @IsString()
   @Length(3, 255)
   uz_title: string;
 
   @IsNotEmpty()
+  @IsString()
   uz_description: string;
 
   @IsOptional()
+  @Transform((value) => {
+    return Number(value)
+  })
   pos: number;
 
   thumbnail: string;

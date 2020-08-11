@@ -1,3 +1,3 @@
-import { BaseBranchDTO } from './base-branch.dto';
+import { BaseBranchDto } from './base-branch.dto';
 
-export class CreateBranchDto extends BaseBranchDTO {}
+export class CreateBranchDto extends BaseBranchDto {}

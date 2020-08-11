@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { Controller, Get, UseGuards, Param, Post, Body, Delete, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
+import { Controller, Get, UseGuards, Param, Post, Body, Delete, UseInterceptors, UploadedFile, UploadedFiles, BadRequestException } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController, Override, CrudAuth } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -7,18 +7,22 @@ import { UserD } from 'src/auth/user.decorator';
 import { FileInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from 'multer';
 import { CategoriesService } from './categories.service';
-import { CreateCategoryDTO, UpdateCategoryDTO } from './dto';
+import { CreateCategoryDto, UpdateCategoryDto } from './dto';
 import { Category } from './category.entity';
 import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
 import { FilesService } from 'src/files/files.service';
 import { CategoriesCrudService } from './categories-crud.service';
 import { User } from 'src/users/user.entity';
 import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
+import { UsersService } from 'src/users/users.service';
 
 
 @Crud({
   model: {
     type: Category
+  },
+  routes: {
+    only: ['getManyBase', 'getOneBase', 'createOneBase', 'updateOneBase'],
   },
   query: {
     join: {
@@ -50,7 +54,8 @@ export class CategoriesController implements CrudController<Category> {
   constructor(
     public service: CategoriesCrudService,
     private categoriesService: CategoriesService,
-    private filesService: FilesService
+    private filesService: FilesService,
+    private usersService: UsersService,
   ) {}
 
   @Override()
@@ -72,7 +77,14 @@ export class CategoriesController implements CrudController<Category> {
       fileFilter: imageFileFilter,
     }),
   )
-  async createOne(@UserD() user, @Body() data: CreateCategoryDTO, @UploadedFiles() uploadedFiles): Promise<Category> {
+  async createOne(@UserD() user, @Body() data: CreateCategoryDto, @UploadedFiles() uploadedFiles): Promise<Category> {
+    await this.validateCall(user, data.organizationId);
+
+    if (data.parentCategoryId) {
+      const parentCategory = await this.categoriesService.findOne(data.parentCategoryId);
+      await this.validateCall(user, parentCategory.organizationId);
+    }
+
     if (uploadedFiles && uploadedFiles.thumbnail && typeof uploadedFiles.thumbnail[0] !== 'undefined') {
       const thumbnail = uploadedFiles.thumbnail[0];
       data.thumbnail = thumbnail.filename;
@@ -96,32 +108,20 @@ export class CategoriesController implements CrudController<Category> {
     }),
     fileFilter: imageFileFilter,
   }))
-  async updateOne(@Body() updateCategoryDto: UpdateCategoryDTO,  @UploadedFile() thumbnail): Promise<Category> {
+  async updateOne(@UserD() user, @Body() updateCategoryDto: UpdateCategoryDto,  @UploadedFile() thumbnail): Promise<Category> {
+    const category = await this.categoriesService.findOne(updateCategoryDto.id);
+    await this.validateCall(user, category.organizationId);
+
+    if (updateCategoryDto.parentCategoryId) {
+      const parentCategory = await this.categoriesService.findOne(updateCategoryDto.parentCategoryId);
+      await this.validateCall(user, parentCategory.organizationId);
+    }
+
     const { id, ...data } = updateCategoryDto;
     if (thumbnail) {
       data.thumbnail = thumbnail.filename;
     }
     return this.categoriesService.updateOne(id, data);
-  }
-
-  @Post("deactivate/:id")
-  @ApiOkResponse({
-    description: 'Sucessfuly Updated',
-    type: Boolean
-  })
-  async deactivate(@Param("id") id): Promise<boolean> {
-    await this.categoriesService.deactivate(id);
-    return true;
-  }
-
-  @Post("activate/:id")
-  @ApiOkResponse({
-    description: 'Sucessfuly Updated',
-    type: Boolean
-  })
-  async activate(@Param("id") id): Promise<boolean> {
-    await this.categoriesService.activate(id);
-    return true;
   }
 
   @Post(":id/add-file")
@@ -149,5 +149,13 @@ export class CategoriesController implements CrudController<Category> {
   async removeFile(@Param("id") id): Promise<boolean> {
     this.filesService.remove(id);
     return true;
+  }
+
+  private async validateCall(user, id){
+    const userEntity = await this.usersService.findOneWithOrganizations(user.id);
+
+    if(!userEntity.organizations.some(org => org.id == id)) {
+      throw new BadRequestException('Wrong input');
+    }
   }
 }

@@ -1,8 +1,8 @@
 import { IsNotEmpty, Validate } from 'class-validator';
-import { BaseBranchDTO } from './base-branch.dto';
+import { BaseBranchDto } from './base-branch.dto';
 import { IsBranchExists } from '../validators';
 
-export class UpdateBranchDto extends BaseBranchDTO {
+export class UpdateBranchDto extends BaseBranchDto {
   @IsNotEmpty()
   @Validate(IsBranchExists)
   id: number;

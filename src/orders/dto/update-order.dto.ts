@@ -5,7 +5,7 @@ import { Type, Transform, plainToClass } from 'class-transformer';
 import { IsItemExists } from 'src/items/validators';
 import { IsOrderExists } from '../validators/isOrderExists';
 
-class OrderItemDto {
+export class OrderItemDto {
   @IsNotEmpty()
   @Validate(IsOrderExists)
   order_id: number;
@@ -19,10 +19,10 @@ class OrderItemDto {
   amount: number;
 }
 
-export class UpdateOrderDTO {
+export class UpdateOrderDto {
   @IsNotEmpty()
   @Validate(IsOrderExists)
-  id: number;
+  id?: number;
 
   @IsNotEmpty()
   @Validate(IsBranchExists)
@@ -72,4 +72,9 @@ export class UpdateOrderDTO {
   @IsIn(Object.values(STATUSES))
   status: number;
 
+  @IsNotEmpty()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => OrderItemDto)
+  order_items: OrderItemDto[]
 }

@@ -22,6 +22,9 @@ import { BotGuard } from 'src/common/guards/BotsGuard';
   model: {
     type: BotNotification
   },
+  routes: {
+    only: ['getManyBase', 'getOneBase'],
+  },
   query: {
     join: {
       bot: {
@@ -119,29 +122,6 @@ export class BotNotificationsController implements CrudController<BotNotificatio
     return this.botNotificationsService.updateTemplate(id, data);
   }
 
-  // @Post()
-  // @ApiOkResponse({
-  //   description: 'BotNotification',
-  //   type: BotNotification
-  // })
-  // async create(@UserD() user, @Body() data: CreateBotNotificationDto): Promise<BotNotification> {
-  //   const model = await this.botNotificationsService.create(data);
-  //   this.botNotificationsService.setNotificationBotUsers(model.id, data.bot_user_ids);
-  //   return model;
-  // }
-
-  // @Post('update')
-  // @ApiOkResponse({
-  //   description: 'BotNotification',
-  //   type: BotNotification
-  // })
-  // async update(@UserD() user, @Body() updateNotificationDto: UpdateBotNotificationDto): Promise<BotNotification> {
-  //   const { id, ...data } = updateNotificationDto;
-  //   const model = await this.botNotificationsService.update(id, data);
-  //   this.botNotificationsService.setNotificationBotUsers(model.id, data.bot_user_ids);
-  //   return model;
-  // }
-
   @Post('mass-send')
   @ApiOkResponse({
     description: 'BotNotification',
@@ -179,14 +159,14 @@ export class BotNotificationsController implements CrudController<BotNotificatio
       this.filesService.uploadImagesFor('NOTIFICATION_TEMPLATE', notificationTemplate.id, uploadedFiles.files);
     }
     const model = await this.botNotificationsService.create({
-      bot_id: data.bot_id,
-      bot_notification_template_id: notificationTemplate.id,
+      botId: data.botId,
+      templateId: notificationTemplate.id,
       after_date_time: data.after_date_time
     });
-    const bot_user_ids = (await this.botUsersService.listAllByBotId(data.bot_id)).map((botUser) => {
+    const bot_user_ids = (await this.botUsersService.listAllByBotId(data.botId)).map((botUser) => {
       return botUser.id;
     })
-    // this.botNotificationsService.setNotificationBotUsers(model.id, bot_user_ids);
+    this.botNotificationsService.setNotificationBotUsers(model.id, bot_user_ids);
     return this.botNotificationsService.findOne(model.id);
   }
 

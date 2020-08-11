@@ -1,17 +1,18 @@
 import { IsNotEmpty, Validate, ValidateNested, IsOptional } from 'class-validator';
-import { Type, Transform, plainToClass } from 'class-transformer';
+import { Transform, plainToClass } from 'class-transformer';
 import { IsBotExists } from 'src/bots/validators';
-import { Default } from 'src/common/validators/Default';
 import { BaseBotNotificationTemplateDto } from './base-bot-notification-template.dto';
 
 export class CreateMassSendDto {
   @IsNotEmpty()
   @Validate(IsBotExists)
-  bot_id: number;
+  botId: number;
 
   @IsOptional()
-  @Default(0)
-  after_date_time: number;
+  @Transform((value) => {
+    return new Date(value)
+  })
+  after_date_time: Date;
 
   @IsNotEmpty()
   @Transform((value) => {

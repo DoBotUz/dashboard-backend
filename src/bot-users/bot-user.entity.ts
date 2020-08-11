@@ -3,6 +3,7 @@ import { Bot } from 'src/bots/bot.entity';
 import { Feedback } from 'src/feedbacks/feedback.entity';
 import { Order } from 'src/orders/order.entity';
 import { BotNotification } from 'src/bot-notifications/bot-notification.entity';
+import { BotNotificationBotUser } from 'src/bot-notifications/bot-notification-bot-user.entity';
 
 export const STATUSES = {
   ACTIVE: 10,
@@ -68,7 +69,6 @@ export class BotUser {
   @OneToMany(type => Order, order => order.bot_user)
   orders: Order[];
 
-  @ManyToMany(type => BotNotification)
-  bot_notifications: BotNotification[];
-  
+  @OneToMany(type => BotNotificationBotUser, model => model.bot_user)
+  bot_notif_bot_users: BotNotificationBotUser[];
 }
