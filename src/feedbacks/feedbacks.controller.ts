@@ -17,6 +17,7 @@ import { FeedbacksCrudService } from './feedbacks-crud.service';
 import { User } from 'src/users/user.entity';
 import { BotGuard } from 'src/common/guards/BotsGuard';
 import { UsersService } from 'src/users/users.service';
+import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
 
 @Crud({
   model: {
@@ -30,15 +31,15 @@ import { UsersService } from 'src/users/users.service';
       bot: {
         eager: true,
       },
-      'bot.organization': {
+      organization: {
         eager: true,
         select: false,
       },
     },
   },
   params: {
-    botId: {
-      field: 'botId',
+    organizationId: {
+      field: 'organizationId',
       type: 'number'
     },
   },
@@ -50,10 +51,10 @@ import { UsersService } from 'src/users/users.service';
   })
 })
 @ApiTags('feedbacks')
-@Controller('/:botId/feedbacks')
+@Controller('/:organizationId/feedbacks')
 @UseGuards(
   JwtAuthGuard,
-  BotGuard
+  OrganizationGuard
 )
 export class FeedbacksController implements CrudController<Feedback> {
   constructor(

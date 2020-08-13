@@ -1,11 +1,20 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
 import { Bot } from 'src/bots/bot.entity';
 import { BotUser } from 'src/bot-users/bot-user.entity';
+import { Organization } from 'src/organizations/organization.entity';
 
 export const STATUSES = {
   ANSWERED: 10,
   PENDING: 11,
 };
+
+export const TYPES = {
+  text: 1,
+  photo: 2,
+  video: 3,
+  audio: 4,
+  voice: 5
+}
 
 @Entity()
 export class Feedback{
@@ -41,6 +50,23 @@ export class Feedback{
   })
   bot: Bot;
 
-  @Column('int')
-  botId: number;
+  @ManyToOne(type => Organization, org => org.feedbacks, {
+    nullable: false
+  })
+  organization: Organization;
+
+  @Column()
+  organizationId?: number;
+
+  @Column({
+    type: 'enum',
+    enum: Object.values(TYPES),
+    default: TYPES.text
+  })
+  type: number;
+
+  @Column({
+    nullable: true
+  })
+  file: string;
 }
