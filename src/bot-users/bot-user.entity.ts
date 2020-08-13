@@ -68,7 +68,7 @@ export class BotUser {
   @OneToMany(type => BotNotificationBotUser, model => model.bot_user)
   bot_notif_bot_users: BotNotificationBotUser[];
 
-  @ManyToMany(type => Organization, org => org.botUsers, {
+  @ManyToOne(type => Organization, org => org.botUsers, {
     nullable: false
   })
   organization: Organization;
