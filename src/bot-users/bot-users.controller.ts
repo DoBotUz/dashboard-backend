@@ -22,17 +22,17 @@ import { UserD } from 'src/auth/user.decorator';
   query: {
     join: {
       bot: {
-        eager: true,
+        eager: true
       },
-      'bot.organization': {
+      organization: {
         eager: true,
         select: false,
       },
     },
   },
   params: {
-    botId: {
-      field: 'botId',
+    organizationId: {
+      field: 'organizationId',
       type: 'number'
     },
   },
@@ -44,7 +44,7 @@ import { UserD } from 'src/auth/user.decorator';
   })
 })
 @ApiTags('bot-users')
-@Controller('/:botId/bot-users')
+@Controller('/:organizationId/bot-users')
 @UseGuards(
   JwtAuthGuard,
   BotGuard
