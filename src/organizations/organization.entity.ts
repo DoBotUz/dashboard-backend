@@ -5,6 +5,7 @@ import { Branch } from 'src/branches/branch.entity';
 import { Order } from 'src/orders/order.entity';
 import { Category } from 'src/categories/category.entity';
 import { Item } from 'src/items/item.entity';
+import { BotUser } from 'src/bot-users/bot-user.entity';
 
 
 export const STATUSES = {
@@ -104,4 +105,7 @@ export class Organization {
 
   @OneToMany(type => Order, order => order.organization)
   orders: Order[];
+
+  @OneToMany(type => BotUser, botUser => botUser.organization)
+  botUsers: BotUser[];
 }

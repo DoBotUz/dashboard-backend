@@ -1,9 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, ManyToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, ManyToMany, JoinColumn } from 'typeorm';
 import { Bot } from 'src/bots/bot.entity';
 import { Feedback } from 'src/feedbacks/feedback.entity';
 import { Order } from 'src/orders/order.entity';
 import { BotNotification } from 'src/bot-notifications/bot-notification.entity';
 import { BotNotificationBotUser } from 'src/bot-notifications/bot-notification-bot-user.entity';
+import { Organization } from 'src/organizations/organization.entity';
 
 export const STATUSES = {
   ACTIVE: 10,
@@ -55,13 +56,8 @@ export class BotUser {
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
 
-  @ManyToOne(type => Bot, bot => bot.bot_notifications,  {
-    nullable: false
-  })
+  @ManyToOne(type => Bot, bot => bot.botUsers,  { nullable: false })
   bot: Bot;
-
-  @Column('int')
-  botId: number;
 
   @OneToMany(type => Feedback, feedback => feedback.bot)
   feedbacks: Feedback[];
@@ -71,4 +67,12 @@ export class BotUser {
 
   @OneToMany(type => BotNotificationBotUser, model => model.bot_user)
   bot_notif_bot_users: BotNotificationBotUser[];
+
+  @ManyToMany(type => Organization, org => org.botUsers, {
+    nullable: false
+  })
+  organization: Organization;
+
+  @Column('int')
+  organizationId: number;
 }

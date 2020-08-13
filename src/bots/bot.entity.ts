@@ -4,6 +4,7 @@ import { BotNotification } from 'src/bot-notifications/bot-notification.entity';
 import { Feedback } from 'src/feedbacks/feedback.entity';
 import { IsEmpty } from 'class-validator';
 import { CrudValidationGroups } from "@nestjsx/crud";
+import { BotUser } from 'src/bot-users/bot-user.entity';
 
 
 const { CREATE, UPDATE } = CrudValidationGroups;
@@ -55,4 +56,7 @@ export class Bot{
 
   @OneToMany(type => Feedback, feedback => feedback.bot)
   feedbacks: Feedback[];
+
+  @OneToMany(type => BotUser, botUser => botUser.bot)
+  botUsers: BotUser[];
 }
