@@ -8,11 +8,11 @@ import { IsOrderExists } from '../validators/isOrderExists';
 export class OrderItemDto {
   @IsNotEmpty()
   @Validate(IsOrderExists)
-  order_id: number;
+  orderId: number;
 
   @IsNotEmpty()
   @Validate(IsItemExists)
-  item_id: number;
+  itemId: number;
 
   @IsNotEmpty()
   @IsInt()
@@ -26,7 +26,7 @@ export class UpdateOrderDto {
 
   @IsNotEmpty()
   @Validate(IsBranchExists)
-  branch_id: number;
+  branchId: number;
 
   @IsNotEmpty()
   @IsNumber()
