@@ -7,10 +7,10 @@ import { BotUsersService } from './bot-users.service';
 import { BotUser } from './bot-user.entity';
 import { BotUsersCrudService } from './bot-users-crud.service';
 import { User } from 'src/users/user.entity';
-import { BotGuard } from 'src/common/guards/BotsGuard';
 import { UpdateBotUserDto } from './dto/update-bot-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { UserD } from 'src/auth/user.decorator';
+import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
 
 @Crud({
   model: {
@@ -47,7 +47,7 @@ import { UserD } from 'src/auth/user.decorator';
 @Controller('/:organizationId/bot-users')
 @UseGuards(
   JwtAuthGuard,
-  BotGuard
+  OrganizationGuard
 )
 export class BotUsersController implements CrudController<BotUser> {
   constructor(
