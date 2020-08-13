@@ -23,6 +23,9 @@ import { UserD } from 'src/auth/user.decorator';
       organization: {
         eager: true,
       },
+      branch: {
+        eager: true
+      }
     },
   },
   params: {
