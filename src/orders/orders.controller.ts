@@ -25,6 +25,9 @@ import { UserD } from 'src/auth/user.decorator';
       },
       branch: {
         eager: true
+      },
+      order_items: {
+        eager: true
       }
     },
   },
