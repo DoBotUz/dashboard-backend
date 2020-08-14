@@ -48,6 +48,11 @@ export class Branch {
   })
   status: number;
 
+  @Column('int', {
+    nullable: true
+  })
+  tg_group_id: number;
+
   @CreateDateColumn({ name: 'created_at' })
   created_at: Date;
 

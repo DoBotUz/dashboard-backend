@@ -36,4 +36,8 @@ export class BaseBranchDto {
   @IsOptional()
   @IsBoolean()
   is_all_day: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  tg_group_id: number;
 }
