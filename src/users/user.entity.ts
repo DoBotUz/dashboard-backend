@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Organization } from 'src/organizations/organization.entity';
+import { Notification } from 'src/notifications/notification.entity'
 
 export const STATUSES = {
   ACTIVE: 10,
