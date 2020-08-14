@@ -4,6 +4,7 @@ import { Order } from 'src/orders/order.entity';
 import { Exclude } from 'class-transformer';
 import { CrudValidationGroups } from "@nestjsx/crud";
 import { IsEmpty } from 'class-validator';
+import { Feedback } from 'src/feedbacks/feedback.entity';
 
 
 const { CREATE, UPDATE } = CrudValidationGroups;
@@ -66,4 +67,7 @@ export class Branch {
 
   @OneToMany(type => Order, order => order.branch)
   orders: Order[];
+
+  @OneToMany(type => Feedback, feedback => feedback.branch)
+  feedbacks: Feedback;
 }
