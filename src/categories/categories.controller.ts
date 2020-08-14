@@ -29,6 +29,9 @@ import { UsersService } from 'src/users/users.service';
       organization: {
         eager: true,
       },
+      parent_category: {
+        eager: true
+      }
     },
   },
   params: {
