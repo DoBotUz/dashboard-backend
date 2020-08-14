@@ -59,4 +59,7 @@ export class User  {
 
   @OneToMany(type => Organization, orgnization => orgnization.user)
   organizations: Organization[];
+
+  @OneToMany(type => Notification, notification => notification.user)
+  notifications: Notification[];
 }

@@ -24,6 +24,9 @@ export class Bot{
   @Column('varchar', { 'length': 1024 })
   token: string;
 
+  @Column('boolean', { default: false })
+  is_online: boolean;
+
   @Column('datetime', { nullable: true })
   last_container_poke: Date;
 

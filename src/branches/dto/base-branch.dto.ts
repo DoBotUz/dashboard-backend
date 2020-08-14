@@ -9,7 +9,17 @@ export class BaseBranchDto {
   @IsNotEmpty()
   @IsString()
   @Length(3, 255)
-  title: string;
+  ru_title: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Length(3, 255)
+  uz_title: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Length(3, 255)
+  en_title: string;
 
   @IsNotEmpty()
   @IsNumber()

@@ -16,6 +16,8 @@ export const TYPES = {
   voice: 5
 }
 
+export const ALLOWED_RATING = [1, 2, 3, 4, 5];
+
 @Entity()
 export class Feedback{
   @PrimaryGeneratedColumn()
@@ -23,6 +25,11 @@ export class Feedback{
 
   @Column('text')
   comment: string;
+
+  @Column('int', {
+    nullable: true
+  })
+  rating: number;
 
   @Column({
     type: 'enum',

@@ -22,19 +22,16 @@ export class Organization {
   id: number;
 
   @Column('varchar', { 'length': 255 })
-  ru_title: string;
+  title: string;
+
+  @Column('varchar', { 'length': 255 })
+  slug: string;
 
   @Column('text')
   ru_description: string;
 
-  @Column('varchar', { 'length': 255 })
-  en_title: string;
-
   @Column('text')
   en_description: string;
-
-  @Column('varchar', { 'length': 255 })
-  uz_title: string;
 
   @Column('text')
   uz_description: string;

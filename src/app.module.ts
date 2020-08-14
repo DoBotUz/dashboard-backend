@@ -19,6 +19,7 @@ import { PromosModule } from './promos/promos.module';
 import { PromocodesModule } from './promocodes/promocodes.module';
 import { SubscriptionPlansModule } from './subscription-plans/subscription-plans.module';
 import { GatewaysModule } from './gateways/gateways.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -36,7 +37,6 @@ import { GatewaysModule } from './gateways/gateways.module';
       synchronize: true,
       autoLoadEntities: true,
       charset: 'utf8mb4_general_ci'
-
     }),
     AuthModule,
     UsersModule,
@@ -54,6 +54,7 @@ import { GatewaysModule } from './gateways/gateways.module';
     PromocodesModule,
     SubscriptionPlansModule,
     GatewaysModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

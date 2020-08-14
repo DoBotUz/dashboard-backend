@@ -1,4 +1,4 @@
-import { IsNotEmpty, Length, Validate, ValidateNested, IsNumber, IsString, IsBoolean, IsInt, IsIn, IsOptional } from 'class-validator';
+import { IsNotEmpty, Length, Validate, ValidateNested, IsNumber, IsString, IsBoolean, IsInt, IsIn, IsOptional, IsAscii } from 'class-validator';
 import { IsUserExists } from 'src/users/validators';
 import { STATUSES } from '../organization.entity';
 import { Transform } from 'class-transformer';
@@ -10,7 +10,13 @@ export class BaseOrganizationDTO {
   @IsNotEmpty()
   @IsString()
   @Length(3, 255)
-  ru_title: string;
+  title: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Length(3, 255)
+  @IsAscii()
+  slug: string;
 
   @IsNotEmpty()
   @IsString()
@@ -18,17 +24,7 @@ export class BaseOrganizationDTO {
 
   @IsNotEmpty()
   @IsString()
-  @Length(3, 255)
-  en_title: string;
-
-  @IsNotEmpty()
-  @IsString()
   en_description: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @Length(3, 255)
-  uz_title: string;
 
   @IsNotEmpty()
   @IsString()

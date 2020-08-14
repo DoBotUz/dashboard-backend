@@ -27,7 +27,13 @@ export class Branch {
   lng: number;
 
   @Column('varchar', { 'length': 255 })
-  title: string;
+  ru_title: string;
+
+  @Column('varchar', { 'length': 255 })
+  en_title: string;
+
+  @Column('varchar', { 'length': 255 })
+  uz_title: string;
 
   @Column('json', { 'nullable': true })
   timetable: string;
