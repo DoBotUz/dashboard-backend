@@ -2,7 +2,6 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateCol
 import { Bot } from 'src/bots/bot.entity';
 import { BotUser } from 'src/bot-users/bot-user.entity';
 import { Organization } from 'src/organizations/organization.entity';
-import { Branch } from 'src/branches/branch.entity';
 
 export const STATUSES = {
   ANSWERED: 10,
@@ -77,7 +76,4 @@ export class Feedback{
     nullable: true
   })
   file: string;
-
-  @ManyToOne(type => Branch, branch => branch.feedbacks)
-  branch: Branch;
 }

@@ -35,6 +35,9 @@ import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
         eager: true,
         select: false,
       },
+      bot_user: {
+        eager: true
+      }
     },
   },
   params: {
