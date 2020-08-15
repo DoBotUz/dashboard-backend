@@ -107,6 +107,10 @@ export class UsersService {
   }
 
   async findUsersOfOrganization(org_id: number): Promise<User[]> {
+    return this.usersRepository.createQueryBuilder('user')
+      .leftJoinAndSelect('user.organizations', 'organization')
+      .where('organization.id = :id', {id: org_id})
+      .getMany();
     return this.usersRepository.find({
       join: {
         alias: 'user',
@@ -115,7 +119,7 @@ export class UsersService {
         }
       },
       where: {
-        organizations: {
+        ['user.organizations']: {
           id: In([org_id])
         }
       }
