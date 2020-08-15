@@ -7,6 +7,7 @@ import { Category } from 'src/categories/category.entity';
 import { Item } from 'src/items/item.entity';
 import { BotUser } from 'src/bot-users/bot-user.entity';
 import { Feedback } from 'src/feedbacks/feedback.entity';
+import { Promocode } from 'src/promocodes/promocode.entity';
 
 
 export const STATUSES = {
@@ -109,4 +110,7 @@ export class Organization {
 
   @OneToMany(type => Feedback, feedback => feedback.organization)
   feedbacks: Feedback[];
+
+  @OneToMany(type => Promocode, promocode => promocode.organization)
+  promocodes: Promocode[];
 }
