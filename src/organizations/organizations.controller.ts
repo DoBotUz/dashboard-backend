@@ -37,6 +37,9 @@ import { UsersService } from 'src/users/users.service';
       user: {
         eager: true,
       },
+      bot: {
+        eager: true,
+      },
     },
   },
 })
