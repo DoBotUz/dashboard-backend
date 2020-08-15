@@ -9,10 +9,17 @@ import { Server, Socket } from 'socket.io';
 import { UseGuards, Logger } from '@nestjs/common';
 import { WsJwtGuard } from 'src/common/guards/wsjwt.guard';
 import { Notification } from 'src/notifications/notification.entity';
+import { User } from 'src/users/user.entity';
+import { jwtConstants } from "src/auth/constants";
+import * as jwt from 'jsonwebtoken';
+import { UsersService } from "src/users/users.service";
 
 @UseGuards(WsJwtGuard)
 @WebSocketGateway({ namespace: 'frontend' })
 export class FrontendGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  constructor(
+    private userService: UsersService,
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -27,8 +34,21 @@ export class FrontendGateway implements OnGatewayConnection, OnGatewayDisconnect
   handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnected: ${client.id}`);
   }
-  
-  handleConnection(client: Socket, ...args: any[]) {
+
+  async handleConnection(client: Socket, ...args: any[]) {
+    const authToken: string = client.handshake?.query?.authorization;
+    const organizationId: Number = client.handshake?.query?.organizationId;
+    const bearerToken = authToken.split(' ')[1];
+    const decoded = jwt.verify(bearerToken, jwtConstants.secret) as any;
+    const user: User = await this.userService.findOneByEmail(decoded.email);
+
+    console.log(user, organizationId)
+
+    if (!user || !user.organizations.find(org => org.id == organizationId)) {
+      return client.disconnect();
+    }
+
+    client.join(`org_id_${organizationId}`);
     this.logger.log(`Client connected: ${client.id}`);
   }
 
