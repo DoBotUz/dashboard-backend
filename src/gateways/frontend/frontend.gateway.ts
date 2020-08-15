@@ -12,19 +12,15 @@ import { Notification } from 'src/notifications/notification.entity';
 
 @UseGuards(WsJwtGuard)
 @WebSocketGateway({ namespace: 'frontend' })
-export class FrontendGateway implements OnGatewayConnection, OnGatewayDisconnect{
+export class FrontendGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @WebSocketServer()
   server: Server;
   private logger: Logger = new Logger('FrontendGateway');
 
-  notifyUser(user_id: number, notif: Notification) {
-    if(this.server) {
-      console.log(user_id);
-      const socketId = this.findSocketByUserId(user_id);
-      if (socketId) {
-        this.server.to(socketId).emit('newNotification', JSON.stringify(notif));
-      }
+  notifyUsers(org_id: number, notif: any) {
+    if (this.server) {
+      this.server.to(`org_id_${org_id}`).emit('newNotification', JSON.stringify(notif));
     }
   }
 
@@ -32,15 +28,15 @@ export class FrontendGateway implements OnGatewayConnection, OnGatewayDisconnect
     this.logger.log(`Client disconnected: ${client.id}`);
   }
   
-  handleConnection(client: any, ...args: any[]) {
+  handleConnection(client: Socket, ...args: any[]) {
     this.logger.log(`Client connected: ${client.id}`);
   }
 
-  private findSocketByUserId(user_id: number): string {
-    for( const socketId in this.server.sockets) {
-      if(this.server.sockets[socketId].user && this.server.sockets[socketId].user.id == user_id){
-        return socketId;
-      }
-    }
-  }
+  // private findSocketByUserId(user_id: number): string {
+  //   for( const socketId in this.server.sockets) {
+  //     if(this.server.sockets[socketId].user && this.server.sockets[socketId].user.id == user_id){
+  //       return socketId;
+  //     }
+  //   }
+  // }
 }

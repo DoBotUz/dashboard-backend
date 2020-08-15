@@ -6,7 +6,6 @@ import {
   OnGatewayDisconnect,
   OnGatewayConnection,
 } from '@nestjs/websockets';
-
 import { Server, Socket } from 'socket.io';
 import { UseGuards, Logger, ValidationPipe, UsePipes, UseFilters } from '@nestjs/common';
 import { LocalhostGuard } from 'src/common/guards/localhost.guard';
@@ -59,7 +58,7 @@ export class BotsGateway implements OnGatewayConnection, OnGatewayDisconnect{
     }
   ))
   async handleNewNotification(@MessageBody() data: NewNotificationDto): Promise<void> {
-    this.notificationsService.notify(data.bot_id, data.notification.key, data.notification.key_id);
+    this.notificationsService.notify(data.org_id, data.notification.key, data.notification.key_id);
   }
 
   handleDisconnect(client: Socket) {

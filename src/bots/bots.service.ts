@@ -9,8 +9,8 @@ export class BotsService {
   constructor(
     @InjectRepository(Bot)
     private botsRepository: Repository<Bot>,
-  ) {}
-  
+  ) { }
+
   async createNew(data: any): Promise<Bot> {
     data.status = STATUSES.ACTIVE;
     const bot = new Bot();
@@ -46,7 +46,7 @@ export class BotsService {
 
   async findBotOwner(id: number): Promise<User> {
     const model = await this.botsRepository.createQueryBuilder('bot').where("bot.id = :id", { id }).innerJoinAndSelect("bot.organization", "organization").innerJoinAndSelect("organization.user", "user")
-    .getOne();
+      .getOne();
 
     if (!model) {
       throw new BadRequestException('Forbidden');

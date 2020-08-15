@@ -18,10 +18,16 @@ export class WsJwtGuard implements CanActivate {
     try {
       const client: Socket = context.switchToWs().getClient<Socket>();
       const authToken: string = client.handshake?.query?.authorization;
+      const organizationId: Number = client.handshake?.query?.organizationId;
       const bearerToken = authToken.split(' ')[1];
       const decoded = jwt.verify(bearerToken, jwtConstants.secret) as any;
       const user: User = await this.userService.findOneByEmail(decoded.email);
-      client.join(`user_id_${user?.id}`);
+
+      if (!user.organizations.find(org => org.id == organizationId)) {
+        return false;
+      }
+
+      client.join(`org_id_${organizationId}`);
       context.switchToHttp().getRequest().user = user
 
       return Boolean(user);
