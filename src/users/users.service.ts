@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Not } from 'typeorm';
 import { User, STATUSES } from './user.entity';
+import { STATUSES as NOTIFICATION_STATUSES } from 'src/notifications/notification.entity';
 import { hash as bcryptHash, compare as bcryptCompare } from 'bcrypt';
 
 @Injectable()
@@ -20,11 +21,8 @@ export class UsersService {
   }
   
   async findOne(id: number): Promise<User> {
-    return await this.usersRepository.findOne({
-      where: {
-        id,
-      },
-    });
+    return await this.usersRepository.createQueryBuilder("user").where("user.id = :id", { id }).leftJoinAndSelect("user.notifications", "notification", "notification.status != :status", { status: NOTIFICATION_STATUSES.READ }).leftJoinAndSelect("user.organizations", "organizations").leftJoinAndSelect("organizations.bot", "bot")
+    .getOne();
   }
 
   async findOneByEmail(email: string): Promise<User> {

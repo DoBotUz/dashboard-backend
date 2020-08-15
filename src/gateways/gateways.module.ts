@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
-import { BotsModule } from './bots/bots.module';
+import { BotsGatewayModule } from './bots/bots-gateway.module';
+import { FrontendModule } from './frontend/frontend.module';
 
 @Module({
-  imports: [BotsModule],
+  imports: [BotsGatewayModule, FrontendModule],
 })
 export class GatewaysModule {}

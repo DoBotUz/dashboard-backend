@@ -27,7 +27,19 @@ export class BotsService {
 
   async updateOne(id: number, data: any): Promise<Bot> {
     const model = await this.findOne(id);
-    Object.assign(model, data);
-    return await this.botsRepository.save(model);
+    if (model) {
+      Object.assign(model, data);
+      return await this.botsRepository.save(model);
+    }
+  }
+
+  async setIsOnline(id: number, flag: boolean): Promise<Bot> {
+    const model = await this.findOne(id);
+    if (model) {
+      Object.assign(model, {
+        is_online: flag,
+      });
+      return await this.botsRepository.save(model);
+    }
   }
 }

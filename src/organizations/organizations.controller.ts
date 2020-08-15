@@ -95,6 +95,7 @@ export class OrganizationsController  implements CrudController<Organization> {
           console.log(res);
       });
     }
+    console.log(data);
     data.userId = user.id;
     const org = await this.organizationsService.createNew(data);
     if (uploadedFiles && uploadedFiles.files && uploadedFiles.files.length) {
