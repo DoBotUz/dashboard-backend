@@ -108,11 +108,15 @@ export class UsersService {
 
   async findUsersOfOrganization(org_id: number): Promise<User[]> {
     return this.usersRepository.find({
+      join: {
+        alias: 'user',
+        leftJoinAndSelect: {
+          organizations: 'user.organizations'
+        }
+      },
       where: {
         organizations: {
-          $in: {
-            id: [org_id]
-          }
+          id: In([org_id])
         }
       }
     })
