@@ -42,8 +42,6 @@ export class FrontendGateway implements OnGatewayConnection, OnGatewayDisconnect
     const decoded = jwt.verify(bearerToken, jwtConstants.secret) as any;
     const user: User = await this.userService.findOneByEmail(decoded.email);
 
-    console.log(user, organizationId)
-
     if (!user || !user.organizations.find(org => org.id == organizationId)) {
       return client.disconnect();
     }
