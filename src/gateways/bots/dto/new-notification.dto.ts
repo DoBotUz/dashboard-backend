@@ -19,7 +19,7 @@ export class NewNotificationDto {
   @IsNotEmpty()
   @Transform((value) => Number(value))
   @Validate(IsBotExists)
-  bot_id: number;
+  org_id: number;
 
   @IsNotEmpty()
   @Validate(AreValidKeys)

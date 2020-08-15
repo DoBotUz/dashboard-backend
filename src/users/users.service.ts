@@ -105,5 +105,17 @@ export class UsersService {
       }
     })
   }
+
+  async findUsersOfOrganization(org_id: number): Promise<User[]> {
+    return this.usersRepository.find({
+      where: {
+        organizations: {
+          $in: {
+            id: [org_id]
+          }
+        }
+      }
+    })
+  }
   
 }

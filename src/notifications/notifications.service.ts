@@ -7,6 +7,7 @@ import { BotUsersService } from 'src/bot-users/bot-users.service';
 import { FeedbacksService } from 'src/feedbacks/feedbacks.service';
 import { BotsService } from 'src/bots/bots.service';
 import { FrontendGateway } from 'src/gateways/frontend/frontend.gateway';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class NotificationsService {
@@ -19,6 +20,7 @@ export class NotificationsService {
     private botUsersService: BotUsersService,
     private feedbacksService: FeedbacksService,
     private frontendGateway: FrontendGateway,
+    private usersService: UsersService,
   ) {}
 
   async readAll(userId: number): Promise<boolean> {
@@ -51,16 +53,21 @@ export class NotificationsService {
     }
   }
 
-  async notify(bot_id: number, key: number, key_id: number): Promise<any> {
-    const botOwner = await this.botsService.findBotOwner(bot_id);
-    const model = new Notification();
-    model.status = STATUSES.PENDING;
-    model.type = TYPES.INFO;
-    model.key = key;
-    model.key_id = key_id;
-    model.userId = botOwner.id;
+  async notify(org_id: number, key: number, key_id: number): Promise<any> {
+    const usersAndEmployees = await this.usersService.findUsersOfOrganization(org_id);
 
-    this.frontendGateway.notifyUser(botOwner.id, await this.notificationsRepository.save(model));
+    let notification = {
+      status: STATUSES.PENDING,
+      type: TYPES.INFO,
+      key: key,
+      key_id: key_id,
+    }
+    await this.notificationsRepository.insert(usersAndEmployees.map(uae => ({
+      ...notification,
+      userId: uae.id
+    })));
+
+    this.frontendGateway.notifyUsers(org_id, notification);
     return true;
   }
 }
