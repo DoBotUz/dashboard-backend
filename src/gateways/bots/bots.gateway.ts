@@ -3,23 +3,27 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsResponse,
   OnGatewayDisconnect,
   OnGatewayConnection,
 } from '@nestjs/websockets';
-import { OrdersService } from 'src/orders/orders.service';
 
 import { Server, Socket } from 'socket.io';
-import { UseGuards, Logger } from '@nestjs/common';
+import { UseGuards, Logger, ValidationPipe, UsePipes, UseFilters } from '@nestjs/common';
 import { LocalhostGuard } from 'src/common/guards/localhost.guard';
 import { BotsService } from 'src/bots/bots.service';
+import { ValidationError } from 'class-validator';
+import { ValidationException } from 'src/validation-exception';
+import { NewNotificationDto } from './dto/new-notification.dto';
+import AllWsExceptionsFilter from 'src/all-ws-exceptions.filter';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @UseGuards(LocalhostGuard)
+@UseFilters(new AllWsExceptionsFilter())
 @WebSocketGateway(3000, { namespace: 'bots' })
 export class BotsGateway implements OnGatewayConnection, OnGatewayDisconnect{
   constructor(
-    private ordersService: OrdersService,
     private botsService: BotsService,
+    private notificationsService: NotificationsService,
   ) {}
 
   @WebSocketServer()
@@ -44,20 +48,25 @@ export class BotsGateway implements OnGatewayConnection, OnGatewayDisconnect{
     this.botsService.setIsOnline(bot_id, false);
   }
 
-  @SubscribeMessage('newOrder')
-  async handleNewOrder(@MessageBody() data: string): Promise<void> {
-    const order_id = Number(data);
-    const order = await this.ordersService.findOne(order_id);
-    if (!order) {
-      return;
+  @SubscribeMessage('newNotification')
+  @UsePipes(new ValidationPipe(
+    {
+      transform: true,
+      whitelist: true,
+      exceptionFactory: (validationErrors: ValidationError[] = []) => {
+         return new ValidationException(validationErrors);
+       }
     }
+  ))
+  async handleNewNotification(@MessageBody() data: NewNotificationDto): Promise<void> {
+    this.notificationsService.notify(data.bot_id, data.notification.key, data.notification.key_id);
   }
 
   handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnected: ${client.id}`);
-   }
+  }
   
-   handleConnection(client: any, ...args: any[]) {
+  handleConnection(client: any, ...args: any[]) {
     this.logger.log(`Client connected: ${client.id}`);
-   }
+  }
 }

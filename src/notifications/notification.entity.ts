@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToOne, OneToMany, } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, } from 'typeorm';
 import { User } from 'src/users/user.entity';
 
 
@@ -7,6 +7,11 @@ export const KEYS = {
   NEW_FEEDBACK: 2,
   NEW_MESSAGE: 3,
   NEW_BOT_USER: 4,
+};
+
+export const TYPES = {
+  INFO: 1,
+  WARNING: 2,
 };
 
 export const STATUSES = {
@@ -20,11 +25,8 @@ export class Notification {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', { 'length': 255 })
-  title: string;
-
-  @Column('varchar', { 'length': 1024 })
-  description: string;
+  @Column('varchar', { length: 1024, nullable: true })
+  comment: string;
 
   @Column({
     type: 'enum',
@@ -41,6 +43,12 @@ export class Notification {
     default: STATUSES.PENDING
   })
   status: number;
+
+  @Column({
+    type: 'enum',
+    enum: Object.values(TYPES),
+  })
+  type: number;
 
   @CreateDateColumn({ name: 'created_at', readonly: true })
   created_at: Date;

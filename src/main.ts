@@ -9,6 +9,7 @@ import { JSendResInterceptor } from './jsend-res.interceptor';
 import { ValidationException } from './validation-exception';
 import { ValidationExceptionFilter } from './validation-exception.filter';
 import { join } from 'path';
+import AllWsExceptionsFilter from './all-ws-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -34,6 +35,7 @@ async function bootstrap() {
   ));
 
   app.useGlobalFilters(new AllExceptionsFilter());
+  app.useGlobalFilters(new AllWsExceptionsFilter());
   app.useGlobalFilters(new ValidationExceptionFilter());
   app.useGlobalInterceptors(new JSendResInterceptor());
   app.enableCors();

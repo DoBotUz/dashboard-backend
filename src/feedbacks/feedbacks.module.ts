@@ -9,6 +9,7 @@ import { FeedbacksCrudService } from './feedbacks-crud.service';
 @Module({
   imports: [TypeOrmModule.forFeature([Feedback])],
   providers: [FeedbacksCrudService, FeedbacksService, isFeedbackExists],
-  controllers: [FeedbacksController]
+  controllers: [FeedbacksController],
+  exports: [FeedbacksService],
 })
 export class FeedbacksModule {}

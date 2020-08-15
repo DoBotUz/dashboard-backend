@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Bot, STATUSES } from './bot.entity';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class BotsService {
@@ -41,5 +42,16 @@ export class BotsService {
       });
       return await this.botsRepository.save(model);
     }
+  }
+
+  async findBotOwner(id: number): Promise<User> {
+    const model = await this.botsRepository.createQueryBuilder('bot').where("bot.id = :id", { id }).innerJoinAndSelect("bot.organization", "organization").innerJoinAndSelect("organization.user", "user")
+    .getOne();
+
+    if (!model) {
+      throw new BadRequestException('Forbidden');
+    }
+
+    return model.organization.user;
   }
 }
