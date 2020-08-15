@@ -3,8 +3,8 @@ import { Injectable, CanActivate, ExecutionContext } from "@nestjs/common";
 @Injectable()
 export class LocalhostGuard implements CanActivate {
   async canActivate(ctx: ExecutionContext): Promise<boolean> {
-    const request = ctx.switchToHttp().getRequest();
+    const socket = ctx.switchToWs().getClient();
     
-    return request.ip === '::1';
+    return socket.handshake.address === '::ffff:127.0.0.1';
   }
 }
