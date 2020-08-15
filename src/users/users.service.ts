@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Not } from 'typeorm';
+import { Repository, Not, In } from 'typeorm';
 import { User, STATUSES } from './user.entity';
 import { STATUSES as NOTIFICATION_STATUSES } from 'src/notifications/notification.entity';
 import { hash as bcryptHash, compare as bcryptCompare } from 'bcrypt';
