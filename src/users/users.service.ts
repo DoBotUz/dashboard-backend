@@ -30,6 +30,12 @@ export class UsersService {
       where: {
         email,
       },
+      join: {
+        alias: 'user',
+        leftJoinAndSelect: {
+          organizations: 'user.organizations'
+        }
+      }
     });
   }
 
