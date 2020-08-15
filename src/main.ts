@@ -35,7 +35,6 @@ async function bootstrap() {
   ));
 
   app.useGlobalFilters(new AllExceptionsFilter());
-  app.useGlobalFilters(new AllWsExceptionsFilter());
   app.useGlobalFilters(new ValidationExceptionFilter());
   app.useGlobalInterceptors(new JSendResInterceptor());
   app.enableCors();

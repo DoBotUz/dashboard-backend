@@ -11,7 +11,7 @@ import { WsJwtGuard } from 'src/common/guards/wsjwt.guard';
 import { Notification } from 'src/notifications/notification.entity';
 
 @UseGuards(WsJwtGuard)
-@WebSocketGateway(3000, { namespace: 'frontend' })
+@WebSocketGateway({ namespace: 'frontend' })
 export class FrontendGateway implements OnGatewayConnection, OnGatewayDisconnect{
 
   @WebSocketServer()

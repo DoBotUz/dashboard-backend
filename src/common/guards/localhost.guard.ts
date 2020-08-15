@@ -1,11 +1,10 @@
-import { Injectable, CanActivate, ExecutionContext, Scope } from "@nestjs/common";
+import { Injectable, CanActivate, ExecutionContext } from "@nestjs/common";
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class LocalhostGuard implements CanActivate {
   async canActivate(ctx: ExecutionContext): Promise<boolean> {
-    const request = ctx.switchToHttp().getRequest()
-    console.log(request);
-
-    return false;
+    const request = ctx.switchToHttp().getRequest();
+    
+    return request.ip === '::1';
   }
 }

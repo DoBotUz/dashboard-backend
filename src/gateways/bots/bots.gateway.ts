@@ -19,7 +19,7 @@ import { NotificationsService } from 'src/notifications/notifications.service';
 
 @UseGuards(LocalhostGuard)
 @UseFilters(new AllWsExceptionsFilter())
-@WebSocketGateway(3000, { namespace: 'bots' })
+@WebSocketGateway({ namespace: 'bots' })
 export class BotsGateway implements OnGatewayConnection, OnGatewayDisconnect{
   constructor(
     private botsService: BotsService,

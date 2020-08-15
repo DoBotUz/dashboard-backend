@@ -5,6 +5,7 @@ import { AuthService } from './auth/auth.service';
 import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
 import { UsersService } from './users/users.service';
 import { UniqueEmail } from 'src/users/validators';
+import { LocalhostGuard } from './common/guards/localhost.guard';
 
 class LoginResDto {
   @IsNotEmpty()
@@ -79,6 +80,7 @@ export class AppController {
     return await this.usersService.isEmailUnique(email);
   }
 
+  @UseGuards(LocalhostGuard)
   @Get()
   index(): string {
     return "Hello world";
