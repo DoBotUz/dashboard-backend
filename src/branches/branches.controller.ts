@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Param, Post, Get, Body, BadRequestException, } from '@nestjs/common';
+import { Controller, UseGuards, Param, Post, Get, Body, BadRequestException, UploadedFile, UseInterceptors, } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController, CrudAuth, Override } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -11,6 +11,12 @@ import { UserD } from 'src/auth/user.decorator';
 import { User } from 'src/users/user.entity';
 import { OrganizationGuard } from '../common/guards/OrganizationsGuard';
 import { UsersService } from 'src/users/users.service';
+import { FilesService } from 'src/files/files.service';
+import { File, KEYS as FILE_KEYS } from 'src/files/file.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
+import { diskStorage } from 'multer';
+
 
 @Crud({
   model: {
@@ -50,6 +56,7 @@ export class BranchesController implements CrudController<Branch> {
     public service: BranchesCrudService,
     private branchesService: BranchesService,
     private usersService: UsersService,
+    private filesService: FilesService,
   ) {}
 
   @Override()
@@ -66,6 +73,40 @@ export class BranchesController implements CrudController<Branch> {
 
     const { id, ...data } = updateBranchDto;
     return this.branchesService.updateOne(id, data);
+  }
+
+  @Get(':id/files')
+  async getFiles(@UserD() user, @Param('id') id): Promise<File[]> {
+    await this.validateCall(user, id);
+    return this.filesService.findFilesByKeyAndId(FILE_KEYS.BRANCH, id);
+  }
+
+  
+  @Post(":id/add-file")
+  @ApiOkResponse({
+    description: 'Add file to file list',
+    type: Boolean
+  })
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: 'tmp/uploads',
+      filename: editFileName,
+    }),
+    fileFilter: imageFileFilter,
+  }))
+  async addFile(@Param("id") id, @UploadedFile() file): Promise<boolean> {
+    this.filesService.uploadImagesFor('BRANCH', id, [file]);
+    return true;
+  }
+
+  @Post(":id/remove-file")
+  @ApiOkResponse({
+    description: 'Remove file from list',
+    type: Boolean
+  })
+  async removeFile(@Param("id") id): Promise<boolean> {
+    this.filesService.remove(id);
+    return true;
   }
 
   private async validateCall(user, id){

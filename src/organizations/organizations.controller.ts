@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import { Controller, UseGuards, Body, UseInterceptors, UploadedFile, UploadedFiles, ValidationPipe, UsePipes, BadRequestException } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Controller, UseGuards, Body, UseInterceptors, UploadedFile, UploadedFiles, ValidationPipe, UsePipes, BadRequestException, Get, Param, Post } from '@nestjs/common';
+import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
 import { Crud, CrudController, Override, CrudAuth } from "@nestjsx/crud";
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
@@ -15,10 +15,12 @@ import { BotsGateway } from 'src/gateways/bots/bots.gateway';
 import { Organization } from './organization.entity';
 import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
 import { FilesService } from 'src/files/files.service';
+import { File, KEYS as FILE_KEYS } from 'src/files/file.entity';
 import { User } from 'src/users/user.entity';
 import { ValidationError } from 'class-validator';
 import { ValidationException } from 'src/validation-exception';
 import { UsersService } from 'src/users/users.service';
+
 
 @Crud({
   model: {
@@ -34,7 +36,7 @@ import { UsersService } from 'src/users/users.service';
       },
       user: {
         eager: true,
-      }
+      },
     },
   },
 })
@@ -122,11 +124,7 @@ export class OrganizationsController  implements CrudController<Organization> {
   }))
   async updateOne(@UserD() user, @Body() updateOrganizationDTO: UpdateOrganizationDTO, @UploadedFile() thumbnail): Promise<any> {
     const { id, ...data } = updateOrganizationDTO;
-    const userEntity = await this.usersService.findOneWithOrganizations(user.id);
-
-    if(!userEntity.organizations.some(org => org.id == id)) {
-      throw new BadRequestException('Wrong input');
-    }
+    await this.validateCall(user, id);
 
     if (thumbnail) {
       data.thumbnail = thumbnail.filename;
@@ -136,5 +134,47 @@ export class OrganizationsController  implements CrudController<Organization> {
     delete data.bot.id;
     this.botsService.updateOne(bot_id, data.bot);
     return model;
+  }
+
+  @Get(':id/files')
+  async getFiles(@UserD() user, @Param('id') id): Promise<File[]> {
+    await this.validateCall(user, id);
+    return this.filesService.findFilesByKeyAndId(FILE_KEYS.ORGANIZATION, id);
+  }
+
+  @Post(":id/add-file")
+  @ApiOkResponse({
+    description: 'Add file to file list',
+    type: Boolean
+  })
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({
+      destination: 'tmp/uploads',
+      filename: editFileName,
+    }),
+    fileFilter: imageFileFilter,
+  }))
+  async addFile(@Param("id") id, @UploadedFile() file): Promise<boolean> {
+    this.filesService.uploadImagesFor('ORGANIZATION', id, [file]);
+    return true;
+  }
+
+  @Post(":id/remove-file")
+  @ApiOkResponse({
+    description: 'Remove file from list',
+    type: Boolean
+  })
+  async removeFile(@Param("id") id): Promise<boolean> {
+    this.filesService.remove(id);
+    return true;
+  }
+
+
+  private async validateCall(user: User, id: number){
+    const userEntity = await this.usersService.findOneWithOrganizations(user.id);
+
+    if(!userEntity.organizations.some(org => org.id == id)) {
+      throw new BadRequestException('Wrong input');
+    }
   }
 }

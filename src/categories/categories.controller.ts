@@ -11,6 +11,7 @@ import { CreateCategoryDto, UpdateCategoryDto } from './dto';
 import { Category } from './category.entity';
 import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
 import { FilesService } from 'src/files/files.service';
+import { File, KEYS as FILE_KEYS } from 'src/files/file.entity';
 import { CategoriesCrudService } from './categories-crud.service';
 import { User } from 'src/users/user.entity';
 import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
@@ -125,6 +126,12 @@ export class CategoriesController implements CrudController<Category> {
       data.thumbnail = thumbnail.filename;
     }
     return this.categoriesService.updateOne(id, data);
+  }
+
+  @Get(':id/files')
+  async getFiles(@UserD() user, @Param('id') id): Promise<File[]> {
+    await this.validateCall(user, id);
+    return this.filesService.findFilesByKeyAndId(FILE_KEYS.CATEGORY, id);
   }
 
   @Post(":id/add-file")

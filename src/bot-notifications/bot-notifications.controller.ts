@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { Controller, UseGuards, Param, Post, Body, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
+import { Controller, UseGuards, Param, Post, Body, UseInterceptors, UploadedFile, UploadedFiles, Get } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController, CrudAuth, } from '@nestjsx/crud';
 import { FileInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express";
@@ -12,6 +12,7 @@ import { CreateBotNotificationTemplateDto, UpdateBotNotificationTemplateDto, Cre
 import { BotNotification } from './bot-notification.entity';
 import { BotNotificationTemplate } from './bot-notification-template.entity';
 import { FilesService } from 'src/files/files.service';
+import { File, KEYS as FILE_KEYS } from 'src/files/file.entity';
 import { BotUsersService } from 'src/bot-users/bot-users.service';
 import { BotNotificationsCrudService } from './bot-notifications-crud.service';
 import { User } from 'src/users/user.entity';
@@ -168,6 +169,12 @@ export class BotNotificationsController implements CrudController<BotNotificatio
     })
     this.botNotificationsService.setNotificationBotUsers(model.id, bot_user_ids);
     return this.botNotificationsService.findOne(model.id);
+  }
+
+  @Get(':id/files')
+  async getFiles(@UserD() user, @Param('id') id): Promise<File[]> {
+    // await this.validateCall(user, id);
+    return this.filesService.findFilesByKeyAndId(FILE_KEYS.NOTIFICATION_TEMPLATE, id);
   }
 
   @Post(":id/add-file")

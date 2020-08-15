@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { Controller, UseGuards, Param, Post, Body, UseInterceptors, UploadedFile, UploadedFiles, BadRequestException } from '@nestjs/common';
+import { Controller, UseGuards, Param, Post, Body, UseInterceptors, UploadedFile, UploadedFiles, BadRequestException, Get } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController, Override, CrudAuth, } from '@nestjsx/crud';
 import { FileInterceptor, FileFieldsInterceptor } from '@nestjs/platform-express';
@@ -11,6 +11,7 @@ import { ItemsService } from './items.service';
 import { CreateItemDto, UpdateItemDto } from './dto';
 import { Item } from './item.entity';
 import { FilesService } from 'src/files/files.service';
+import { File, KEYS as FILE_KEYS } from 'src/files/file.entity';
 import { ItemsCrudService } from './items-crud.service';
 import { User } from 'src/users/user.entity';
 import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
@@ -111,6 +112,12 @@ export class ItemsController implements CrudController<Item> {
       data.thumbnail = thumbnail.filename;
     }
     return this.itemsService.updateOne(id, data);
+  }
+
+  @Get(':id/files')
+  async getFiles(@UserD() user, @Param('id') id): Promise<File[]> {
+    await this.validateCall(user, id);
+    return this.filesService.findFilesByKeyAndId(FILE_KEYS.ITEM, id);
   }
 
   @Post(':id/add-file')

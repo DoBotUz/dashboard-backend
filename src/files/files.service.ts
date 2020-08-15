@@ -32,6 +32,15 @@ export class FilesService {
     }
   }
 
+  async findFilesByKeyAndId(key: number, key_id: number): Promise<File[]> {
+    return this.filesRepository.find({
+      where: {
+        key,
+        key_id
+      }
+    })
+  }
+
   async removeImageFor(key: string, key_id: number): Promise<void> {
     const model = await this.filesRepository.findOne({
       where: {
