@@ -1,6 +1,6 @@
-import { Controller, UseGuards, Body, BadRequestException, } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { Crud, CrudController, CrudAuth, Override } from "@nestjsx/crud";
+import { Controller, UseGuards, Body, BadRequestException, Post, } from '@nestjs/common';
+import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
+import { Crud, CrudController, CrudAuth } from "@nestjsx/crud";
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 import { OrdersService } from './orders.service';
@@ -16,7 +16,7 @@ import { UserD } from 'src/auth/user.decorator';
     type: Order
   },
   routes: {
-    only: ['getManyBase', 'getOneBase', 'updateOneBase'],
+    only: ['getManyBase', 'getOneBase',],
   },
   query: {
     join: {
@@ -55,7 +55,11 @@ export class OrdersController implements CrudController<Order> {
   ) {}
 
   
-  @Override()
+  @Post("/update")
+  @ApiOkResponse({
+    description: 'Updates one order',
+    type: Order
+  })
   async updateOne(@UserD() user, @Body() updateOrderDTO: UpdateOrderDto): Promise<Order> {
     const order = await this.ordersService.findOne(updateOrderDTO.id);
     await this.validateCall(user, order.organizationId);

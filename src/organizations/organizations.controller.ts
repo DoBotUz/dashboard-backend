@@ -27,7 +27,7 @@ import { UsersService } from 'src/users/users.service';
     type: Organization
   },
   routes: {
-    only: ['getManyBase', 'getOneBase', 'updateOneBase', 'createOneBase'],
+    only: ['getManyBase', 'getOneBase', 'createOneBase'],
   },
   query: {
     join: {
@@ -117,7 +117,11 @@ export class OrganizationsController  implements CrudController<Organization> {
     };
   }
 
-  @Override()
+  @Post("/update")
+  @ApiOkResponse({
+    description: 'Updates one organization',
+    type: Organization
+  })
   @UseInterceptors(FileInterceptor('thumbnail', {
     storage: diskStorage({
       destination: 'uploads/organizations/',
@@ -126,16 +130,18 @@ export class OrganizationsController  implements CrudController<Organization> {
     fileFilter: imageFileFilter,
   }))
   async updateOne(@UserD() user, @Body() updateOrganizationDTO: UpdateOrganizationDTO, @UploadedFile() thumbnail): Promise<any> {
-    const { id, ...data } = updateOrganizationDTO;
+    const { id, bot, ...data } = updateOrganizationDTO;
     await this.validateCall(user, id);
 
     if (thumbnail) {
       data.thumbnail = thumbnail.filename;
     }
+    
     const model = await this.organizationsService.updateOne(id, data);
-    const bot_id = data.bot.id;
-    delete data.bot.id;
-    this.botsService.updateOne(bot_id, data.bot);
+    const bot_id = bot.id;
+    delete bot.id;
+    this.botsService.updateOne(bot_id, bot);
+    model.bot.token = bot.token;
     return model;
   }
 

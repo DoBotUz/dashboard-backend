@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Body, ValidationPipe, UsePipes, BadRequestException } from '@nestjs/common';
+import { Controller, UseGuards, Body, ValidationPipe, UsePipes, BadRequestException, Post } from '@nestjs/common';
 import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
 import { Crud, CrudController, Override, CrudAuth } from "@nestjsx/crud";
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -19,7 +19,7 @@ import { UsersService } from 'src/users/users.service';
     type: Promocode
   },
   routes: {
-    only: ['getManyBase', 'getOneBase', 'updateOneBase', 'createOneBase'],
+    only: ['getManyBase', 'getOneBase', 'createOneBase'],
   },
   query: {
     join: {
@@ -59,7 +59,11 @@ export class PromocodesController  implements CrudController<Promocode> {
     return this.promocodesService.createNew(data);
   }
 
-  @Override()
+  @Post("/update")
+  @ApiOkResponse({
+    description: 'Updates one promocode',
+    type: Promocode
+  })
   async updateOne(@UserD() user, @Body() updatePromocodeDto: UpdatePromocodeDto,): Promise<Promocode> {
     const { id, ...data } = updatePromocodeDto;
     return this.promocodesService.updateOne(id, data);

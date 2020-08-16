@@ -23,7 +23,7 @@ import { UsersService } from 'src/users/users.service';
     type: Item
   },
   routes: {
-    only: ['getManyBase', 'getOneBase', 'createOneBase', 'updateOneBase'],
+    only: ['getManyBase', 'getOneBase', 'createOneBase'],
   },
   query: {
     join: {
@@ -95,7 +95,11 @@ export class ItemsController implements CrudController<Item> {
     return model;
   }
 
-  @Override()
+  @Post("/update")
+  @ApiOkResponse({
+    description: 'Updates one item',
+    type: Item
+  })
   @UseInterceptors(FileInterceptor('thumbnail', {
     storage: diskStorage({
       destination: 'uploads/items/',

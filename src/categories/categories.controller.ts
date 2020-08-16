@@ -23,7 +23,7 @@ import { UsersService } from 'src/users/users.service';
     type: Category
   },
   routes: {
-    only: ['getManyBase', 'getOneBase', 'createOneBase', 'updateOneBase'],
+    only: ['getManyBase', 'getOneBase', 'createOneBase'],
   },
   query: {
     join: {
@@ -104,7 +104,11 @@ export class CategoriesController implements CrudController<Category> {
     return model;
   }
 
-  @Override()
+  @Post("/update")
+  @ApiOkResponse({
+    description: 'Updates one category',
+    type: Category
+  })
   @UseInterceptors(FileInterceptor('thumbnail', {
     storage: diskStorage({
       destination: 'uploads/categories/',

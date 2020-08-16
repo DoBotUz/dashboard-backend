@@ -23,7 +23,7 @@ import { diskStorage } from 'multer';
     type: Branch
   },
   routes: {
-    only: ['getManyBase', 'getOneBase', 'createOneBase', 'updateOneBase'],
+    only: ['getManyBase', 'getOneBase', 'createOneBase'],
   },
   query: {
     join: {
@@ -66,7 +66,11 @@ export class BranchesController implements CrudController<Branch> {
     return this.branchesService.createNew(data);
   }
 
-  @Override()
+  @Post("/update")
+  @ApiOkResponse({
+    description: 'Updates one branch',
+    type: Branch
+  })
   async updateOne(@UserD() user, @Body() updateBranchDto: UpdateBranchDto): Promise<Branch> {
     const model = await this.branchesService.findOne(updateBranchDto.id);
     await this.validateCall(user, model.organizationId);
