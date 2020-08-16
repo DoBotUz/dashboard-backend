@@ -55,13 +55,14 @@ export class PromocodesController  implements CrudController<Promocode> {
   ) {}
   
   @Override()
-  async createOne(@UserD() user, @Body() data: CreatePromocodeDto): Promise<any> {
-    return;
+  async createOne(@UserD() user, @Body() data: CreatePromocodeDto): Promise<Promocode> {
+    return this.promocodesService.createNew(data);
   }
 
   @Override()
-  async updateOne(@UserD() user, @Body() updateOrganizationDTO: UpdatePromocodeDto,): Promise<any> {
-    return;
+  async updateOne(@UserD() user, @Body() updatePromocodeDto: UpdatePromocodeDto,): Promise<Promocode> {
+    const { id, ...data } = updatePromocodeDto;
+    return this.promocodesService.updateOne(id, data);
   }
 
   private async validateCall(user: User, id: number){
