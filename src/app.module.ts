@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MulterModule } from "@nestjs/platform-express";
+import { MailerModule } from '@nestjs-modules/mailer';
+import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -20,18 +23,42 @@ import { SubscriptionPlansModule } from './subscription-plans/subscription-plans
 import { GatewaysModule } from './gateways/gateways.module';
 import { NotificationsModule } from './notifications/notifications.module';
 
+
 @Module({
   imports: [
+    ConfigModule.forRoot(),
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.MAIL_HOST,
+        port: process.env.MAIL_PORT,
+        ignoreTLS: true,
+        secure: false,
+        auth: {
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASS,
+        },
+      },
+      defaults: {
+        from: process.env.MAIL_USER,
+      },
+      template: {
+        dir: './templates',
+        adapter: new PugAdapter(),
+        options: {
+          strict: true,
+        },
+      },
+    }),
     MulterModule.register({
       dest: './uploads',
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'dobot',
-      password: '04aOnb4yWUtRavTb',
-      database: 'dobot',
+      host: process.env.DATABASE_HOST,
+      port: Number(process.env.DATABASE_PORT),
+      username: process.env.DATABASE_USER,
+      password: process.env.DATABASE_PASSWORD,
+      database: process.env.DATABASE_NAME,
       entities: [],
       synchronize: true,
       autoLoadEntities: true,

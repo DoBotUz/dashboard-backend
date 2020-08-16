@@ -6,6 +6,7 @@ import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
 import { UsersService } from './users/users.service';
 import { UniqueEmail } from 'src/users/validators';
 import { LocalhostGuard } from './common/guards/localhost.guard';
+import { MailerService } from '@nestjs-modules/mailer';
 
 class LoginResDto {
   @IsNotEmpty()
@@ -48,6 +49,8 @@ export class AppController {
   constructor(
     private authService: AuthService,
     private usersService: UsersService,
+    private readonly mailerService: MailerService
+
   ) {}
 
   @UseGuards(LocalAuthGuard)
@@ -80,9 +83,26 @@ export class AppController {
     return await this.usersService.isEmailUnique(email);
   }
 
-  @UseGuards(LocalhostGuard)
   @Get()
   index(): string {
+    this
+    .mailerService
+    .sendMail({
+      to: 'zealotrahl@gmail.com',
+      from: 'dobot-info@yandex.ru',
+      subject: 'Testing Nest Mailermodule with template ✔',
+      template: 'welcome', // The `.pug`, `.ejs` or `.hbs` extension is appended automatically.
+      context: {  // Data to be sent to template engine.
+        name: '123',
+      },
+    })
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
     return "Hello world";
   }
 }
