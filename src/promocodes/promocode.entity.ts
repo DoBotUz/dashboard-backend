@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { Organization } from 'src/organizations/organization.entity';
+import { Order } from 'src/orders/order.entity';
 
 export const STATUSES = {
   ACTIVE: 10,
@@ -7,6 +8,10 @@ export const STATUSES = {
   MODERATION: 9,
   DELETED: 0,
 };
+
+export const TYPES = {
+  PERCENT: 10,
+}
 
 @Entity()
 export class Promocode {
@@ -32,6 +37,16 @@ export class Promocode {
   })
   status: number;
 
+  @Column({
+    type: 'enum',
+    enum: Object.values(TYPES),
+    default: TYPES.PERCENT
+  })
+  type: number;
+
+  @Column('double', { nullable: true })
+  discount: number;
+
   @CreateDateColumn({ name: 'created_at', readonly: true })
   created_at: Date;
 
@@ -46,4 +61,7 @@ export class Promocode {
 
   @Column('int')
   organizationId: number;
+
+  @OneToMany(type => Order, order => order.promocode)
+  orders: Order[];
 }

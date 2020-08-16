@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Post } from '@nestjs/common';
+import { Controller, UseGuards, Post, Param } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 import { NotificationsService } from './notifications.service';
@@ -13,8 +13,14 @@ export class NotificationsController {
   ) {}
 
   @Post('/read-all')
-  async updateOne(@UserD() user): Promise<boolean> {
+  async readAll(@UserD() user): Promise<boolean> {
     this.notificationsService.readAll(user.id);
+    return true;
+  }
+
+  @Post('/:id/read')
+  async readOne(@Param('id') id, @UserD() user): Promise<boolean> {
+    this.notificationsService.readOne(id);
     return true;
   }
 }

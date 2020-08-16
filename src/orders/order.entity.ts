@@ -4,6 +4,7 @@ import { Organization } from 'src/organizations/organization.entity';
 import { Branch } from 'src/branches/branch.entity';
 import { Item } from 'src/items/item.entity';
 import { OrderItem } from './order-item';
+import { Promocode } from 'src/promocodes/promocode.entity';
 
 
 export const STATUSES = {
@@ -95,6 +96,12 @@ export class Order {
 
   @Column('int')
   branchId: number;
+
+  @ManyToOne(type => Promocode, promocode => promocode.orders)
+  promocode: Promocode;
+
+  @Column('int', { nullable: true })
+  promocodeId: number;
   
   @OneToMany(type => OrderItem, orderItem => orderItem.order)
   order_items: OrderItem[];

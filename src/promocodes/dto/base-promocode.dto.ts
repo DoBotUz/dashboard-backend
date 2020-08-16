@@ -1,5 +1,5 @@
-import { IsNotEmpty, Length, Validate, IsString, IsInt, IsIn, IsOptional, Min } from 'class-validator';
-import { STATUSES } from '../promocode.entity';
+import { IsNotEmpty, Length, Validate, IsString, IsInt, IsIn, IsOptional, Min, IsNumber, ValidateIf } from 'class-validator';
+import { STATUSES, TYPES } from '../promocode.entity';
 import { Transform } from 'class-transformer';
 import { IsOrganizationExists } from 'src/organizations/validators';
 
@@ -38,4 +38,20 @@ export class BasePromocodeDto {
   @IsInt()
   @IsIn(Object.values(STATUSES))
   status: number;
+
+  @IsOptional()
+  @Transform((value) => {
+    return Number(value)
+  })
+  @IsInt()
+  @IsIn(Object.values(TYPES))
+  type: number;
+
+  @ValidateIf(o => o.type === TYPES.PERCENT)
+  @IsNotEmpty()
+  @Transform((value) => {
+    return Number(value)
+  })
+  @IsNumber()
+  discount: number;
 }

@@ -22,6 +22,10 @@ export class NotificationsService {
     private frontendGateway: FrontendGateway,
     private usersService: UsersService,
   ) {}
+  
+  async findOne(id: number): Promise<Notification> {
+    return this.notificationsRepository.findOne(id);
+  }
 
   async readAll(userId: number): Promise<boolean> {
     this.notificationsRepository.createQueryBuilder()
@@ -29,6 +33,13 @@ export class NotificationsService {
     .set({ status: STATUSES.READ })
     .where(`userId = :userId`, { userId})
     .execute();
+    return true;
+  }
+
+  async readOne(id: number): Promise<boolean> {
+    const model = await this.findOne(id);
+    model.status = STATUSES.READ;
+    this.notificationsRepository.save(model);
     return true;
   }
 
@@ -56,7 +67,7 @@ export class NotificationsService {
   async notify(org_id: number, key: number, key_id: number): Promise<any> {
     const usersAndEmployees = await this.usersService.findUsersOfOrganization(org_id);
 
-    let notification = {
+    const notification = {
       status: STATUSES.PENDING,
       type: TYPES.INFO,
       key: key,
@@ -70,4 +81,5 @@ export class NotificationsService {
     this.frontendGateway.notifyUsers(org_id, notification);
     return true;
   }
+  
 }
