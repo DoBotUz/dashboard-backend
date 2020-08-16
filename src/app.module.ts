@@ -15,7 +15,6 @@ import { BotUsersModule } from './bot-users/bot-users.module';
 import { BotNotificationsModule } from './bot-notifications/bot-notifications.module';
 import { FeedbacksModule } from './feedbacks/feedbacks.module';
 import { OrdersModule } from './orders/orders.module';
-import { PromosModule } from './promos/promos.module';
 import { PromocodesModule } from './promocodes/promocodes.module';
 import { SubscriptionPlansModule } from './subscription-plans/subscription-plans.module';
 import { GatewaysModule } from './gateways/gateways.module';
@@ -50,7 +49,6 @@ import { NotificationsModule } from './notifications/notifications.module';
     BotNotificationsModule,
     FeedbacksModule,
     OrdersModule,
-    PromosModule,
     PromocodesModule,
     SubscriptionPlansModule,
     GatewaysModule,
