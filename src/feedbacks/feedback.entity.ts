@@ -6,6 +6,7 @@ import { Organization } from 'src/organizations/organization.entity';
 export const STATUSES = {
   ANSWERED: 10,
   PENDING: 11,
+  DELETED: 0,
 };
 
 export const TYPES = {
@@ -32,8 +33,7 @@ export class Feedback{
   rating: number;
 
   @Column({
-    type: 'enum',
-    enum: Object.values(STATUSES),
+    type: 'int',
     default: STATUSES.PENDING
   })
   status: number;
@@ -53,11 +53,13 @@ export class Feedback{
   botUserId: number;
 
   @ManyToOne(type => Bot, bot => bot.bot_notifications,  {
+    onDelete: 'CASCADE',
     nullable: false
   })
   bot: Bot;
 
   @ManyToOne(type => Organization, org => org.feedbacks, {
+    onDelete: 'CASCADE',
     nullable: false
   })
   organization: Organization;

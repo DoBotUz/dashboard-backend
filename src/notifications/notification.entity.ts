@@ -57,6 +57,7 @@ export class Notification {
   updated_at: Date;
   
   @ManyToOne(type => User, user => user.notifications, {
+    onDelete: 'CASCADE',
     nullable: false,
     eager: true
   })

@@ -27,6 +27,9 @@ export class User  {
   @Column('varchar', { length: 255 })
   last_name: string;
 
+  @Column('varchar', { length: 255, nullable: true })
+  avatar: string;
+
   @Column({ type: 'varchar', length: 255, readonly: true, })
   @Exclude()
   password_hash: string;
@@ -46,8 +49,7 @@ export class User  {
   balance: number;
 
   @Column({
-    type: 'enum',
-    enum: Object.values(STATUSES),
+    type: 'int',
     default: STATUSES.ACTIVE
   })
   status: number;

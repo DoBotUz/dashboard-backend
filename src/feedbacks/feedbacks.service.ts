@@ -31,4 +31,10 @@ export class FeedbacksService {
       }
     });
   }
+
+  async updateOne(id: number, data: any): Promise<Feedback> {
+    const feedback = await this.findOne(id);
+    Object.assign(feedback, data);
+    return await this.feedbacksRepository.save(feedback);
+  }
 }

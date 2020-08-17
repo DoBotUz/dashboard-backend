@@ -8,10 +8,10 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
 import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
 import { FeedbacksService } from './feedbacks.service';
-import { AnswerFeedbackDto } from './dto';
+import { AnswerFeedbackDto, UpdateFeedbackStatusDto } from './dto';
 import { BotNotificationsService } from 'src/bot-notifications/bot-notifications.service';
 import { FilesService } from 'src/files/files.service';
-import { Feedback } from './feedback.entity';
+import { Feedback, STATUSES } from './feedback.entity';
 import { BotNotificationTemplate, TYPES } from 'src/bot-notifications/bot-notification-template.entity';
 import { FeedbacksCrudService } from './feedbacks-crud.service';
 import { User } from 'src/users/user.entity';
@@ -45,6 +45,11 @@ import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
         eager: true
       }
     },
+    filter: {
+      status: {
+        $ne: STATUSES.DELETED,
+      }
+    }
   },
   params: {
     organizationId: {
@@ -124,6 +129,18 @@ export class FeedbacksController implements CrudController<Feedback> {
     
     this.botNotificationsService.setNotificationBotUsers(notification.id, [feedbackModel.botUserId]);
     return model;
+  }
+
+  @Post("/status")
+  @ApiOkResponse({
+    description: 'Updates status',
+    type: Feedback
+  })
+  async updateStatus(@UserD() user, @Body() updateStatusDto: UpdateFeedbackStatusDto): Promise<Feedback> {
+    const item = await this.feedbackService.findOne(updateStatusDto.id);
+    await this.validateCall(user, item.organizationId);
+    const { id, ...data } = updateStatusDto;
+    return this.feedbackService.updateOne(id, data);
   }
 
   private async validateCall(user, id){

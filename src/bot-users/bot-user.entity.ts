@@ -44,8 +44,7 @@ export class BotUser {
   last_seen: Date;
 
   @Column({
-    type: 'enum',
-    enum: Object.values(STATUSES),
+    type: 'int',
     default: STATUSES.ACTIVE
   })
   status: number;
@@ -56,7 +55,10 @@ export class BotUser {
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
 
-  @ManyToOne(type => Bot, bot => bot.botUsers,  { nullable: false })
+  @ManyToOne(type => Bot, bot => bot.botUsers, {
+    onDelete: 'CASCADE',
+    nullable: false
+  })
   bot: Bot;
 
   @OneToMany(type => Feedback, feedback => feedback.bot)
@@ -69,6 +71,7 @@ export class BotUser {
   bot_notif_bot_users: BotNotificationBotUser[];
 
   @ManyToOne(type => Organization, org => org.botUsers, {
+    onDelete: 'CASCADE',
     nullable: false
   })
   organization: Organization;

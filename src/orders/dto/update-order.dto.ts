@@ -22,7 +22,7 @@ export class OrderItemDto {
 export class UpdateOrderDto {
   @IsNotEmpty()
   @Validate(IsOrderExists)
-  id?: number;
+  id: number;
 
   @IsNotEmpty()
   @Validate(IsBranchExists)
@@ -77,4 +77,15 @@ export class UpdateOrderDto {
   @ValidateNested({ each: true })
   @Type(() => OrderItemDto)
   order_items: OrderItemDto[]
+}
+
+export class UpdateOrderStatusDto {
+  @IsNotEmpty()
+  @Validate(IsOrderExists)
+  id: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @IsIn(Object.values(STATUSES))
+  status: number;
 }

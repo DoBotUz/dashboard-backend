@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Body, ValidationPipe, UsePipes, BadRequestException, Post } from '@nestjs/common';
+import { Controller, UseGuards, Body, BadRequestException, Post } from '@nestjs/common';
 import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
 import { Crud, CrudController, Override, CrudAuth } from "@nestjsx/crud";
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -6,12 +6,11 @@ import { UserD } from 'src/auth/user.decorator';
 import { PromocodeCrudService } from './promocodes-crud.service';
 import { CreatePromocodeDto, UpdatePromocodeDto } from './dto';
 import { User } from 'src/users/user.entity';
-import { ValidationError } from 'class-validator';
-import { ValidationException } from 'src/validation-exception';
 import { PromocodesService } from './promocodes.service';
-import { Promocode } from './promocode.entity';
+import { Promocode, STATUSES } from './promocode.entity';
 import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
 import { UsersService } from 'src/users/users.service';
+import { UpdatePromocodeStatusDto } from './dto/update-promocode.dto';
 
 
 @Crud({
@@ -33,6 +32,11 @@ import { UsersService } from 'src/users/users.service';
         eager: true,
       },
     },
+    filter: {
+      status: {
+        $ne: STATUSES.DELETED,
+      }
+    }
   },
   params: {
     organizationId: {
@@ -72,6 +76,18 @@ export class PromocodesController  implements CrudController<Promocode> {
   })
   async updateOne(@UserD() user, @Body() updatePromocodeDto: UpdatePromocodeDto,): Promise<Promocode> {
     const { id, ...data } = updatePromocodeDto;
+    return this.promocodesService.updateOne(id, data);
+  }
+
+  @Post("/status")
+  @ApiOkResponse({
+    description: 'Updates status',
+    type: Promocode
+  })
+  async updateStatus(@UserD() user, @Body() updateStatusDto: UpdatePromocodeStatusDto): Promise<Promocode> {
+    const item = await this.promocodesService.findOne(updateStatusDto.id);
+    await this.validateCall(user, item.organizationId);
+    const { id, ...data } = updateStatusDto;
     return this.promocodesService.updateOne(id, data);
   }
 

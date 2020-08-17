@@ -9,10 +9,10 @@ import { IsEmpty } from 'class-validator';
 const { CREATE, UPDATE } = CrudValidationGroups;
 
 export const STATUSES = {
+  DELETED: 0,
+  MODERATION: 9,
   ACTIVE: 10,
   INACTIVE: 11,
-  MODERATION: 9,
-  DELETED: 0,
 };
 
 @Entity()
@@ -42,8 +42,7 @@ export class Branch {
   is_all_day: number;
 
   @Column({
-    type: 'enum',
-    enum: Object.values(STATUSES),
+    type: 'int',
     default: STATUSES.ACTIVE
   })
   status: number;
@@ -60,6 +59,7 @@ export class Branch {
   updated_at: Date;
   
   @ManyToOne(type => Organization, organization => organization.branches, {
+    onDelete: 'CASCADE',
     nullable: false
   })
   @IsEmpty({ groups: [CREATE, UPDATE] })

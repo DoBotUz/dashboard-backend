@@ -44,6 +44,7 @@ export class Bot{
   updated_at: Date;
   
   @OneToOne(type => Organization, org => org.bot, {
+    onDelete: 'CASCADE',
     nullable: false
   })
   @IsEmpty({ groups: [CREATE, UPDATE] })

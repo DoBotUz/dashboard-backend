@@ -22,7 +22,7 @@ export class OrdersService {
     });
   }
 
-  async updateOne(id: number, data: UpdateOrderDto): Promise<Order> {
+  async updateOne(id: number, data: any): Promise<Order> {
     const model = await this.findOne(id);
     Object.assign(model, data);
     return await this.ordersRepository.save(model);

@@ -64,6 +64,7 @@ export class BotNotificationTemplate {
   updated_at: Date;
   
   @ManyToOne(type => Bot, bot => bot.bot_notifications,  {
+    onDelete: 'CASCADE',
     nullable: false
   })
   @IsEmpty({ groups: [CREATE, UPDATE] })

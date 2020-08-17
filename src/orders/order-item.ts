@@ -21,12 +21,14 @@ export class OrderItem {
   amount: number;
 
   @ManyToOne(type => Order, order => order.order_items, {
+    onDelete: 'CASCADE',
     nullable: false,
     eager: true,
   })
   order: Order;
 
   @ManyToOne(type => Item, item => item.order_items, {
+    onDelete: 'CASCADE',
     nullable: false,
     eager: true,
   })

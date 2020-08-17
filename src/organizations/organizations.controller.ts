@@ -12,7 +12,7 @@ import { CreateOrganizationBranchBotDTO, UpdateOrganizationDTO } from './dto';
 import { BranchesService } from 'src/branches/branches.service';
 import { BotsService } from 'src/bots/bots.service';
 import { BotsGateway } from 'src/gateways/bots/bots.gateway';
-import { Organization } from './organization.entity';
+import { Organization, STATUSES } from './organization.entity';
 import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
 import { FilesService } from 'src/files/files.service';
 import { File, KEYS as FILE_KEYS } from 'src/files/file.entity';
@@ -27,7 +27,7 @@ import { UsersService } from 'src/users/users.service';
     type: Organization
   },
   routes: {
-    only: ['getManyBase', 'getOneBase', 'createOneBase'],
+    only: ['getManyBase', 'getOneBase', 'createOneBase', 'deleteOneBase'],
   },
   query: {
     join: {
@@ -41,6 +41,11 @@ import { UsersService } from 'src/users/users.service';
         eager: true,
       },
     },
+    filter: {
+      status: {
+        $ne: STATUSES.DELETED,
+      }
+    }
   },
 })
 @CrudAuth({

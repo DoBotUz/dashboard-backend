@@ -4,10 +4,10 @@ import { Crud, CrudController, CrudAuth } from "@nestjsx/crud";
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 import { OrdersService } from './orders.service';
-import { Order } from './order.entity';
+import { Order, STATUSES } from './order.entity';
 import { OrdersCrudService } from './orders-crud.service';
 import { User } from 'src/users/user.entity';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { UpdateOrderDto, UpdateOrderStatusDto } from './dto/update-order.dto';
 import { UsersService } from 'src/users/users.service';
 import { UserD } from 'src/auth/user.decorator';
 
@@ -36,6 +36,11 @@ import { UserD } from 'src/auth/user.decorator';
         eager: true
       }
     },
+    filter: {
+      status: {
+        $ne: STATUSES.DELETED,
+      }
+    }
   },
   params: {
     organizationId: {
@@ -60,7 +65,6 @@ export class OrdersController implements CrudController<Order> {
     private usersService: UsersService,
   ) {}
 
-  
   @Post("/update")
   @ApiOkResponse({
     description: 'Updates one order',
@@ -73,6 +77,18 @@ export class OrdersController implements CrudController<Order> {
     const { id, ...data } = updateOrderDTO;
     this.ordersService.updateItems(id, data.order_items);
     delete data.order_items;
+    return this.ordersService.updateOne(id, data);
+  }
+
+  @Post("/status")
+  @ApiOkResponse({
+    description: 'Updates status',
+    type: Order
+  })
+  async updateStatus(@UserD() user, @Body() updateStatusDto: UpdateOrderStatusDto): Promise<Order> {
+    const item = await this.ordersService.findOne(updateStatusDto.id);
+    await this.validateCall(user, item.organizationId);
+    const { id, ...data } = updateStatusDto;
     return this.ordersService.updateOne(id, data);
   }
 

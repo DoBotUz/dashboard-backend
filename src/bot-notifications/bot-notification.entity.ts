@@ -33,6 +33,7 @@ export class BotNotification {
   updated_at: Date;
 
   @ManyToOne(type => Bot, bot => bot.bot_notifications,  {
+    onDelete: 'CASCADE',
     nullable: false
   })
   bot: Bot;
@@ -41,6 +42,7 @@ export class BotNotification {
   botId: number;
 
   @ManyToOne(type => BotNotificationTemplate, template => template.bot_notifications,  {
+    onDelete: 'CASCADE',
     nullable: false
   })
   template: BotNotificationTemplate;
