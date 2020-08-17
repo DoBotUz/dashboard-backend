@@ -44,6 +44,7 @@ export class BaseCategoryDto {
   })
   pos: number;
 
+  @IsOptional()
   @Transform((value) => {
     return Number(value)
   })
