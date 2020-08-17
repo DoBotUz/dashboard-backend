@@ -8,11 +8,12 @@ import { Promocode } from 'src/promocodes/promocode.entity';
 
 
 export const STATUSES = {
-  ACTIVE: 10,
+  DELETED: 0,
   MODERATION: 9,
-  CANCELED: 0,
-  PAID: 11,
-  DELIVERED: 12,
+  ACTIVE: 10,
+  CANCELED: 11,
+  PAID: 12,
+  DELIVERED: 13,
 };
 
 export const PAYMENT_TYPES = {
@@ -58,8 +59,7 @@ export class Order {
   comment: string;
 
   @Column({
-    type: 'enum',
-    enum: Object.values(STATUSES),
+    type: 'int',
     default: STATUSES.MODERATION
   })
   status: number;
@@ -74,6 +74,7 @@ export class Order {
   updated_at: Date;
 
   @ManyToOne(type => BotUser, botUser => botUser.orders,  {
+    onDelete: 'CASCADE',
     nullable: false
   })
   bot_user: BotUser;
@@ -82,6 +83,7 @@ export class Order {
   botUserId: number;
 
   @ManyToOne(type => Organization, organization => organization.orders,  {
+    onDelete: 'CASCADE',
     nullable: false
   })
   organization: Organization;
@@ -90,6 +92,7 @@ export class Order {
   organizationId: number;
 
   @ManyToOne(type => Branch, branch => branch.orders,  {
+    onDelete: 'CASCADE',
     nullable: false
   })
   branch: Branch;
@@ -97,7 +100,9 @@ export class Order {
   @Column('int')
   branchId: number;
 
-  @ManyToOne(type => Promocode, promocode => promocode.orders)
+  @ManyToOne(type => Promocode, promocode => promocode.orders,{
+    onDelete: 'CASCADE',
+  })
   promocode: Promocode;
 
   @Column('int', { nullable: true })

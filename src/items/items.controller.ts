@@ -8,8 +8,8 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
 import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
 import { ItemsService } from './items.service';
-import { CreateItemDto, UpdateItemDto } from './dto';
-import { Item } from './item.entity';
+import { CreateItemDto, UpdateItemDto, UpdateItemStatusDto } from './dto';
+import { Item, STATUSES } from './item.entity';
 import { FilesService } from 'src/files/files.service';
 import { File, KEYS as FILE_KEYS } from 'src/files/file.entity';
 import { ItemsCrudService } from './items-crud.service';
@@ -23,7 +23,7 @@ import { UsersService } from 'src/users/users.service';
     type: Item
   },
   routes: {
-    only: ['getManyBase', 'getOneBase', 'createOneBase'],
+    only: ['getManyBase', 'getOneBase', 'createOneBase',],
   },
   query: {
     sort: [
@@ -37,6 +37,11 @@ import { UsersService } from 'src/users/users.service';
         eager: true,
       },
     },
+    filter: {
+      status: {
+        $ne: STATUSES.DELETED,
+      }
+    }
   },
   params: {
     organizationId: {
@@ -121,6 +126,19 @@ export class ItemsController implements CrudController<Item> {
     if (thumbnail) {
       data.thumbnail = thumbnail.filename;
     }
+    return this.itemsService.updateOne(id, data);
+  }
+
+  
+  @Post("/status")
+  @ApiOkResponse({
+    description: 'Updates status',
+    type: Item
+  })
+  async updateStatus(@UserD() user, @Body() updateStatusDto: UpdateItemStatusDto): Promise<Item> {
+    const item = await this.itemsService.findOne(updateStatusDto.id);
+    await this.validateCall(user, item.organizationId);
+    const { id, ...data } = updateStatusDto;
     return this.itemsService.updateOne(id, data);
   }
 

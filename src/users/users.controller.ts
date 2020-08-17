@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, UseGuards, Post, Body, Param, UseInterceptors, UploadedFile, Delete } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
@@ -6,6 +6,9 @@ import { UserD } from 'src/auth/user.decorator';
 import { UsersService } from './users.service';
 import { UpdateUserDTO } from './dto';
 import { User } from './user.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
 
 @ApiTags('users')
 @Controller('users')
@@ -29,8 +32,29 @@ export class UsersController {
     description: 'Update user',
     type: User
   })
-  async updateProfile(@UserD() user, @Body() data: UpdateUserDTO): Promise<any> {
+  @UseInterceptors(FileInterceptor('avatar', {
+    storage: diskStorage({
+      destination: 'uploads/users/',
+      filename: editFileName,
+    }),
+    fileFilter: imageFileFilter,
+  }))
+  async updateProfile(@UserD() user, @Body() data: UpdateUserDTO,  @UploadedFile() avatar): Promise<any> {
+    if (avatar) {
+      data.avatar = avatar.filename;
+    }
     return this.usersService.updateOne(user.id, data);
+  }
+
+  @Delete('profile/delete-avatar')
+  @ApiOkResponse({
+    description: 'Update user',
+    type: User
+  })
+  async deleteAvatar(@UserD() user): Promise<any> {
+    return this.usersService.updateOne(user.id, {
+      avatar: '',
+    });
   }
 
   @Get('isemailunique/:email')

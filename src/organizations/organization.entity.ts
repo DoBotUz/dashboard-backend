@@ -11,10 +11,10 @@ import { Promocode } from 'src/promocodes/promocode.entity';
 
 
 export const STATUSES = {
+  DELETED: 0,
+  MODERATION: 9,
   ACTIVE: 10,
   INACTIVE: 11,
-  MODERATION: 9,
-  DELETED: 0,
 };
 
 @Entity()
@@ -62,8 +62,7 @@ export class Organization {
   delivery_time_range_end: number;
 
   @Column({
-    type: 'enum',
-    enum: Object.values(STATUSES),
+    type: 'int',
     default: STATUSES.ACTIVE
   })
   status: number;

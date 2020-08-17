@@ -13,4 +13,6 @@ export class BaseUserDTO {
   @IsNotEmpty()
   @Length(1,255)
   last_name: string;
+
+  avatar: string;
 }

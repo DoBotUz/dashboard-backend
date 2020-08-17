@@ -7,8 +7,8 @@ import { UserD } from 'src/auth/user.decorator';
 import { FileInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from 'multer';
 import { CategoriesService } from './categories.service';
-import { CreateCategoryDto, UpdateCategoryDto } from './dto';
-import { Category } from './category.entity';
+import { CreateCategoryDto, UpdateCategoryDto, UpdateCategoryStatusDto } from './dto';
+import { Category, STATUSES } from './category.entity';
 import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
 import { FilesService } from 'src/files/files.service';
 import { File, KEYS as FILE_KEYS } from 'src/files/file.entity';
@@ -40,6 +40,11 @@ import { UsersService } from 'src/users/users.service';
         eager: true
       }
     },
+    filter: {
+      status: {
+        $ne: STATUSES.DELETED,
+      }
+    }
   },
   params: {
     organizationId: {
@@ -135,6 +140,18 @@ export class CategoriesController implements CrudController<Category> {
     if (thumbnail) {
       data.thumbnail = thumbnail.filename;
     }
+    return this.categoriesService.updateOne(id, data);
+  }
+
+  @Post("/status")
+  @ApiOkResponse({
+    description: 'Updates status',
+    type: Category
+  })
+  async updateStatus(@UserD() user, @Body() updateStatusDto: UpdateCategoryStatusDto): Promise<Category> {
+    const item = await this.categoriesService.findOne(updateStatusDto.id);
+    await this.validateCall(user, item.organizationId);
+    const { id, ...data } = updateStatusDto;
     return this.categoriesService.updateOne(id, data);
   }
 

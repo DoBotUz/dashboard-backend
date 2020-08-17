@@ -7,7 +7,8 @@ import { OrderItem } from 'src/orders/order-item';
 export const STATUSES = {
   ACTIVE: 10,
   MODERATION: 9,
-  INACTIVE: 0,
+  INACTIVE: 11,
+  DELETED: 0,
 };
 
 @Entity()
@@ -44,8 +45,7 @@ export class Item {
   amount: number;
 
   @Column({
-    type: 'enum',
-    enum: Object.values(STATUSES),
+    type: 'int',
     default: STATUSES.ACTIVE
   })
   status: number;
@@ -57,6 +57,7 @@ export class Item {
   updated_at: Date;
 
   @ManyToOne(type => Category, category => category.items,  {
+    onDelete: 'CASCADE',
     nullable: false
   })
   category: Category;
@@ -65,6 +66,7 @@ export class Item {
   categoryId: number;
 
   @ManyToOne(type => Organization, org => org.items,  {
+    onDelete: 'CASCADE',
     nullable: false
   })
   organization: Organization;

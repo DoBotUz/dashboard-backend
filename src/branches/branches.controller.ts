@@ -4,9 +4,9 @@ import { Crud, CrudController, CrudAuth, Override } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 import { BranchesService } from './branches.service';
-import { Branch } from './branch.entity';
+import { Branch, STATUSES } from './branch.entity';
 import { BranchesCrudService } from './branches-crud.service';
-import { CreateBranchDto, UpdateBranchDto } from './dto';
+import { CreateBranchDto, UpdateBranchDto, UpdateBranchStatusDto } from './dto';
 import { UserD } from 'src/auth/user.decorator';
 import { User } from 'src/users/user.entity';
 import { OrganizationGuard } from '../common/guards/OrganizationsGuard';
@@ -37,6 +37,11 @@ import { diskStorage } from 'multer';
         eager: true,
       },
     },
+    filter: {
+      status: {
+        $ne: STATUSES.DELETED,
+      }
+    }
   },
   params: {
     organizationId: {
@@ -85,13 +90,24 @@ export class BranchesController implements CrudController<Branch> {
     return this.branchesService.updateOne(id, data);
   }
 
+  @Post("/status")
+  @ApiOkResponse({
+    description: 'Updates status',
+    type: Branch
+  })
+  async updateStatus(@UserD() user, @Body() updateStatusDto: UpdateBranchStatusDto): Promise<Branch> {
+    const item = await this.branchesService.findOne(updateStatusDto.id);
+    await this.validateCall(user, item.organizationId);
+    const { id, ...data } = updateStatusDto;
+    return this.branchesService.updateOne(id, data);
+  }
+
   @Get(':id/files')
   async getFiles(@UserD() user, @Param('id') id): Promise<File[]> {
     await this.validateCall(user, id);
     return this.filesService.findFilesByKeyAndId(FILE_KEYS.BRANCH, id);
   }
 
-  
   @Post(":id/add-file")
   @ApiOkResponse({
     description: 'Add file to file list',

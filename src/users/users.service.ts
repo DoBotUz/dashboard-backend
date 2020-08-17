@@ -78,6 +78,8 @@ export class UsersService {
 
   async updateOne(id: number, data: any): Promise<User> {
     const model = await this.findOne(id);
+    if(data.password)
+      data.password_hash = await this.hashPassword(data.password);
     Object.assign(model, data);
     await this.usersRepository.save(model);
     return model;
@@ -117,19 +119,6 @@ export class UsersService {
       .leftJoinAndSelect('user.organizations', 'organization')
       .where('organization.id = :id', {id: org_id})
       .getMany();
-    return this.usersRepository.find({
-      join: {
-        alias: 'user',
-        leftJoinAndSelect: {
-          organizations: 'user.organizations'
-        }
-      },
-      where: {
-        ['user.organizations']: {
-          id: In([org_id])
-        }
-      }
-    })
   }
   
 }

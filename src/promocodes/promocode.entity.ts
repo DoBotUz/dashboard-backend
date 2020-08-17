@@ -1,12 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Organization } from 'src/organizations/organization.entity';
 import { Order } from 'src/orders/order.entity';
 
 export const STATUSES = {
+  DELETED: 0,
+  MODERATION: 9,
   ACTIVE: 10,
   INACTIVE: 11,
-  MODERATION: 9,
-  DELETED: 0,
 };
 
 export const TYPES = {
@@ -31,8 +31,7 @@ export class Promocode {
   left: number;
 
   @Column({
-    type: 'enum',
-    enum: Object.values(STATUSES),
+    type: 'int',
     default: STATUSES.ACTIVE
   })
   status: number;
@@ -54,6 +53,7 @@ export class Promocode {
   updated_at: Date;
 
   @ManyToOne(type => Organization, org => org.promocodes, {
+    onDelete: 'CASCADE',
     nullable: false,
     eager: true,
   })

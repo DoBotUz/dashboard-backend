@@ -1,5 +1,6 @@
-import { IsNotEmpty, IsOptional, Length, Validate, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, Length, Validate, IsString, IsNumber, IsIn } from 'class-validator';
 import { IsCategoryExists } from '../validators';
+import { STATUSES } from '../category.entity';
 import { Transform } from 'class-transformer';
 
 export class BaseCategoryDto {
@@ -42,6 +43,13 @@ export class BaseCategoryDto {
     return Number(value)
   })
   pos: number;
+
+  @Transform((value) => {
+    return Number(value)
+  })
+  @IsNumber()
+  @IsIn(Object.values(STATUSES))
+  status: number;
 
   thumbnail: string;
 }

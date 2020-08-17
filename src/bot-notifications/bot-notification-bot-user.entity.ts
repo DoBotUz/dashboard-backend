@@ -29,12 +29,14 @@ export class BotNotificationBotUser {
   botUserId: number;
 
   @ManyToOne(type => BotNotification, notif => notif.bot_notif_bot_users, {
+    onDelete: 'CASCADE',
     nullable: false,
     eager: true,
   })
   notification: BotNotification;
 
   @ManyToOne(type => BotUser, botUser => botUser.bot_notif_bot_users, {
+    onDelete: 'CASCADE',
     nullable: false,
     eager: true,
   })
