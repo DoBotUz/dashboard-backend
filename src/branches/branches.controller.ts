@@ -26,6 +26,12 @@ import { diskStorage } from 'multer';
     only: ['getManyBase', 'getOneBase', 'createOneBase'],
   },
   query: {
+    sort: [
+      {
+        field: 'id',
+        order: 'DESC',
+      },
+    ],
     join: {
       organization: {
         eager: true,

@@ -16,9 +16,15 @@ import { UserD } from 'src/auth/user.decorator';
     type: Order
   },
   routes: {
-    only: ['getManyBase', 'getOneBase',],
+    only: ['getManyBase', 'getOneBase'],
   },
   query: {
+    sort: [
+      {
+        field: 'id',
+        order: 'DESC',
+      },
+    ],
     join: {
       organization: {
         eager: true,

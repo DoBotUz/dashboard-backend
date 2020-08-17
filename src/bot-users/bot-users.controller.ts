@@ -20,6 +20,12 @@ import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
     only: ["getManyBase", "getOneBase", "updateOneBase"],
   },
   query: {
+    sort: [
+      {
+        field: 'id',
+        order: 'DESC',
+      },
+    ],
     join: {
       bot: {
         eager: true

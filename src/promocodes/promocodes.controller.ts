@@ -22,6 +22,12 @@ import { UsersService } from 'src/users/users.service';
     only: ['getManyBase', 'getOneBase', 'createOneBase'],
   },
   query: {
+    sort: [
+      {
+        field: 'id',
+        order: 'DESC',
+      },
+    ],
     join: {
       organization: {
         eager: true,

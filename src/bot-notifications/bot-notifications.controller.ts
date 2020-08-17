@@ -27,6 +27,12 @@ import { BotGuard } from 'src/common/guards/BotsGuard';
     only: ['getManyBase', 'getOneBase'],
   },
   query: {
+    sort: [
+      {
+        field: 'id',
+        order: 'DESC',
+      },
+    ],
     join: {
       bot: {
         eager: true,
