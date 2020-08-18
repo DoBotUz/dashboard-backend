@@ -8,6 +8,7 @@ import { Item } from 'src/items/item.entity';
 import { BotUser } from 'src/bot-users/bot-user.entity';
 import { Feedback } from 'src/feedbacks/feedback.entity';
 import { Promocode } from 'src/promocodes/promocode.entity';
+import { MailingTemplate } from 'src/mailing-templates/mailing-template.entity';
 
 
 export const STATUSES = {
@@ -112,4 +113,7 @@ export class Organization {
 
   @OneToMany(type => Promocode, promocode => promocode.organization)
   promocodes: Promocode[];
+
+  @OneToMany(type => MailingTemplate, template => template.organization)
+  mailing_templates: MailingTemplate[];
 }

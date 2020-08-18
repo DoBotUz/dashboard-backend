@@ -109,7 +109,7 @@ export class OrganizationsController  implements CrudController<Organization> {
     data.userId = user.id;
     const org = await this.organizationsService.createNew(data);
     if (uploadedFiles && uploadedFiles.files && uploadedFiles.files.length) {
-      this.filesService.uploadImagesFor('ORGANIZATION', org.id, uploadedFiles.files);
+      this.filesService.uploadImagesFor(FILE_KEYS.ORGANIZATION, org.id, uploadedFiles.files);
     }
     const bot = await this.botsService.createNew({
       organization: org,
@@ -169,7 +169,7 @@ export class OrganizationsController  implements CrudController<Organization> {
     fileFilter: imageFileFilter,
   }))
   async addFile(@Param("id") id, @UploadedFile() file): Promise<boolean> {
-    this.filesService.uploadImagesFor('ORGANIZATION', id, [file]);
+    this.filesService.uploadImagesFor(FILE_KEYS.ORGANIZATION, id, [file]);
     return true;
   }
 

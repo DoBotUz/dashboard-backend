@@ -121,7 +121,7 @@ export class BranchesController implements CrudController<Branch> {
     fileFilter: imageFileFilter,
   }))
   async addFile(@Param("id") id, @UploadedFile() file): Promise<boolean> {
-    this.filesService.uploadImagesFor('BRANCH', id, [file]);
+    this.filesService.uploadImagesFor(FILE_KEYS.BRANCH, id, [file]);
     return true;
   }
 

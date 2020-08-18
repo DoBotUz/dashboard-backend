@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { BotNotification, STATUSES as BOT_NOTIF_STATUSES } from './bot-notification.entity';
-import { BotNotificationTemplate, STATUSES as TEMPLATE_STATUSES, TYPES } from './bot-notification-template.entity';
 import { BotNotificationBotUser, STATUSES as BOT_NOTIFICATION_BOT_USER_STATUSES } from './bot-notification-bot-user.entity'; 
 
 @Injectable()
@@ -10,22 +9,12 @@ export class BotNotificationsService {
   constructor(
     @InjectRepository(BotNotification)
     private botNotificationsRepository: Repository<BotNotification>,
-    @InjectRepository(BotNotificationTemplate)
-    private botNotificationTemplatesRepository: Repository<BotNotificationTemplate>,
     @InjectRepository(BotNotificationBotUser)
     private botNotificationBotUserRepository: Repository<BotNotificationBotUser>,
   ) {}
   
   async findOne(id: number): Promise<BotNotification> {
     return this.botNotificationsRepository.findOne({
-      where: {
-        id,
-      },
-    });
-  }
-
-  async findOneTemplate(id: number): Promise<BotNotificationTemplate> {
-    return this.botNotificationTemplatesRepository.findOne({
       where: {
         id,
       },
@@ -51,20 +40,6 @@ export class BotNotificationsService {
     const model = await this.findOne(id);
     Object.assign(model, data);
     return await this.botNotificationsRepository.save(model);
-  }
-
-
-  async createTemplate(data: any): Promise<BotNotificationTemplate> {
-    data.status = TEMPLATE_STATUSES.ACTIVE;
-    const model = new BotNotificationTemplate();
-    Object.assign(model, data);
-    return await this.botNotificationTemplatesRepository.save(model);
-  }
-
-  async updateTemplate(id: number, data: any): Promise<BotNotificationTemplate> {
-    const model = await this.findOneTemplate(id);
-    Object.assign(model, data);
-    return await this.botNotificationTemplatesRepository.save(model);
   }
 
   async deleteBotUsers(botNotificationId: number, bot_user_ids: number[]): Promise<void> {

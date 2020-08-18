@@ -22,6 +22,7 @@ import { PromocodesModule } from './promocodes/promocodes.module';
 import { SubscriptionPlansModule } from './subscription-plans/subscription-plans.module';
 import { GatewaysModule } from './gateways/gateways.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { MailingTemplatesModule } from './mailing-templates/mailing-templates.module';
 
 
 @Module({
@@ -80,6 +81,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     SubscriptionPlansModule,
     GatewaysModule,
     NotificationsModule,
+    MailingTemplatesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,7 +1,8 @@
 import { IsNotEmpty, Validate, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { isFeedbackExists } from '../validators';
-import { CreateBotNotificationTemplateDto } from 'src/bot-notifications/dto';
+import { CreateMailingTemplateDto } from 'src/mailing-templates/dto';
+
 
 export class AnswerFeedbackDto {
   @IsNotEmpty()
@@ -10,6 +11,6 @@ export class AnswerFeedbackDto {
 
   @IsNotEmpty()
   @ValidateNested()
-  @Type(() => CreateBotNotificationTemplateDto)
-  template: CreateBotNotificationTemplateDto;
+  @Type(() => CreateMailingTemplateDto)
+  template: CreateMailingTemplateDto;
 }

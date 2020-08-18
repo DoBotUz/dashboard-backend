@@ -77,11 +77,11 @@ export class UsersService {
   }
 
   async updateOne(id: number, data: any): Promise<User> {
-    const model = await this.findOne(id);
+    let model = await this.findOne(id);
     if(data.password)
       data.password_hash = await this.hashPassword(data.password);
     Object.assign(model, data);
-    await this.usersRepository.save(model);
+    model = await this.usersRepository.save(model);
     return model;
   }
 

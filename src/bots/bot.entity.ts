@@ -55,7 +55,7 @@ export class Bot{
   @IsEmpty({ groups: [UPDATE] })
   organizationId: number;
 
-  @OneToMany(type => BotNotification, botNotification => botNotification.template)
+  @OneToMany(type => BotNotification, botNotification => botNotification.bot)
   bot_notifications: BotNotification[];
 
   @OneToMany(type => Feedback, feedback => feedback.bot)

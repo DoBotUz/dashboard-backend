@@ -1,0 +1,1 @@
+export { isMailingTemplateExists } from './isMailingTemplateExists';

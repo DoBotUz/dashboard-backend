@@ -110,7 +110,7 @@ export class CategoriesController implements CrudController<Category> {
     }
     const model = await this.categoriesService.createNew(data);
     if (uploadedFiles && uploadedFiles.files && uploadedFiles.files.length) {
-      this.filesService.uploadImagesFor('CATEGORY', model.id, uploadedFiles.files);
+      this.filesService.uploadImagesFor(FILE_KEYS.CATEGORY, model.id, uploadedFiles.files);
     }
     return model;
   }
@@ -174,7 +174,7 @@ export class CategoriesController implements CrudController<Category> {
     fileFilter: imageFileFilter,
   }))
   async addFile(@Param("id") id, @UploadedFile() file): Promise<boolean> {
-    this.filesService.uploadImagesFor('CATEGORY', id, [file]);
+    this.filesService.uploadImagesFor(FILE_KEYS.CATEGORY, id, [file]);
     return true;
   }
 

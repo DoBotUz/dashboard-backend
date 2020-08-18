@@ -1,8 +1,8 @@
 import { IsNotEmpty, Validate, IsDate, IsArray, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 import { IsBotExists } from 'src/bots/validators';
-import { isBotNotificationTemplateExists } from '../validators';
 import { IsBotUserExists } from 'src/bot-users/validators/isBotUserExists';
+import { isMailingTemplateExists } from 'src/mailing-templates/validators';
 
 export class BaseBotNotificationDto {
   @IsNotEmpty()
@@ -10,13 +10,8 @@ export class BaseBotNotificationDto {
   bot_id: number;
 
   @IsNotEmpty()
-  @Validate(isBotNotificationTemplateExists)
-  bot_notification_template_id: number;
-
-  @IsOptional()
-  @Type(() => Date)
-  @IsDate()
-  after_date_time: Date;
+  @Validate(isMailingTemplateExists)
+  mailing_template_id: number;
 
   @IsNotEmpty()
   @IsArray()

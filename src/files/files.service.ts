@@ -11,14 +11,14 @@ export class FilesService {
     private filesRepository: Repository<File>,
   ) {}
   
-  async uploadImagesFor(key: string, key_id: number, files: any[]): Promise<void> {
+  async uploadImagesFor(key: number, key_id: number, files: any[]): Promise<void> {
     for (let i = 0; i < files.length; i += 1) {
       fs.rename(files[i].path, `./uploads/files/${files[i].filename}`, (res) => {
         if (res !== null)
           console.log(res);
       });
       const newFile = {
-        key: KEYS[key],
+        key,
         key_id: key_id,
         file: files[i].filename,
         original_name: files[i].originalname,

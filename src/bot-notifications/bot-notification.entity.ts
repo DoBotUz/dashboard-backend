@@ -1,7 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinTable, ManyToMany, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn, OneToOne } from 'typeorm';
 import { Bot } from 'src/bots/bot.entity';
-import { BotNotificationTemplate } from './bot-notification-template.entity';
-import { BotUser } from 'src/bot-users/bot-user.entity';
+import { MailingTemplate } from 'src/mailing-templates/mailing-template.entity';
 import { BotNotificationBotUser } from './bot-notification-bot-user.entity';
 
 export const STATUSES = {
@@ -23,9 +22,6 @@ export class BotNotification {
   })
   status: number;
 
-  @Column('timestamp', { default: () => 'CURRENT_TIMESTAMP' })
-  after_date_time: Date;
-
   @CreateDateColumn({ name: 'created_at' })
   created_at: Date;
 
@@ -41,14 +37,15 @@ export class BotNotification {
   @Column('int')
   botId: number;
 
-  @ManyToOne(type => BotNotificationTemplate, template => template.bot_notifications,  {
+  @OneToOne(type => MailingTemplate, template => template.bot_notification,  {
     onDelete: 'CASCADE',
     nullable: false
   })
-  template: BotNotificationTemplate;
+  @JoinColumn()
+  mailing_template: MailingTemplate;
 
   @Column('int')
-  templateId: number;
+  mailingTemplateId: number;
 
   @OneToMany(type => BotNotificationBotUser, model => model.notification)
   bot_notif_bot_users: BotNotificationBotUser[];

@@ -5,7 +5,7 @@ export const KEYS = {
   BRANCH: 2,
   CATEGORY: 3,
   ITEM: 4,
-  NOTIFICATION_TEMPLATE: 5,
+  MAILING_TEMPLATE: 5,
   PROMO: 6,
 };
 

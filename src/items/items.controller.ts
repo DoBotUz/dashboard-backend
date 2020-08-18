@@ -101,7 +101,7 @@ export class ItemsController implements CrudController<Item> {
     }
     const model = await this.itemsService.createNew(data);
     if (uploadedFiles && uploadedFiles.files && uploadedFiles.files.length) {
-      this.filesService.uploadImagesFor('ITEM', model.id, uploadedFiles.files);
+      this.filesService.uploadImagesFor(FILE_KEYS.ITEM, model.id, uploadedFiles.files);
     }
     return model;
   }
@@ -161,7 +161,7 @@ export class ItemsController implements CrudController<Item> {
     fileFilter: imageFileFilter,
   }))
   async addFile(@Param('id') id, @UploadedFile() file): Promise<boolean> {
-    this.filesService.uploadImagesFor('ITEM', id, [file]);
+    this.filesService.uploadImagesFor(FILE_KEYS.ITEM, id, [file]);
     return true;
   }
 

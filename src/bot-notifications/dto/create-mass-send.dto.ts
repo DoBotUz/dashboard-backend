@@ -1,7 +1,7 @@
 import { IsNotEmpty, Validate, ValidateNested, IsOptional } from 'class-validator';
 import { Transform, plainToClass } from 'class-transformer';
 import { IsBotExists } from 'src/bots/validators';
-import { BaseBotNotificationTemplateDto } from './base-bot-notification-template.dto';
+import { BaseMailingTemplateDto } from '../../mailing-templates/dto/base-mailing-template.dto';
 
 export class CreateMassSendDto {
   @IsNotEmpty()
@@ -16,8 +16,8 @@ export class CreateMassSendDto {
 
   @IsNotEmpty()
   @Transform((value) => {
-    return plainToClass(BaseBotNotificationTemplateDto, JSON.parse(value));
+    return plainToClass(BaseMailingTemplateDto, JSON.parse(value));
   })
   @ValidateNested()
-  template: BaseBotNotificationTemplateDto;
+  template: BaseMailingTemplateDto;
 }

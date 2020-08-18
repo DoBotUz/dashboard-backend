@@ -30,11 +30,12 @@ export class User  {
   @Column('varchar', { length: 255, nullable: true })
   avatar: string;
 
-  @Column({ type: 'varchar', length: 255, readonly: true, })
-  @Exclude()
+  @Column({ type: 'varchar', length: 255 })
+  @Exclude({ toClassOnly: true })
   password_hash: string;
 
-  @Column({ type: 'datetime', nullable: true, readonly: true, })
+  @Column({ type: 'datetime', nullable: true })
+  @Exclude({ toClassOnly: true })
   last_seen: Date;
 
   @Column({ type: 'varchar', length: 255, nullable: true, readonly: true, })
