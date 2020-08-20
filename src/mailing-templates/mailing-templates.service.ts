@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { MailingTemplate } from '../mailing-templates/mailing-template.entity';
+import { MailingTemplate, STATUSES } from '../mailing-templates/mailing-template.entity';
 
 
 @Injectable()
@@ -36,5 +36,15 @@ export class MailingTemplatesService {
     const model = await this.findOne(id);
     Object.assign(model, data);
     return await this.mailingTemplateRepository.save(model);
+  }
+
+  async removeOne(id: number): Promise<boolean> {
+    const model = await this.mailingTemplateRepository.findOne(id);
+    this.mailingTemplateRepository.remove(model);
+    return true;
+  }
+
+  async updateModel(model: MailingTemplate): Promise<MailingTemplate> {
+    return this.mailingTemplateRepository.save(model);
   }
 }

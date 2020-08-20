@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { Controller, UseGuards, Param, Post, Body, UseInterceptors, UploadedFile, UploadedFiles, Get } from '@nestjs/common';
+import { Controller, UseGuards, Param, Post, Body, UseInterceptors, UploadedFile, UploadedFiles, Get, Delete, BadRequestException } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController, CrudAuth, } from '@nestjsx/crud';
 import { FileInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express";
@@ -8,13 +8,15 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
 import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
 import { CreateMailingTemplateDto, UpdateMailingTemplateDto } from './dto';
-import { MailingTemplate, CATS_ARRAY } from 'src/mailing-templates/mailing-template.entity';
+import { MailingTemplate, CATS_ARRAY, STATUSES } from 'src/mailing-templates/mailing-template.entity';
 import { FilesService } from 'src/files/files.service';
 import { File, KEYS as FILE_KEYS } from 'src/files/file.entity';
 import { User } from 'src/users/user.entity';
 import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
 import { MailingTemplatesCrudService } from './mailing-templates-crud.service';
 import { MailingTemplatesService } from './mailing-templates.service';
+import { BotNotificationsService } from 'src/bot-notifications/bot-notifications.service';
+import { classToPlain } from 'class-transformer';
 
 
 @Crud({
@@ -22,7 +24,7 @@ import { MailingTemplatesService } from './mailing-templates.service';
     type: MailingTemplate
   },
   routes: {
-    only: ['getManyBase', 'getOneBase'],
+    only: ['getManyBase', 'getOneBase',],
   },
   query: {
     sort: [
@@ -61,6 +63,7 @@ export class MailingTemplatesController implements CrudController<MailingTemplat
     public service: MailingTemplatesCrudService,
     private mailingTempaltesService: MailingTemplatesService,
     private filesService: FilesService,
+    private botNotificationSErvice: BotNotificationsService,
   ) {}
 
   @Post('')
@@ -162,5 +165,48 @@ export class MailingTemplatesController implements CrudController<MailingTemplat
   })
   async getCats(): Promise<any[]> {
     return CATS_ARRAY;
+  }
+
+  @Delete(':id')
+  @ApiOkResponse({
+    description: 'Delete mailing template',
+    type: Boolean
+  })
+  async deleteOne(@Param("id") id): Promise<boolean> {
+    return this.mailingTempaltesService.removeOne(id);
+  }
+
+  @Post('start-draft/:id/:botId')
+  @ApiOkResponse({
+    description: 'Start mailing draft',
+    type: Boolean
+  })
+  async startOne(@Param("id") id, @Param("botId") botId): Promise<boolean> {
+    const model = await this.mailingTempaltesService.findOne(id);
+    if(!model){
+      throw new BadRequestException('404');
+    }
+    model.status = STATUSES.SENDING;
+    this.mailingTempaltesService.updateModel(model);
+    this.botNotificationSErvice.create({
+      mailingTemplateId: model.id,
+      botId
+    });
+    return true;
+  }
+
+  @Post('duplicate/:id')
+  @ApiOkResponse({
+    description: 'Duplicate template to draft',
+    type: Boolean
+  })
+  async duplicateOne(@Param("id") modelId): Promise<MailingTemplate> {
+    const model = await this.mailingTempaltesService.findOne(modelId);
+    if(!model){
+      throw new BadRequestException('404');
+    }
+    const {id, organization, ...data} = <any>classToPlain(model);
+    data.status = STATUSES.DRAFTS;
+    return this.mailingTempaltesService.createNew(data);
   }
 }

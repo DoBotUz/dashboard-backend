@@ -1,7 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn, OneToOne } from 'typeorm';
 import { Bot } from 'src/bots/bot.entity';
 import { MailingTemplate } from 'src/mailing-templates/mailing-template.entity';
-import { BotNotificationBotUser } from './bot-notification-bot-user.entity';
 
 export const STATUSES = {
   SENT: 10,
@@ -46,7 +45,4 @@ export class BotNotification {
 
   @Column('int')
   mailingTemplateId: number;
-
-  @OneToMany(type => BotNotificationBotUser, model => model.notification)
-  bot_notif_bot_users: BotNotificationBotUser[];
 }

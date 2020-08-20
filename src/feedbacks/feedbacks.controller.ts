@@ -129,8 +129,7 @@ export class FeedbacksController implements CrudController<Feedback> {
       botId: template.organization.bot.id,
       templateId: template.id,
     });
-    
-    this.botNotificationsService.setNotificationBotUsers(notification.id, [feedbackModel.botUserId]);
+
     return template;
   }
 

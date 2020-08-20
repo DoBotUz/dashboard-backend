@@ -2,8 +2,6 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateCol
 import { Bot } from 'src/bots/bot.entity';
 import { Feedback } from 'src/feedbacks/feedback.entity';
 import { Order } from 'src/orders/order.entity';
-import { BotNotification } from 'src/bot-notifications/bot-notification.entity';
-import { BotNotificationBotUser } from 'src/bot-notifications/bot-notification-bot-user.entity';
 import { Organization } from 'src/organizations/organization.entity';
 
 export const STATUSES = {
@@ -66,9 +64,6 @@ export class BotUser {
 
   @OneToMany(type => Order, order => order.bot_user)
   orders: Order[];
-
-  @OneToMany(type => BotNotificationBotUser, model => model.bot_user)
-  bot_notif_bot_users: BotNotificationBotUser[];
 
   @ManyToOne(type => Organization, org => org.botUsers, {
     onDelete: 'CASCADE',
