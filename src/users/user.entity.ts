@@ -42,6 +42,10 @@ export class User  {
   @Exclude()
   password_reset_token: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true, readonly: true, })
+  @Exclude()
+  verification_token: string;
+
   @Column({
     type: 'double',
     default: 0,

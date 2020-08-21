@@ -32,8 +32,8 @@ import { MailingTemplatesModule } from './mailing-templates/mailing-templates.mo
       transport: {
         host: process.env.MAIL_HOST,
         port: process.env.MAIL_PORT,
-        ignoreTLS: true,
-        secure: false,
+        // ignoreTLS: true,
+        secure: true,
         auth: {
           user: process.env.MAIL_USER,
           pass: process.env.MAIL_PASS,

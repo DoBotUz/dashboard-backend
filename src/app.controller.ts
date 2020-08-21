@@ -89,7 +89,8 @@ export class AppController {
     .mailerService
     .sendMail({
       to: 'zealotrahl@gmail.com',
-      from: 'dobot-info@yandex.ru',
+      from: 'info@dobot.uz',
+      bcc: 'info@dobot.uz',
       subject: 'Testing Nest Mailermodule with template ✔',
       template: 'welcome', // The `.pug`, `.ejs` or `.hbs` extension is appended automatically.
       context: {  // Data to be sent to template engine.
