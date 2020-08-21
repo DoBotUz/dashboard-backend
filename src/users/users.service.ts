@@ -15,7 +15,7 @@ export class UsersService {
   ) {}
 
   async createNew(data: any): Promise<User> {
-    data.status = STATUSES.ACTIVE;
+    data.status = STATUSES.MODERATION;
     data.password_hash = await this.hashPassword(data.password);
     data.verification_token = nanoid(255);
     const user = new User();
@@ -32,6 +32,20 @@ export class UsersService {
     return await this.usersRepository.findOne({
       where: {
         email,
+      },
+      join: {
+        alias: 'user',
+        leftJoinAndSelect: {
+          organizations: 'user.organizations'
+        }
+      }
+    });
+  }
+
+  async findOneByToken(token: string): Promise<User> {
+    return await this.usersRepository.findOne({
+      where: {
+        verification_token: token
       },
       join: {
         alias: 'user',
@@ -86,6 +100,10 @@ export class UsersService {
     Object.assign(model, data);
     model = await this.usersRepository.save(model);
     return model;
+  }
+
+  async updateOneModel(user: User): Promise<User> {
+    return this.usersRepository.save(user);
   }
 
   async findOneWithOrganizations(id: number): Promise<User> {

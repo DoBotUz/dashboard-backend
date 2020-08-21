@@ -1,4 +1,4 @@
-import { Controller, Request, Post, Get, UseGuards, Body, Param } from '@nestjs/common';
+import { Controller, Request, Post, Get, UseGuards, Body, Param, BadRequestException } from '@nestjs/common';
 import { IsEmail, IsNotEmpty, Length, Validate } from 'class-validator';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
@@ -7,7 +7,7 @@ import { UsersService } from './users/users.service';
 import { UniqueEmail } from 'src/users/validators';
 import { LocalhostGuard } from './common/guards/localhost.guard';
 import { MailerService } from '@nestjs-modules/mailer';
-import { User } from './users/user.entity';
+import { User, STATUSES } from './users/user.entity';
 
 class LoginResDto {
   @IsNotEmpty()
@@ -84,7 +84,7 @@ export class AppController {
       context: {  // Data to be sent to template engine.
         first_name: model.first_name,
         email: model.email,
-        activation_link: `${process.env.FRONTEND_HOST}/active?token=${model.verification_token}`,
+        activation_link: `${process.env.FRONTEND_HOST}/pages/complete-registration?token=${model.verification_token}`,
       },
     })
     .then((res) => {
@@ -104,6 +104,22 @@ export class AppController {
   })
   async isEmailUnique(@Param('email') email: string): Promise<boolean> {
     return await this.usersService.isEmailUnique(email);
+  }
+
+  @Post('/verify-email-token/:token')
+  @ApiOkResponse({
+    description: "Active user acc by token",
+    type: LoginResDto
+  })
+  async verifyToken(@Param('token') token: string): Promise<LoginResDto> {
+    const user = await this.usersService.findOneByToken(token);
+    if (!user) {
+      throw new BadRequestException('404');
+    }
+    user.status = STATUSES.ACTIVE;
+    user.verification_token = null;
+    this.usersService.updateOneModel(user);
+    return this.authService.login(user);
   }
 
   @Get()
