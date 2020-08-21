@@ -1,5 +1,4 @@
 import { IsNotEmpty, Validate, IsIn, IsInt } from 'class-validator';
-import { BaseOrganizationDTO } from './base-organization.dto';
 import { IsOrganizationExists } from '../validators';
 import { Transform } from 'class-transformer';
 import { STATUSES } from 'src/bots/bot.entity';

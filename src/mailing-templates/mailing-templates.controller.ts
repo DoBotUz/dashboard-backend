@@ -17,6 +17,7 @@ import { MailingTemplatesCrudService } from './mailing-templates-crud.service';
 import { MailingTemplatesService } from './mailing-templates.service';
 import { BotNotificationsService } from 'src/bot-notifications/bot-notifications.service';
 import { classToPlain } from 'class-transformer';
+import { BotsGateway } from 'src/gateways/bots/bots.gateway';
 
 
 @Crud({
@@ -64,6 +65,7 @@ export class MailingTemplatesController implements CrudController<MailingTemplat
     private mailingTempaltesService: MailingTemplatesService,
     private filesService: FilesService,
     private botNotificationSErvice: BotNotificationsService,
+    private botsGateway: BotsGateway,
   ) {}
 
   @Post('')
@@ -188,10 +190,11 @@ export class MailingTemplatesController implements CrudController<MailingTemplat
     }
     model.status = STATUSES.SENDING;
     this.mailingTempaltesService.updateModel(model);
-    this.botNotificationSErvice.create({
+    const notif = await this.botNotificationSErvice.create({
       mailingTemplateId: model.id,
       botId
     });
+    this.botsGateway.newBotNotification(notif.id);
     return true;
   }
 

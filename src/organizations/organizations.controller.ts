@@ -192,7 +192,11 @@ export class OrganizationsController  implements CrudController<Organization> {
     await this.validateCall(user, data.id);
     const bot = await this.botsService.findOnyByOrgId(data.id);
     bot.status = data.status;
-    this.botsService.updateOneModel(bot);
+    await this.botsService.updateOneModel(bot);
+    this.botsGateway.botStatusChange({
+      id: bot.id,
+      status: bot.status,
+    });
     return true;
   }
 

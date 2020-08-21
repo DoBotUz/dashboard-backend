@@ -35,6 +35,18 @@ export class BotsGateway implements OnGatewayConnection, OnGatewayDisconnect{
     }
   }
 
+  botStatusChange(@MessageBody() data: any): void {
+    if(this.server) {
+      this.server.emit('botStatusChange', data);
+    }
+  }
+
+  newBotNotification(@MessageBody() data: any): void {
+    if(this.server) {
+      this.server.emit('newBotNotification', data);
+    }
+  }
+
   @SubscribeMessage('botOnline')
   async handleBotOnline(@MessageBody() data: string): Promise<void> {
     const bot_id = Number(data);
