@@ -27,11 +27,4 @@ export class UpdateOrganizationDTO extends BaseOrganizationDTO {
   @ValidateNested()
   bot: Bot;
 
-  @IsNotEmpty()
-  @Transform((value) => {
-    return Number(value)
-  })
-  @IsNumber()
-  @IsIn(Object.values(STATUSES))
-  status: number;
 }

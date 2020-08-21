@@ -8,7 +8,7 @@ import { FileInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express
 import { diskStorage } from 'multer';
 import { OrganizationsService } from './organizations.service';
 import { OrgCrudService } from './org-crud.service';
-import { CreateOrganizationBranchBotDTO, UpdateOrganizationDTO } from './dto';
+import { CreateOrganizationBranchBotDTO, UpdateOrganizationDTO, SwitchBotStatusDto } from './dto';
 import { BranchesService } from 'src/branches/branches.service';
 import { BotsService } from 'src/bots/bots.service';
 import { BotsGateway } from 'src/gateways/bots/bots.gateway';
@@ -183,6 +183,18 @@ export class OrganizationsController  implements CrudController<Organization> {
     return true;
   }
 
+  @Post("/switch-bot-status")
+  @ApiOkResponse({
+    description: 'Changes organiaztion related bot status',
+    type: Boolean
+  })
+  async switchBotStatus(@UserD() user, data: SwitchBotStatusDto): Promise<boolean> {
+    await this.validateCall(user, data.id);
+    const bot = await this.botsService.findOnyByOrgId(data.id);
+    bot.status = data.status;
+    this.botsService.updateOneModel(bot);
+    return true;
+  }
 
   private async validateCall(user: User, id: number){
     const userEntity = await this.usersService.findOneWithOrganizations(user.id);

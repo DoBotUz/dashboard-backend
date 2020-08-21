@@ -26,12 +26,24 @@ export class BotsService {
     });
   }
 
+  async findOnyByOrgId(organizationId: number): Promise<Bot> {
+    return this.botsRepository.findOne({
+      where: {
+        organizationId,
+      },
+    });
+  }
+
   async updateOne(id: number, data: any): Promise<Bot> {
     const model = await this.findOne(id);
     if (model) {
       Object.assign(model, data);
       return await this.botsRepository.save(model);
     }
+  }
+
+  async updateOneModel(model: Bot): Promise<Bot> {
+    return await this.botsRepository.save(model);
   }
 
   async setIsOnline(id: number, flag: boolean): Promise<Bot> {
