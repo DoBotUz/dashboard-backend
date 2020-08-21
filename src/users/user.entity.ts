@@ -42,7 +42,7 @@ export class User  {
   @Exclude()
   password_reset_token: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true, readonly: true, })
+  @Column({ type: 'varchar', length: 255, nullable: true })
   @Exclude()
   verification_token: string;
 

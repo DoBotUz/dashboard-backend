@@ -4,6 +4,8 @@ import { Repository, Not, In } from 'typeorm';
 import { User, STATUSES } from './user.entity';
 import { STATUSES as NOTIFICATION_STATUSES } from 'src/notifications/notification.entity';
 import { hash as bcryptHash, compare as bcryptCompare } from 'bcrypt';
+import { nanoid } from 'nanoid';
+
 
 @Injectable()
 export class UsersService {
@@ -15,6 +17,7 @@ export class UsersService {
   async createNew(data: any): Promise<User> {
     data.status = STATUSES.ACTIVE;
     data.password_hash = await this.hashPassword(data.password);
+    data.verification_token = nanoid(255);
     const user = new User();
     Object.assign(user, data);
     return await this.usersRepository.save(user);

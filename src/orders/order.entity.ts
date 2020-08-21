@@ -67,6 +67,9 @@ export class Order {
   @Column('boolean', { default: false })
   is_paid: boolean;
 
+  @Column('boolean', { default: false })
+  is_self_service: boolean;
+
   @CreateDateColumn({ name: 'created_at', readonly: true })
   created_at: Date;
 

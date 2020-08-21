@@ -7,6 +7,7 @@ import { UsersService } from './users/users.service';
 import { UniqueEmail } from 'src/users/validators';
 import { LocalhostGuard } from './common/guards/localhost.guard';
 import { MailerService } from '@nestjs-modules/mailer';
+import { User } from './users/user.entity';
 
 class LoginResDto {
   @IsNotEmpty()
@@ -68,10 +69,32 @@ export class AppController {
   @ApiBody({ type: SignUpDto })
   @ApiOkResponse({
     description: 'Sucessfuly Signed up',
-    type: Object
+    type: Boolean
   })
   async signup(@Body() signUpDto: SignUpDto): Promise<boolean> {
-    return this.authService.signup(signUpDto);
+    const model = await this.usersService.createNew(signUpDto);
+    this
+    .mailerService
+    .sendMail({
+      to: model.email,
+      from: 'info@dobot.uz',
+      bcc: 'info@dobot.uz',
+      subject: 'DoBot: Успешная регистрация      ',
+      template: 'registration', // The `.pug`, `.ejs` or `.hbs` extension is appended automatically.
+      context: {  // Data to be sent to template engine.
+        first_name: model.first_name,
+        email: model.email,
+        activation_link: `${process.env.FRONTEND_HOST}/active?token=${model.verification_token}`,
+      },
+    })
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+    return true;
   }
 
   @Get('auth/isemailunique/:email')
@@ -85,25 +108,6 @@ export class AppController {
 
   @Get()
   index(): string {
-    this
-    .mailerService
-    .sendMail({
-      to: 'zealotrahl@gmail.com',
-      from: 'info@dobot.uz',
-      bcc: 'info@dobot.uz',
-      subject: 'Testing Nest Mailermodule with template ✔',
-      template: 'welcome', // The `.pug`, `.ejs` or `.hbs` extension is appended automatically.
-      context: {  // Data to be sent to template engine.
-        name: '123',
-      },
-    })
-    .then((res) => {
-      console.log(res);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-
     return "Hello world";
   }
 }

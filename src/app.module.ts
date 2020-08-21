@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MulterModule } from "@nestjs/platform-express";
 import { MailerModule } from '@nestjs-modules/mailer';
-import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -44,10 +44,7 @@ import { MailingTemplatesModule } from './mailing-templates/mailing-templates.mo
       },
       template: {
         dir: './templates',
-        adapter: new PugAdapter(),
-        options: {
-          strict: true,
-        },
+        adapter: new HandlebarsAdapter(),
       },
     }),
     MulterModule.register({

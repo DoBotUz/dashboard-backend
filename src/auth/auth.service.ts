@@ -24,9 +24,4 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
     };
   }
-
-  async signup(data: any): Promise<boolean> {
-    await this.usersService.createNew(data);
-    return true;
-  }
 }
