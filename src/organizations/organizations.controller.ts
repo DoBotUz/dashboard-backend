@@ -188,7 +188,7 @@ export class OrganizationsController  implements CrudController<Organization> {
     description: 'Changes organiaztion related bot status',
     type: Boolean
   })
-  async switchBotStatus(@UserD() user, data: SwitchBotStatusDto): Promise<boolean> {
+  async switchBotStatus(@UserD() user, @Body() data: SwitchBotStatusDto): Promise<boolean> {
     await this.validateCall(user, data.id);
     const bot = await this.botsService.findOnyByOrgId(data.id);
     bot.status = data.status;
