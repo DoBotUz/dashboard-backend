@@ -13,6 +13,7 @@ import { User } from 'src/users/user.entity';
 import { jwtConstants } from "src/auth/constants";
 import * as jwt from 'jsonwebtoken';
 import { UsersService } from "src/users/users.service";
+import { Message } from 'src/chat/message.entity';
 
 @UseGuards(WsJwtGuard)
 @WebSocketGateway({ namespace: 'frontend' })
@@ -48,6 +49,10 @@ export class FrontendGateway implements OnGatewayConnection, OnGatewayDisconnect
 
     client.join(`org_id_${organizationId}`);
     this.logger.log(`Client connected: ${client.id}`);
+  }
+
+  handleChatMessage(data: Message) {
+    this.server.to(`org_id_${data.organization.id}`).emit('newChatMessage', JSON.stringify(data));
   }
 
   // private findSocketByUserId(user_id: number): string {

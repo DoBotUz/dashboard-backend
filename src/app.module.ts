@@ -23,6 +23,7 @@ import { SubscriptionPlansModule } from './subscription-plans/subscription-plans
 import { GatewaysModule } from './gateways/gateways.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { MailingTemplatesModule } from './mailing-templates/mailing-templates.module';
+import { ChatModule } from './chat/chat.module';
 
 
 @Module({
@@ -79,6 +80,7 @@ import { MailingTemplatesModule } from './mailing-templates/mailing-templates.mo
     GatewaysModule,
     NotificationsModule,
     MailingTemplatesModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

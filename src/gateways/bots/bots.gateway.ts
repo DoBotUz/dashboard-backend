@@ -15,6 +15,8 @@ import { ValidationException } from 'src/validation-exception';
 import { NewNotificationDto } from './dto/new-notification.dto';
 import AllWsExceptionsFilter from 'src/all-ws-exceptions.filter';
 import { NotificationsService } from 'src/notifications/notifications.service';
+import { Message } from 'src/chat/message.entity';
+import { MessagesService } from 'src/chat/messages.service';
 
 @UseGuards(LocalhostGuard)
 @UseFilters(new AllWsExceptionsFilter())
@@ -23,6 +25,7 @@ export class BotsGateway implements OnGatewayConnection, OnGatewayDisconnect{
   constructor(
     private botsService: BotsService,
     private notificationsService: NotificationsService,
+    private messagesService: MessagesService,
   ) {}
 
   @WebSocketServer()
@@ -79,5 +82,14 @@ export class BotsGateway implements OnGatewayConnection, OnGatewayDisconnect{
   
   handleConnection(client: any, ...args: any[]) {
     this.logger.log(`Client connected: ${client.id}`);
+  }
+
+  handleChatMessage(data: Message) {
+    this.server.to(`org_id_${data.organization.id}`).emit('newChatMessage', JSON.stringify(data));
+  }
+
+  @SubscribeMessage('newMessage')
+  async newMessage(@MessageBody() data: Message) {
+    this.messagesService.newMessage(data);
   }
 }
