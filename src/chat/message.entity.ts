@@ -49,9 +49,7 @@ export class Message {
   is_read: boolean;
 
   @ManyToOne(type => User, {
-    cascade: true
-  })
-  @Column({
+    cascade: true,
     nullable: true
   })
   operator: User;
