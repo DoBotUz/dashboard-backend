@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Module, forwardRef } from "@nestjs/common";
 import { MessagesController } from "./messages.controller";
 import { MessagesService } from "./messages.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -10,7 +10,7 @@ import { BotsGatewayModule } from "src/gateways/bots/bots-gateway.module";
   imports: [
     TypeOrmModule.forFeature([Message]),
     FrontendModule,
-    BotsGatewayModule
+    forwardRef(() => BotsGatewayModule)
   ],
   controllers: [MessagesController],
   providers: [MessagesService],
