@@ -7,7 +7,7 @@ import {
   OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { UseGuards, Logger, ValidationPipe, UsePipes, UseFilters } from '@nestjs/common';
+import { UseGuards, Logger, ValidationPipe, UsePipes, UseFilters, Inject, forwardRef } from '@nestjs/common';
 import { LocalhostGuard } from 'src/common/guards/localhost.guard';
 import { BotsService } from 'src/bots/bots.service';
 import { ValidationError } from 'class-validator';
@@ -25,6 +25,7 @@ export class BotsGateway implements OnGatewayConnection, OnGatewayDisconnect{
   constructor(
     private botsService: BotsService,
     private notificationsService: NotificationsService,
+    @Inject(forwardRef(() => MessagesService))
     private messagesService: MessagesService,
   ) {}
 

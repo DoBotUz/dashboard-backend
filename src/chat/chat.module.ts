@@ -3,7 +3,6 @@ import { MessagesController } from "./messages.controller";
 import { MessagesService } from "./messages.service";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Message } from "./message.entity";
-import { GatewaysModule } from "src/gateways/gateways.module";
 import { FrontendModule } from "src/gateways/frontend/frontend.module";
 import { BotsGatewayModule } from "src/gateways/bots/bots-gateway.module";
 
