@@ -17,7 +17,7 @@ export class Message {
   id: number;
 
   @Column({
-    type: 'number',
+    type: 'int',
     default: TYPES.text
   })
   type: string;

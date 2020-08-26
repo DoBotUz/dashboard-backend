@@ -25,6 +25,7 @@ export class BotsGateway implements OnGatewayConnection, OnGatewayDisconnect{
   constructor(
     private botsService: BotsService,
     private notificationsService: NotificationsService,
+    @Inject(forwardRef(() => MessagesService))
     private messagesService: MessagesService,
   ) {}
 

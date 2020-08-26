@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeepPartial } from 'typeorm';
 import { TypeOrmCrudService } from "@nestjsx/crud-typeorm";
@@ -13,6 +13,7 @@ export class MessagesService extends TypeOrmCrudService<Message> {
     @InjectRepository(Message)
     public repo: Repository<Message>,
     public frontendGateway: FrontendGateway,
+    @Inject(forwardRef(() => BotsGateway))
     public botsGateway: BotsGateway,
   ) {
     super(repo)
