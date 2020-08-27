@@ -11,6 +11,6 @@ import { IsBotUserExists } from './validators/isBotUserExists';
   imports: [TypeOrmModule.forFeature([BotUser])],
   controllers: [BotUsersController],
   providers: [BotUsersCrudService, BotUsersService, IsBotUserExists],
-  exports: [BotUsersService],
+  exports: [BotUsersService, BotUsersCrudService],
 })
 export class BotUsersModule {}

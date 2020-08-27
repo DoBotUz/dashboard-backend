@@ -76,4 +76,9 @@ export class MessagesController implements CrudController<Message> {
       is_read: true
     });
   }
+
+  @Get('/chats')
+  async getChats() {
+    return this.service.getChats();
+  }
 }
