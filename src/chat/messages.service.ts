@@ -1,6 +1,6 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DeepPartial, MoreThan } from 'typeorm';
+import { Repository, DeepPartial, MoreThan, In } from 'typeorm';
 import { TypeOrmCrudService } from "@nestjsx/crud-typeorm";
 import { Message } from './message.entity';
 import { ParsedBody } from '@nestjsx/crud';
@@ -50,9 +50,7 @@ export class MessagesService extends TypeOrmCrudService<Message> {
     }, new Set());
     const botUsers = await this.botUsersService.find({
       where: {
-        id: {
-          $in: Array.from(distinctBotUserIds)
-        }
+        id: In(Array.from(distinctBotUserIds))
       }
     });
     const chatsWithLastMessage = botUsers.map(botUser => {
