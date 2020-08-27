@@ -1,6 +1,6 @@
 import { Controller, UseGuards, Param, Post, Body, UseInterceptors, UploadedFile, UploadedFiles, BadRequestException, Get } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Crud, CrudController, Override, CrudAuth, ParsedBody, ParsedRequest, } from '@nestjsx/crud';
+import { Crud, CrudController, Override, CrudAuth, ParsedBody, ParsedRequest, CrudRequest, } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
 import { UserD } from 'src/auth/user.decorator';
@@ -59,7 +59,7 @@ export class MessagesController implements CrudController<Message> {
 
 
   @Override()
-  async createOne(@ParsedRequest() request, @ParsedBody() body: Message) {
+  async createOne(@ParsedRequest() request: CrudRequest, @ParsedBody() body: Message) {
     const data = await this.base.createOneBase(request, body);
     this.service.notifyAboutMessage(data);
     return data;
