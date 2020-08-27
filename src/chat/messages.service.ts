@@ -1,6 +1,6 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DeepPartial } from 'typeorm';
+import { Repository, DeepPartial, MoreThan } from 'typeorm';
 import { TypeOrmCrudService } from "@nestjsx/crud-typeorm";
 import { Message } from './message.entity';
 import { ParsedBody } from '@nestjsx/crud';
@@ -36,11 +36,12 @@ export class MessagesService extends TypeOrmCrudService<Message> {
     let from = new Date(new Date().getTime() - 14 * 24 * 3600 * 1000);
     const messages = await this.repo.find({
       where: {
-        created_at: {
-          $gte: from
-        },
+        created_at: MoreThan(from),
         organizationId
-      }
+      },
+      order: {
+        created_at: 'DESC',
+      },
     });
     const distinctBotUserIds = messages.reduce((p,c) => {
       if (!c.sent_by_operator)
