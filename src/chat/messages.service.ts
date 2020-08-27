@@ -23,6 +23,7 @@ export class MessagesService extends TypeOrmCrudService<Message> {
   async newMessage(body: Message): Promise<Message> {
     const res = await this.repo.insert(body);
     const message = await this.repo.findOne(res.identifiers[0].id);
+    this.notifyAboutMessage(message);
     return message;
   }
 
@@ -58,7 +59,7 @@ export class MessagesService extends TypeOrmCrudService<Message> {
     });
     const chatsWithLastMessage = botUsers.map(botUser => {
       let unreadCount = 0;
-      let lastMessage = messages.filter(msg => msg.author == botUser.id).reduce((p,c) => {
+      let lastMessage = messages.filter(msg => msg.author == botUser.id || msg.recipient == botUser.id).reduce((p,c) => {
         if (!c.is_read) {
           unreadCount++;
         }
