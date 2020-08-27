@@ -1,6 +1,6 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DeepPartial, MoreThan, In } from 'typeorm';
+import { Repository, DeepPartial, MoreThan, In, Like } from 'typeorm';
 import { TypeOrmCrudService } from "@nestjsx/crud-typeorm";
 import { Message } from './message.entity';
 import { FrontendGateway } from 'src/gateways/frontend/frontend.gateway';
@@ -82,5 +82,15 @@ export class MessagesService extends TypeOrmCrudService<Message> {
         { recipient: botUserId, organizationId },
       ]
     });
+  }
+
+  async search(query) {
+    return this.botUsersService.find({
+      where: [
+        { username: Like(`%${query}%`) },
+        { bio: Like(`%${query}%`) },
+        { phone_number: Like(`%${query}%`) },
+      ]
+    })
   }
 }

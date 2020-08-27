@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Param, Post, Body, UseInterceptors, UploadedFile, UploadedFiles, BadRequestException, Get } from '@nestjs/common';
+import { Controller, UseGuards, Param, Post, Body, UseInterceptors, UploadedFile, UploadedFiles, BadRequestException, Get, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { Crud, CrudController, Override, CrudAuth, ParsedBody, ParsedRequest, CrudRequest, } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -79,5 +79,10 @@ export class MessagesController implements CrudController<Message> {
   @Get('/:botUser')
   async getChatLog(@Param('organizationId') orgId, @Param('botUser') botUserId) {
     return this.service.getChatLog(orgId, botUserId);
+  }
+
+  @Get('/search')
+  async search(@Query('q') query) {
+    return this.service.search(query);
   }
 }
