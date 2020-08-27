@@ -80,10 +80,7 @@ export class MessagesService extends TypeOrmCrudService<Message> {
       where: [
         { author: botUserId, organizationId },
         { recipient: botUserId, organizationId },
-      ],
-      order: {
-        'created_at': 'DESC'
-      }
+      ]
     });
   }
 }
