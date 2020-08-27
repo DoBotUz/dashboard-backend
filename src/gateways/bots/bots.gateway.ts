@@ -86,7 +86,7 @@ export class BotsGateway implements OnGatewayConnection, OnGatewayDisconnect{
   }
 
   handleChatMessage(data: Message) {
-    this.server.to(`org_id_${data.organizationId}`).emit('newChatMessage', JSON.stringify(data));
+    this.server.emit('newChatMessage', JSON.stringify(data));
   }
 
   @SubscribeMessage('newMessage')
