@@ -6,11 +6,7 @@ import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
 import { UserD } from 'src/auth/user.decorator';
 import { Message } from './message.entity';
 import { MessagesService } from './messages.service';
-import { request } from 'express';
 import { User } from 'src/users/user.entity';
-import { FrontendGateway } from 'src/gateways/frontend/frontend.gateway';
-import { BotsGateway } from 'src/gateways/bots/bots.gateway';
-
 
 @Crud({
   model: {

@@ -21,7 +21,7 @@ export class MessagesService extends TypeOrmCrudService<Message> {
     super(repo)
   }
 
-  async newMessage(@ParsedBody() body: Message): Promise<Message> {
+  async newMessage(body: Message): Promise<Message> {
     const res = await this.repo.insert(body);
     const message = await this.repo.findOne(res.identifiers[0].id);
     return message;
