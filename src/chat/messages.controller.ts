@@ -55,7 +55,7 @@ export class MessagesController implements CrudController<Message> {
 
 
   @Override()
-  async createOne(@ParsedRequest() request: CrudRequest, @ParsedBody() body: Message) {
+  async createOne(@ParsedRequest() request: CrudRequest, @Body() body) { // TODO: make dto
     const data = await this.base.createOneBase(request, body);
     this.service.notifyAboutMessage(data);
     return data;

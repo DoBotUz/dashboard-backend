@@ -26,7 +26,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe(
     {
-      transform: false,
+      transform: true,
       whitelist: true,
       exceptionFactory: (validationErrors: ValidationError[] = []) => {
         return new ValidationException(validationErrors);
