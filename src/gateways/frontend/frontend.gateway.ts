@@ -52,7 +52,7 @@ export class FrontendGateway implements OnGatewayConnection, OnGatewayDisconnect
   }
 
   handleChatMessage(data: Message) {
-    this.server.to(`org_id_${data.organization.id}`).emit('newChatMessage', JSON.stringify(data));
+    this.server.to(`org_id_${data.organizationId}`).emit('newChatMessage', JSON.stringify(data));
   }
 
   // private findSocketByUserId(user_id: number): string {
