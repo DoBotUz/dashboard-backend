@@ -32,13 +32,14 @@ export class MessagesService extends TypeOrmCrudService<Message> {
     this.botsGateway.handleChatMessage(message);
   }
 
-  async getChats(days: number = 14) {
+  async getChats(organizationId, days: number = 14) {
     let from = new Date(new Date().getTime() - 14 * 24 * 3600 * 1000);
     const messages = await this.repo.find({
       where: {
         created_at: {
           $gte: from
-        }
+        },
+        organizationId
       }
     });
     const distinctBotUserIds = messages.reduce((p,c) => {

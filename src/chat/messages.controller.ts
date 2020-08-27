@@ -50,9 +50,7 @@ import { BotsGateway } from 'src/gateways/bots/bots.gateway';
 )
 export class MessagesController implements CrudController<Message> {
   constructor(
-    public service: MessagesService,
-    private frontendGateway: FrontendGateway,
-    private botsGateway: BotsGateway,
+    public service: MessagesService
   ) {}
 
   get base(): CrudController<Message> {
@@ -67,7 +65,7 @@ export class MessagesController implements CrudController<Message> {
     return data;
   }
 
-  @Get('/read/:botUser')
+  @Get('read/:botUser')
   read(@Param('botUser') botUserId) {
     return this.service.repo.update({
       author: botUserId,
@@ -77,8 +75,8 @@ export class MessagesController implements CrudController<Message> {
     });
   }
 
-  @Get('/chats')
-  async getChats() {
-    return this.service.getChats();
+  @Get('chats')
+  async getChats(@Param('organizationId') orgId) {
+    return this.service.getChats(orgId);
   }
 }
