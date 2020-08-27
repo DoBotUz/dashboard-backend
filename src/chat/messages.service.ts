@@ -44,8 +44,12 @@ export class MessagesService extends TypeOrmCrudService<Message> {
       },
     });
     const distinctBotUserIds = messages.reduce((p,c) => {
-      if (!c.sent_by_operator)
+      if (!c.sent_by_operator) {
         p.add(c.author);
+      }
+      else {
+        p.add(c.recipient);
+      }
       return p;
     }, new Set());
     const botUsers = await this.botUsersService.find({
@@ -69,5 +73,17 @@ export class MessagesService extends TypeOrmCrudService<Message> {
     });
 
     return chatsWithLastMessage;
-  } 
+  }
+
+  async getChatLog(organizationId: number, botUserId: number): Promise<Message[]> {
+    return this.repo.find({
+      where: [
+        { author: botUserId, organizationId },
+        { recipient: botUserId, organizationId },
+      ],
+      order: {
+        'created_at': 'DESC'
+      }
+    });
+  }
 }

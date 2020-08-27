@@ -79,4 +79,9 @@ export class MessagesController implements CrudController<Message> {
   async getChats(@Param('organizationId') orgId) {
     return this.service.getChats(orgId);
   }
+
+  @Get('/:botUser')
+  async getChatLog(@Param('organizationId') orgId, @Param('botUser') botUserId) {
+    return this.service.getChatLog(orgId, botUserId);
+  }
 }
