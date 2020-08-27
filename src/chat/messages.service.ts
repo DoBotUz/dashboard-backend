@@ -54,12 +54,17 @@ export class MessagesService extends TypeOrmCrudService<Message> {
       }
     });
     const chatsWithLastMessage = botUsers.map(botUser => {
+      let unreadCount = 0;
       let lastMessage = messages.filter(msg => msg.author == botUser.id).reduce((p,c) => {
+        if (!c.is_read) {
+          unreadCount++;
+        }
         return p.created_at > c.created_at ? p : c;
       })
       return {
         ...botUser,
-        lastMessage: lastMessage
+        lastMessage: lastMessage,
+        unreadCount,
       }
     });
 
