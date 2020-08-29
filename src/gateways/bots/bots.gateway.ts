@@ -7,7 +7,7 @@ import {
   OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { UseGuards, Logger, ValidationPipe, UsePipes, UseFilters } from '@nestjs/common';
+import { UseGuards, Logger, ValidationPipe, UsePipes, UseFilters, Inject, forwardRef } from '@nestjs/common';
 import { LocalhostGuard } from 'src/common/guards/localhost.guard';
 import { BotsService } from 'src/bots/bots.service';
 import { ValidationError } from 'class-validator';
@@ -15,6 +15,8 @@ import { ValidationException } from 'src/validation-exception';
 import { NewNotificationDto } from './dto/new-notification.dto';
 import AllWsExceptionsFilter from 'src/all-ws-exceptions.filter';
 import { NotificationsService } from 'src/notifications/notifications.service';
+import { Message } from 'src/chat/message.entity';
+import { MessagesService } from 'src/chat/messages.service';
 
 @UseGuards(LocalhostGuard)
 @UseFilters(new AllWsExceptionsFilter())
@@ -23,6 +25,8 @@ export class BotsGateway implements OnGatewayConnection, OnGatewayDisconnect{
   constructor(
     private botsService: BotsService,
     private notificationsService: NotificationsService,
+    @Inject(forwardRef(() => MessagesService))
+    private messagesService: MessagesService,
   ) {}
 
   @WebSocketServer()
@@ -79,5 +83,14 @@ export class BotsGateway implements OnGatewayConnection, OnGatewayDisconnect{
   
   handleConnection(client: any, ...args: any[]) {
     this.logger.log(`Client connected: ${client.id}`);
+  }
+
+  handleChatMessage(data: Message) {
+    this.server.emit('newChatMessage', JSON.stringify(data));
+  }
+
+  @SubscribeMessage('newMessage')
+  async newMessage(@MessageBody() data: Message) {
+    this.messagesService.newMessage(data);
   }
 }
