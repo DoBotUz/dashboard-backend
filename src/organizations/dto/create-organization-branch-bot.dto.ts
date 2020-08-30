@@ -1,6 +1,7 @@
-import { ValidateNested, IsNotEmpty, IsOptional, Length } from 'class-validator';
+import { ValidateNested, IsNotEmpty, IsOptional, Length, Validate } from 'class-validator';
 import { Type } from 'class-transformer';
 import { BaseOrganizationDTO } from './base-organization.dto';
+import { UniqueBotToken } from 'src/bots/validators';
 
 class Branch {
   @IsNotEmpty()
@@ -19,6 +20,7 @@ class Branch {
 
 export class BaseBotDto {
   @IsNotEmpty()
+  @Validate(UniqueBotToken)
   @Length(3, 512)
   token: string;
 }

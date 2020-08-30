@@ -21,7 +21,9 @@ export class Bot{
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', { 'length': 1024 })
+  @Column('varchar', {
+    length: 512
+  })
   token: string;
 
   @Column('boolean', { default: false })

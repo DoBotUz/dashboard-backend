@@ -142,13 +142,20 @@ export class OrganizationsController  implements CrudController<Organization> {
     const { id, bot, ...data } = updateOrganizationDTO;
     await this.validateCall(user, Number(id));
 
+    const uniqueToken = await this.botsService.isTokenUnique(bot.token, bot.id);
+    if (!uniqueToken) {
+      throw new BadRequestException('Wrong Input');
+    }
+
     if (thumbnail) {
       data.thumbnail = thumbnail.filename;
     }
     
     const model = await this.organizationsService.updateOne(id, data);
+
     const bot_id = bot.id;
     delete bot.id;
+
     this.botsService.updateOne(bot_id, bot);
     model.bot.token = bot.token;
     return model;
@@ -198,7 +205,7 @@ export class OrganizationsController  implements CrudController<Organization> {
   @Action('Update-One')
   async switchBotStatus(@UserD() user, @Body() data: SwitchBotStatusDto): Promise<boolean> {
     await this.validateCall(user, Number(data.id));
-    const bot = await this.botsService.findOnyByOrgId(data.id);
+    const bot = await this.botsService.findOneByOrgId(data.id);
     bot.status = data.status;
     await this.botsService.updateOneModel(bot);
     this.botsGateway.botStatusChange({
@@ -206,6 +213,15 @@ export class OrganizationsController  implements CrudController<Organization> {
       status: bot.status,
     });
     return true;
+  }
+
+  @Get('is-bot-token-unique/:token')
+  @ApiOkResponse({
+    description: "Is token unique?",
+    type: Boolean
+  })
+  async isEmailUnique(@Param('token') token: string): Promise<boolean> {
+    return await this.botsService.isTokenUnique(token);
   }
 
   private async validateCall(user: User, id: number){

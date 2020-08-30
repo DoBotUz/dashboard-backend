@@ -26,10 +26,18 @@ export class BotsService {
     });
   }
 
-  async findOnyByOrgId(organizationId: number): Promise<Bot> {
+  async findOneByOrgId(organizationId: number): Promise<Bot> {
     return this.botsRepository.findOne({
       where: {
         organizationId,
+      },
+    });
+  }
+
+  async findOneByToken(token: string): Promise<Bot> {
+    return this.botsRepository.findOne({
+      where: {
+        token,
       },
     });
   }
@@ -65,5 +73,21 @@ export class BotsService {
     }
 
     return model.organization.user;
+  }
+
+  public async isTokenUnique(token: string, bot_id?: number): Promise<boolean> {
+    const bot = await this.findOneByToken(token);
+    let botById = null;
+    if (bot_id) {
+      botById = await this.findOne(bot_id);
+    }
+    if(!bot)
+      return true;
+    else {
+      if(botById && bot.token == botById.token)
+        return true;
+      else
+        return false;
+    }
   }
 }
