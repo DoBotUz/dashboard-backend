@@ -77,7 +77,7 @@ export class OrdersController implements CrudController<Order> {
   @Action('Update-One')
   async updateOne(@UserD() user, @Body() updateOrderDTO: UpdateOrderDto): Promise<Order> {
     const order = await this.ordersService.findOne(updateOrderDTO.id);
-    await this.validateCall(user, order.organizationId);
+    await this.validateCall(user, Number(order.organizationId));
     
     const { id, ...data } = updateOrderDTO;
     this.ordersService.updateItems(id, data.order_items);
@@ -93,12 +93,12 @@ export class OrdersController implements CrudController<Order> {
   @Action('Update-One')
   async updateStatus(@UserD() user, @Body() updateStatusDto: UpdateOrderStatusDto): Promise<Order> {
     const item = await this.ordersService.findOne(updateStatusDto.id);
-    await this.validateCall(user, item.organizationId);
+    await this.validateCall(user, Number(item.organizationId));
     const { id, ...data } = updateStatusDto;
     return this.ordersService.updateOne(id, data);
   }
 
-  private async validateCall(user, id){
+  private async validateCall(user, id: number){
     if (!user.roles.includes(AppRoles.admin)) {
       if (user.organizationId !== id) {
         throw new BadRequestException('Wrong input');

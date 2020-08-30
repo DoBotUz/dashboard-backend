@@ -77,7 +77,7 @@ export class BranchesController implements CrudController<Branch> {
   @Override()
   @Action('Create-One')
   async createOne(@UserD() user, @Body() data: CreateBranchDto): Promise<Branch> {
-    await this.validateCall(user, data.organizationId);
+    await this.validateCall(user, Number(data.organizationId));
 
     return this.branchesService.createNew(data);
   }
@@ -90,7 +90,7 @@ export class BranchesController implements CrudController<Branch> {
   @Action('Update-One')
   async updateOne(@UserD() user, @Body() updateBranchDto: UpdateBranchDto): Promise<Branch> {
     const model = await this.branchesService.findOne(updateBranchDto.id);
-    await this.validateCall(user, model.organizationId);
+    await this.validateCall(user, Number(model.organizationId));
 
     const { id, ...data } = updateBranchDto;
     return this.branchesService.updateOne(id, data);
@@ -104,7 +104,7 @@ export class BranchesController implements CrudController<Branch> {
   @Action('Update-One')
   async updateStatus(@UserD() user, @Body() updateStatusDto: UpdateBranchStatusDto): Promise<Branch> {
     const item = await this.branchesService.findOne(updateStatusDto.id);
-    await this.validateCall(user, item.organizationId);
+    await this.validateCall(user, Number(item.organizationId));
     const { id, ...data } = updateStatusDto;
     return this.branchesService.updateOne(id, data);
   }
@@ -112,7 +112,7 @@ export class BranchesController implements CrudController<Branch> {
   @Get(':id/files')
   @Action('Read-One')
   async getFiles(@UserD() user, @Param('id') id): Promise<File[]> {
-    await this.validateCall(user, id);
+    await this.validateCall(user, Number(id));
     return this.filesService.findFilesByKeyAndId(FILE_KEYS.BRANCH, id);
   }
 
@@ -145,7 +145,7 @@ export class BranchesController implements CrudController<Branch> {
     return true;
   }
 
-  private async validateCall(user, id){
+  private async validateCall(user, id: number){
     if (!user.roles.includes(AppRoles.admin)) {
       if (user.organizationId !== id) {
         throw new BadRequestException('Wrong input');

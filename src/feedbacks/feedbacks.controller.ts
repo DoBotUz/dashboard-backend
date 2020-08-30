@@ -81,12 +81,12 @@ export class FeedbacksController implements CrudController<Feedback> {
   @Action('Update-One')
   async updateStatus(@UserD() user, @Body() updateStatusDto: UpdateFeedbackStatusDto): Promise<Feedback> {
     const item = await this.feedbackService.findOne(updateStatusDto.id);
-    await this.validateCall(user, item.organizationId);
+    await this.validateCall(user, Number(item.organizationId));
     const { id, ...data } = updateStatusDto;
     return this.feedbackService.updateOne(id, data);
   }
 
-  private async validateCall(user, id){
+  private async validateCall(user, id: number){
     if (!user.roles.includes(AppRoles.admin)) {
       if (user.organizationId !== id) {
         throw new BadRequestException('Wrong input');

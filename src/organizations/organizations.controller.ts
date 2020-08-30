@@ -140,7 +140,7 @@ export class OrganizationsController  implements CrudController<Organization> {
   @Action('Update-One')
   async updateOne(@UserD() user, @Body() updateOrganizationDTO: UpdateOrganizationDTO, @UploadedFile() thumbnail): Promise<any> {
     const { id, bot, ...data } = updateOrganizationDTO;
-    await this.validateCall(user, id);
+    await this.validateCall(user, Number(id));
 
     if (thumbnail) {
       data.thumbnail = thumbnail.filename;
@@ -157,7 +157,7 @@ export class OrganizationsController  implements CrudController<Organization> {
   @Get('/:id/files')
   @Action('Read-One')
   async getFiles(@UserD() user, @Param('id') id): Promise<File[]> {
-    await this.validateCall(user, id);
+    await this.validateCall(user, Number(id));
     return this.filesService.findFilesByKeyAndId(FILE_KEYS.ORGANIZATION, id);
   }
 
@@ -197,7 +197,7 @@ export class OrganizationsController  implements CrudController<Organization> {
   })
   @Action('Update-One')
   async switchBotStatus(@UserD() user, @Body() data: SwitchBotStatusDto): Promise<boolean> {
-    await this.validateCall(user, data.id);
+    await this.validateCall(user, Number(data.id));
     const bot = await this.botsService.findOnyByOrgId(data.id);
     bot.status = data.status;
     await this.botsService.updateOneModel(bot);

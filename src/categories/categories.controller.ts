@@ -98,11 +98,11 @@ export class CategoriesController implements CrudController<Category> {
   )
   @Action('Create-One')
   async createOne(@UserD() user, @Body() data: CreateCategoryDto, @UploadedFiles() uploadedFiles): Promise<Category> {
-    await this.validateCall(user, data.organizationId);
+    await this.validateCall(user, Number(data.organizationId));
 
     if (data.parentCategoryId) {
       const parentCategory = await this.categoriesService.findOne(data.parentCategoryId);
-      await this.validateCall(user, parentCategory.organizationId);
+      await this.validateCall(user, Number(parentCategory.organizationId));
     }
 
     if (uploadedFiles && uploadedFiles.thumbnail && typeof uploadedFiles.thumbnail[0] !== 'undefined') {
@@ -135,11 +135,11 @@ export class CategoriesController implements CrudController<Category> {
   @Action('Update-One')
   async updateOne(@UserD() user, @Body() updateCategoryDto: UpdateCategoryDto,  @UploadedFile() thumbnail): Promise<Category> {
     const category = await this.categoriesService.findOne(updateCategoryDto.id);
-    await this.validateCall(user, category.organizationId);
+    await this.validateCall(user, Number(category.organizationId));
 
     if (updateCategoryDto.parentCategoryId) {
       const parentCategory = await this.categoriesService.findOne(updateCategoryDto.parentCategoryId);
-      await this.validateCall(user, parentCategory.organizationId);
+      await this.validateCall(user, Number(parentCategory.organizationId));
     }
 
     const { id, ...data } = updateCategoryDto;
@@ -157,7 +157,7 @@ export class CategoriesController implements CrudController<Category> {
   @Action('Update-One')
   async updateStatus(@UserD() user, @Body() updateStatusDto: UpdateCategoryStatusDto): Promise<Category> {
     const item = await this.categoriesService.findOne(updateStatusDto.id);
-    await this.validateCall(user, item.organizationId);
+    await this.validateCall(user, Number(item.organizationId));
     const { id, ...data } = updateStatusDto;
     return this.categoriesService.updateOne(id, data);
   }
@@ -165,7 +165,7 @@ export class CategoriesController implements CrudController<Category> {
   @Get(':id/files')
   @Action('Read-One')
   async getFiles(@UserD() user, @Param('id') id): Promise<File[]> {
-    await this.validateCall(user, id);
+    await this.validateCall(user, Number(id));
     return this.filesService.findFilesByKeyAndId(FILE_KEYS.CATEGORY, id);
   }
 
@@ -198,7 +198,7 @@ export class CategoriesController implements CrudController<Category> {
     return true;
   }
 
-  private async validateCall(user, id){
+  private async validateCall(user, id: number){
     if (!user.roles.includes(AppRoles.admin)) {
       if (user.organizationId !== id) {
         throw new BadRequestException('Wrong input');

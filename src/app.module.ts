@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MulterModule } from "@nestjs/platform-express";
@@ -26,6 +27,8 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { MailingTemplatesModule } from './mailing-templates/mailing-templates.module';
 import { ChatModule } from './chat/chat.module';
 import { roles } from './app.roles';
+import { ACLFilterInterceptor } from './acl-filter.interceptor';
+import { JSendResInterceptor } from './jsend-res.interceptor';
 
 @Module({
   imports: [
@@ -85,6 +88,12 @@ import { roles } from './app.roles';
     ChatModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,  {
+    provide: APP_INTERCEPTOR,
+    useClass: JSendResInterceptor,
+  }, {
+    provide: APP_INTERCEPTOR,
+    useClass: ACLFilterInterceptor,
+  }],
 })
 export class AppModule {}

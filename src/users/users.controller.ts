@@ -66,7 +66,7 @@ export class UsersController implements CrudController<User> {
   }))
   @Action('Create-One')
   async createOne(@UserD() user, @Body() data: CreateUserDto,  @UploadedFile() avatar): Promise<User> {
-    await this.validateCall(user, data.organizationId);
+    await this.validateCall(user, Number(data.organizationId));
     await this.validateRoleVal(user, data.role);
 
     if (avatar) {
@@ -90,7 +90,7 @@ export class UsersController implements CrudController<User> {
   @Action('Update-One')
   async updateOne(@UserD() user, @Body() updateUserDto: UpdateUserDto,  @UploadedFile() avatar): Promise<any> {
     const userModel = await this.usersService.findOne(updateUserDto.id);
-    await this.validateCall(user, userModel.organizationId);
+    await this.validateCall(user, Number(userModel.organizationId));
     await this.validateRoleVal(user, updateUserDto.role);
 
     if (avatar) {
@@ -109,7 +109,7 @@ export class UsersController implements CrudController<User> {
   @Action('Update-One')
   async deleteAvatar(@UserD() user, @Param('id') id: number): Promise<any> {
     const userModel = await this.usersService.findOne(id);
-    await this.validateCall(user, userModel.organizationId);
+    await this.validateCall(user, Number(userModel.organizationId));
     return this.usersService.updateOne(id, {
       avatar: '',
     });
@@ -132,12 +132,12 @@ export class UsersController implements CrudController<User> {
   @Action('Update-One')
   async updateStatus(@UserD() user, @Body() updateStatusDto: UpdateUserStatusDto): Promise<User> {
     const userModel = await this.usersService.findOne(updateStatusDto.id);
-    await this.validateCall(user, userModel.organizationId);
+    await this.validateCall(user, Number(userModel.organizationId));
     const { id, ...data } = updateStatusDto;
     return this.usersService.updateOne(id, data);
   }
 
-  private async validateCall(user, id){
+  private async validateCall(user, id: number){
     if (!user.roles.includes(AppRoles.admin)) {
       if (user.organizationId !== id) {
         throw new BadRequestException('Wrong input');

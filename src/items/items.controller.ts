@@ -95,7 +95,7 @@ export class ItemsController implements CrudController<Item> {
   )
   @Action('Create-One')
   async createOne(@UserD() user, @Body() data: CreateItemDto, @UploadedFiles() uploadedFiles): Promise<Item> {
-    await this.validateCall(user, data.organizationId);
+    await this.validateCall(user, Number(data.organizationId));
     if (uploadedFiles && uploadedFiles.thumbnail && typeof uploadedFiles.thumbnail[0] !== 'undefined') {
       const thumbnail = uploadedFiles.thumbnail[0];
       data.thumbnail = thumbnail.filename;
@@ -126,7 +126,7 @@ export class ItemsController implements CrudController<Item> {
   @Action('Update-One')
   async updateOne(@UserD() user, @Body() updateItemDto: UpdateItemDto, @UploadedFile() thumbnail): Promise<Item> {
     const item = await this.itemsService.findOne(updateItemDto.id);
-    await this.validateCall(user, item.organizationId);
+    await this.validateCall(user, Number(item.organizationId));
     
     const { id, ...data } = updateItemDto;
     if (thumbnail) {
@@ -144,7 +144,7 @@ export class ItemsController implements CrudController<Item> {
   @Action('Update-One')
   async updateStatus(@UserD() user, @Body() updateStatusDto: UpdateItemStatusDto): Promise<Item> {
     const item = await this.itemsService.findOne(updateStatusDto.id);
-    await this.validateCall(user, item.organizationId);
+    await this.validateCall(user, Number(item.organizationId));
     const { id, ...data } = updateStatusDto;
     return this.itemsService.updateOne(id, data);
   }
@@ -152,7 +152,7 @@ export class ItemsController implements CrudController<Item> {
   @Get(':id/files')
   @Action('Read-One')
   async getFiles(@UserD() user, @Param('id') id): Promise<File[]> {
-    await this.validateCall(user, id);
+    await this.validateCall(user, Number(id));
     return this.filesService.findFilesByKeyAndId(FILE_KEYS.ITEM, id);
   }
 
@@ -185,7 +185,7 @@ export class ItemsController implements CrudController<Item> {
     return true;
   }
 
-  private async validateCall(user, id){
+  private async validateCall(user, id: number){
     if (!user.roles.includes(AppRoles.admin)) {
       if (user.organizationId !== id) {
         throw new BadRequestException('Wrong input');

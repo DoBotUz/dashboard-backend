@@ -70,12 +70,12 @@ export class BotUsersController implements CrudController<BotUser> {
   @Action('Update-One')
   async updateOne(@UserD() user, @Body() updateBotUserDto: UpdateBotUserDto): Promise<BotUser> {
     const botUser = await this.botUsersService.findOneWithBot(updateBotUserDto.id);
-    await this.validateCall(user, botUser.bot.organizationId);
+    await this.validateCall(user, Number(botUser.bot.organizationId));
     const { id, ...data } = updateBotUserDto;
     return this.botUsersService.updateOne(id, data);
   }
 
-  private async validateCall(user, id){
+  private async validateCall(user, id: number){
     if (!user.roles.includes(AppRoles.admin)) {
       if (user.organizationId !== id) {
         throw new BadRequestException('Wrong input');

@@ -93,7 +93,7 @@ export class PromocodesController  implements CrudController<Promocode> {
   @Action('Update-One')
   async updateStatus(@UserD() user, @Body() updateStatusDto: UpdatePromocodeStatusDto): Promise<Promocode> {
     const item = await this.promocodesService.findOne(updateStatusDto.id);
-    await this.validateCall(user, item.organizationId);
+    await this.validateCall(user, Number(item.organizationId));
     const { id, ...data } = updateStatusDto;
     return this.promocodesService.updateOne(id, data);
   }
