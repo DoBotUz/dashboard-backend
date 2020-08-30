@@ -8,40 +8,25 @@ export enum AppRoles {
 }
 
 const grantsObject = {
-  [AppRoles.operator]: {
-    order: {
-      'create': ['*', '!organizationId'],
-      'read': ['*'],
-      'update': ['*', '!organizationId'],
-      'delete': ['*'],
+  operator: {
+    orders: {
+      'create:any': ['*', '!organizationId'],
+      'read:any': ['*'],
+      'update:any': ['*', '!organizationId'],
+      'delete:any': ['*'],
     },
-    feedback: {
+    feedbacks: {
       'read': ['*'],
     },
   },
   [AppRoles.manager]: {
-      video: {
-          'create:own': ['*', '!rating', '!views'],
-          'read:own': ['*'],
-          'update:own': ['*', '!rating', '!views'],
-          'delete:own': ['*']
-      }
+
   },
   [AppRoles.owner]: {
-    video: {
-        'create:own': ['*', '!rating', '!views'],
-        'read:own': ['*'],
-        'update:own': ['*', '!rating', '!views'],
-        'delete:own': ['*']
-    }
+
   },
   [AppRoles.admin]: {
-    video: {
-        'create:own': ['*', '!rating', '!views'],
-        'read:own': ['*'],
-        'update:own': ['*', '!rating', '!views'],
-        'delete:own': ['*']
-    }
+
   }
 };
 

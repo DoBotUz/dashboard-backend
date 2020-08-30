@@ -1,6 +1,6 @@
 import { Controller, UseGuards, Body, BadRequestException, Post, } from '@nestjs/common';
 import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
-import { Crud, CrudController, CrudAuth } from "@nestjsx/crud";
+import { Crud, CrudController, CrudAuth, Feature, Action } from "@nestjsx/crud";
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 import { OrdersService } from './orders.service';
@@ -59,6 +59,7 @@ import { ACLGuard } from 'src/common/guards/ACL.guard';
 @ApiTags('orders')
 @Controller('/:organizationId/orders')
 @UseGuards(JwtAuthGuard, ACLGuard)
+@Feature('orders')
 export class OrdersController implements CrudController<Order> {
   constructor(
     public service: OrdersCrudService,
@@ -66,15 +67,13 @@ export class OrdersController implements CrudController<Order> {
     private usersService: UsersService,
   ) {}
 
-  get base(): CrudController<Order> {
-    return this;
-  }
 
   @Post("/update")
   @ApiOkResponse({
     description: 'Updates one order',
     type: Order
   })
+  @Action('Update-One')
   async updateOne(@UserD() user, @Body() updateOrderDTO: UpdateOrderDto): Promise<Order> {
     const order = await this.ordersService.findOne(updateOrderDTO.id);
     await this.validateCall(user, order.organizationId);
@@ -90,6 +89,7 @@ export class OrdersController implements CrudController<Order> {
     description: 'Updates status',
     type: Order
   })
+  @Action('Update-One')
   async updateStatus(@UserD() user, @Body() updateStatusDto: UpdateOrderStatusDto): Promise<Order> {
     const item = await this.ordersService.findOne(updateStatusDto.id);
     await this.validateCall(user, item.organizationId);
