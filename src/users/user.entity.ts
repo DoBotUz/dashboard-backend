@@ -2,6 +2,7 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateCol
 import { Exclude } from 'class-transformer';
 import { Organization } from 'src/organizations/organization.entity';
 import { Notification } from 'src/notifications/notification.entity'
+import { AppRoles } from 'src/app.roles';
 
 export const STATUSES = {
   ACTIVE: 10,
@@ -59,6 +60,13 @@ export class User  {
   })
   status: number;
 
+  @Column({
+    type: 'varchar',
+    length: 255,
+    default: AppRoles.operator
+  })
+  role: string;
+
   @CreateDateColumn({ name: 'created_at', readonly: true })
   created_at: Date;
 
@@ -70,4 +78,6 @@ export class User  {
 
   @OneToMany(type => Notification, notification => notification.user)
   notifications: Notification[];
+
+  roles: string[]; //For ACGuard
 }

@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MulterModule } from "@nestjs/platform-express";
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { AccessControlModule } from 'nest-access-control';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -24,11 +25,12 @@ import { GatewaysModule } from './gateways/gateways.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { MailingTemplatesModule } from './mailing-templates/mailing-templates.module';
 import { ChatModule } from './chat/chat.module';
-
+import { roles } from './app.roles';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    AccessControlModule.forRoles(roles),
     MailerModule.forRoot({
       transport: {
         host: process.env.MAIL_HOST,

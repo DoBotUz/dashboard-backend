@@ -25,6 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
     user.last_seen = new Date();
     await this.usersService.updateOne(user.id, user);
+    user.roles = [user.role];
     return user;
   }
 }
