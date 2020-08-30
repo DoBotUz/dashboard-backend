@@ -4,7 +4,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
 
 import { UsersService } from './users.service';
-import { UpdateUserDTO } from './dto';
+import { UpdateProfileDto } from './dto';
 import { User } from './user.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -41,7 +41,7 @@ export class ProfileController {
     }),
     fileFilter: imageFileFilter,
   }))
-  async updateProfile(@UserD() user, @Body() data: UpdateUserDTO,  @UploadedFile() avatar): Promise<any> {
+  async updateProfile(@UserD() user, @Body() data: UpdateProfileDto,  @UploadedFile() avatar): Promise<any> {
     if (avatar) {
       data.avatar = avatar.filename;
     }

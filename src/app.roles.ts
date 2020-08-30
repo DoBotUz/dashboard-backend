@@ -37,6 +37,9 @@ const grantsObject = {
     organizations: {
       'read:any': ['*'],
     },
+    users: {
+      'read:any': ['*'],
+    },
   },
   [AppRoles.manager]: {
     orders: {
@@ -84,6 +87,11 @@ const grantsObject = {
     },
     organizations: {
       'read:any': ['*'],
+    },
+    users: {
+      'read:any': ['*'],
+      'create:any': ['*'],
+      'update:any': ['*'],
     },
   },
   [AppRoles.owner]: {
@@ -134,6 +142,12 @@ const grantsObject = {
       'update:any': ['*'],
       'read:any': ['*'],
     },
+    users: {
+      'read:any': ['*'],
+      'create:any': ['*'],
+      'update:any': ['*'],
+      'delete:any': ['*'],
+    },
   },
   [AppRoles.admin]: {
     orders: {
@@ -183,6 +197,12 @@ const grantsObject = {
       'update:any': ['*'],
       'read:any': ['*'],
       'create:any': ['*'],
+      'delete:any': ['*'],
+    },
+    users: {
+      'read:any': ['*'],
+      'create:any': ['*'],
+      'update:any': ['*'],
       'delete:any': ['*'],
     },
   }

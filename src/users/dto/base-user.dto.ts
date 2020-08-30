@@ -15,4 +15,5 @@ export class BaseUserDTO {
   last_name: string;
 
   avatar: string;
+  password_hash: string;
 }

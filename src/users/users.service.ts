@@ -14,10 +14,17 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async createNew(data: any): Promise<User> {
+  async createNewSignUp(data: any): Promise<User> {
     data.status = STATUSES.MODERATION;
     data.password_hash = await this.hashPassword(data.password);
     data.verification_token = nanoid(255);
+    const user = new User();
+    Object.assign(user, data);
+    return await this.usersRepository.save(user);
+  }
+
+  async createNew(data: any): Promise<User> {
+    data.password_hash = await this.hashPassword(data.password);
     const user = new User();
     Object.assign(user, data);
     return await this.usersRepository.save(user);

@@ -43,6 +43,9 @@ class SignUpDto {
   @IsNotEmpty()
   @Length(6, 255)
   password: string;
+  
+  password_hash: string;
+  verification_token: string;
 }
 
 @Controller()
@@ -72,7 +75,7 @@ export class AppController {
     type: Boolean
   })
   async signup(@Body() signUpDto: SignUpDto): Promise<boolean> {
-    const model = await this.usersService.createNew(signUpDto);
+    const model = await this.usersService.createNewSignUp(signUpDto);
     this
     .mailerService
     .sendMail({
