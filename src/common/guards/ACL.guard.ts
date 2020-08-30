@@ -45,6 +45,7 @@ export class ACLGuard implements CanActivate {
 
   private translateCrudActionToACL(action: string): string{
     const translations = {
+      'Read-Many': 'readAny',
       'Read-All': 'readAny',
       'Read-One': 'readAny',
       'Create-One': 'createAny',

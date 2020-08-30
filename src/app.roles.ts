@@ -16,7 +16,7 @@ const grantsObject = {
       'delete:any': ['*'],
     },
     feedbacks: {
-      'read': ['*'],
+      'read:any': ['*'],
     },
     categories: {
       'read:any': ['*'],
@@ -49,7 +49,7 @@ const grantsObject = {
       'delete:any': ['*'],
     },
     feedbacks: {
-      'read': ['*'],
+      'read:any': ['*'],
     },
     categories: {
       'create:any': ['*'],
@@ -102,7 +102,7 @@ const grantsObject = {
       'delete:any': ['*'],
     },
     feedbacks: {
-      'read': ['*'],
+      'read:any': ['*'],
     },
     categories: {
       'create:any': ['*'],
@@ -157,7 +157,7 @@ const grantsObject = {
       'delete:any': ['*'],
     },
     feedbacks: {
-      'read': ['*'],
+      'read:any': ['*'],
     },
     categories: {
       'create:any': ['*'],
