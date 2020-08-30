@@ -10,6 +10,7 @@ import { User } from 'src/users/user.entity';
 import { UpdateOrderDto, UpdateOrderStatusDto } from './dto/update-order.dto';
 import { UsersService } from 'src/users/users.service';
 import { UserD } from 'src/auth/user.decorator';
+import { ACLGuard } from 'src/common/guards/ACL.guard';
 
 @Crud({
   model: {
@@ -57,13 +58,17 @@ import { UserD } from 'src/auth/user.decorator';
 })
 @ApiTags('orders')
 @Controller('/:organizationId/orders')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, ACLGuard)
 export class OrdersController implements CrudController<Order> {
   constructor(
     public service: OrdersCrudService,
     private ordersService: OrdersService,
     private usersService: UsersService,
   ) {}
+
+  get base(): CrudController<Order> {
+    return this;
+  }
 
   @Post("/update")
   @ApiOkResponse({

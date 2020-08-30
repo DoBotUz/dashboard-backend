@@ -9,12 +9,15 @@ export enum AppRoles {
 
 const grantsObject = {
   [AppRoles.operator]: {
-      video: {
-          'create:any': ['*', '!views'],
-          'read:any': ['*'],
-          'update:any': ['*', '!views'],
-          'delete:any': ['*']
-      }
+    order: {
+      'create': ['*', '!organizationId'],
+      'read': ['*'],
+      'update': ['*', '!organizationId'],
+      'delete': ['*'],
+    },
+    feedback: {
+      'read': ['*'],
+    },
   },
   [AppRoles.manager]: {
       video: {
