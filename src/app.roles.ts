@@ -35,7 +35,7 @@ const grantsObject = {
       'update:any': ['*'],
     },
     organizations: {
-      'read:any': ['*'],
+      'read:any': ['*', '!bot.*'],
     },
     users: {
       'read:any': ['*'],
