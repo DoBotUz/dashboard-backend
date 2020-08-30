@@ -24,7 +24,7 @@ export class UpdateUserDto extends BaseUserDTO {
 
   @IsNotEmpty()
   @IsString()
-  @IsIn(Object.values(roles))
+  @IsIn(Object.keys(roles).map(k => roles[k]))
   role: string;
 }
 
