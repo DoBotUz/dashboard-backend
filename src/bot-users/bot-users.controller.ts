@@ -12,6 +12,7 @@ import { UsersService } from 'src/users/users.service';
 import { UserD } from 'src/auth/user.decorator';
 import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
 import { ACLGuard } from 'src/common/guards/ACL.guard';
+import { AppRoles } from 'src/app.roles';
 
 @Crud({
   model: {
@@ -75,6 +76,13 @@ export class BotUsersController implements CrudController<BotUser> {
   }
 
   private async validateCall(user, id){
+    if (!user.roles.includes(AppRoles.admin)) {
+      if (user.organizationId !== id) {
+        throw new BadRequestException('Wrong input');
+      }
+      return;
+    }
+
     const userEntity = await this.usersService.findOneWithOrganizations(user.id);
 
     if(!userEntity.organizations.some(org => org.id == id)) {

@@ -12,6 +12,7 @@ import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
 import { UsersService } from 'src/users/users.service';
 import { UpdatePromocodeStatusDto } from './dto/update-promocode.dto';
 import { ACLGuard } from 'src/common/guards/ACL.guard';
+import { AppRoles } from 'src/app.roles';
 
 
 @Crud({
@@ -73,7 +74,7 @@ export class PromocodesController  implements CrudController<Promocode> {
     return this.promocodesService.createNew(data);
   }
 
-  @Post("/update")
+  @Post("/:organizationId/update")
   @ApiOkResponse({
     description: 'Updates one promocode',
     type: Promocode
@@ -84,7 +85,7 @@ export class PromocodesController  implements CrudController<Promocode> {
     return this.promocodesService.updateOne(id, data);
   }
 
-  @Post("/status")
+  @Post("/:organizationId/status")
   @ApiOkResponse({
     description: 'Updates status',
     type: Promocode
@@ -98,6 +99,13 @@ export class PromocodesController  implements CrudController<Promocode> {
   }
 
   private async validateCall(user: User, id: number){
+    if (!user.roles.includes(AppRoles.admin)) {
+      if (user.organizationId !== id) {
+        throw new BadRequestException('Wrong input');
+      }
+      return;
+    }
+
     const userEntity = await this.usersService.findOneWithOrganizations(user.id);
 
     if(!userEntity.organizations.some(org => org.id == id)) {

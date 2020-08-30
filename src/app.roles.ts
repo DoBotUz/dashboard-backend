@@ -8,7 +8,7 @@ export enum AppRoles {
 }
 
 const grantsObject = {
-  operator: {
+  [AppRoles.operator]: {
     orders: {
       'create:any': ['*'],
       'read:any': ['*'],

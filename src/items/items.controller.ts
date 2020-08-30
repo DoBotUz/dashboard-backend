@@ -17,6 +17,7 @@ import { User } from 'src/users/user.entity';
 import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
 import { UsersService } from 'src/users/users.service';
 import { ACLGuard } from 'src/common/guards/ACL.guard';
+import { AppRoles } from 'src/app.roles';
 
 
 @Crud({
@@ -185,6 +186,13 @@ export class ItemsController implements CrudController<Item> {
   }
 
   private async validateCall(user, id){
+    if (!user.roles.includes(AppRoles.admin)) {
+      if (user.organizationId !== id) {
+        throw new BadRequestException('Wrong input');
+      }
+      return;
+    }
+
     const userEntity = await this.usersService.findOneWithOrganizations(user.id);
 
     if(!userEntity.organizations.some(org => org.id == id)) {

@@ -21,6 +21,7 @@ import { ValidationError } from 'class-validator';
 import { ValidationException } from 'src/validation-exception';
 import { UsersService } from 'src/users/users.service';
 import { ACLGuard } from 'src/common/guards/ACL.guard';
+import { AppRoles } from 'src/app.roles';
 
 
 @Crud({
@@ -108,7 +109,6 @@ export class OrganizationsController  implements CrudController<Organization> {
           console.log(res);
       });
     }
-    console.log(data);
     data.userId = user.id;
     const org = await this.organizationsService.createNew(data);
     if (uploadedFiles && uploadedFiles.files && uploadedFiles.files.length) {
@@ -125,7 +125,7 @@ export class OrganizationsController  implements CrudController<Organization> {
     };
   }
 
-  @Post("/update")
+  @Post('/:organizationId/update')
   @ApiOkResponse({
     description: 'Updates one organization',
     type: Organization
@@ -154,14 +154,14 @@ export class OrganizationsController  implements CrudController<Organization> {
     return model;
   }
 
-  @Get(':id/files')
+  @Get('/:organizationId/:id/files')
   @Action('Read-One')
   async getFiles(@UserD() user, @Param('id') id): Promise<File[]> {
     await this.validateCall(user, id);
     return this.filesService.findFilesByKeyAndId(FILE_KEYS.ORGANIZATION, id);
   }
 
-  @Post(":id/add-file")
+  @Post("/:organizationId/:id/add-file")
   @ApiOkResponse({
     description: 'Add file to file list',
     type: Boolean
@@ -179,7 +179,7 @@ export class OrganizationsController  implements CrudController<Organization> {
     return true;
   }
 
-  @Post(":id/remove-file")
+  @Post("/:organizationId/:id/remove-file")
   @ApiOkResponse({
     description: 'Remove file from list',
     type: Boolean
@@ -190,7 +190,7 @@ export class OrganizationsController  implements CrudController<Organization> {
     return true;
   }
 
-  @Post("/switch-bot-status")
+  @Post("/:organizationId/switch-bot-status")
   @ApiOkResponse({
     description: 'Changes organiaztion related bot status',
     type: Boolean
@@ -209,6 +209,13 @@ export class OrganizationsController  implements CrudController<Organization> {
   }
 
   private async validateCall(user: User, id: number){
+    if (!user.roles.includes(AppRoles.admin)) {
+      if (user.organizationId !== id) {
+        throw new BadRequestException('Wrong input');
+      }
+      return;
+    }
+
     const userEntity = await this.usersService.findOneWithOrganizations(user.id);
 
     if(!userEntity.organizations.some(org => org.id == id)) {

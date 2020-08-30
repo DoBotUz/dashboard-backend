@@ -17,6 +17,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
 import { diskStorage } from 'multer';
 import { ACLGuard } from 'src/common/guards/ACL.guard';
+import { AppRoles } from 'src/app.roles';
 
 
 @Crud({
@@ -145,6 +146,13 @@ export class BranchesController implements CrudController<Branch> {
   }
 
   private async validateCall(user, id){
+    if (!user.roles.includes(AppRoles.admin)) {
+      if (user.organizationId !== id) {
+        throw new BadRequestException('Wrong input');
+      }
+      return;
+    }
+
     const userEntity = await this.usersService.findOneWithOrganizations(user.id);
 
     if(!userEntity.organizations.some(org => org.id == id)) {
