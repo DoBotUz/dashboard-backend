@@ -125,7 +125,7 @@ export class OrganizationsController  implements CrudController<Organization> {
     };
   }
 
-  @Post('/:organizationId/update')
+  @Post('/update')
   @ApiOkResponse({
     description: 'Updates one organization',
     type: Organization
@@ -154,14 +154,14 @@ export class OrganizationsController  implements CrudController<Organization> {
     return model;
   }
 
-  @Get('/:organizationId/:id/files')
+  @Get('/:id/files')
   @Action('Read-One')
   async getFiles(@UserD() user, @Param('id') id): Promise<File[]> {
     await this.validateCall(user, id);
     return this.filesService.findFilesByKeyAndId(FILE_KEYS.ORGANIZATION, id);
   }
 
-  @Post("/:organizationId/:id/add-file")
+  @Post("/:id/add-file")
   @ApiOkResponse({
     description: 'Add file to file list',
     type: Boolean
@@ -179,7 +179,7 @@ export class OrganizationsController  implements CrudController<Organization> {
     return true;
   }
 
-  @Post("/:organizationId/:id/remove-file")
+  @Post("/:id/remove-file")
   @ApiOkResponse({
     description: 'Remove file from list',
     type: Boolean
@@ -190,7 +190,7 @@ export class OrganizationsController  implements CrudController<Organization> {
     return true;
   }
 
-  @Post("/:organizationId/switch-bot-status")
+  @Post("/switch-bot-status")
   @ApiOkResponse({
     description: 'Changes organiaztion related bot status',
     type: Boolean
