@@ -3,7 +3,7 @@ import { UniqueEmail } from '../validators';
 import { STATUSES } from '../user.entity';
 import { Transform } from 'class-transformer';
 import { BaseUserDTO } from './base-user.dto';
-import { roles } from 'src/app.roles';
+import { AppRoles } from 'src/app.roles';
 import { IsOrganizationExists } from 'src/organizations/validators';
 
 export class CreateUserDto extends BaseUserDTO {
@@ -35,6 +35,6 @@ export class CreateUserDto extends BaseUserDTO {
 
   @IsNotEmpty()
   @IsString()
-  @IsIn(Object.keys(roles).map(k => roles[k]))
+  @IsIn(Object.values(AppRoles))
   role: string;
 }

@@ -3,7 +3,7 @@ import { IsUserExists } from '../validators';
 import { STATUSES } from '../user.entity';
 import { Transform } from 'class-transformer';
 import { BaseUserDTO } from './base-user.dto';
-import { roles } from 'src/app.roles';
+import { AppRoles } from 'src/app.roles';
 
 export class UpdateUserDto extends BaseUserDTO {
   @IsNotEmpty()
@@ -24,7 +24,7 @@ export class UpdateUserDto extends BaseUserDTO {
 
   @IsNotEmpty()
   @IsString()
-  @IsIn(Object.keys(roles).map(k => roles[k]))
+  @IsIn(Object.values(AppRoles))
   role: string;
 }
 
