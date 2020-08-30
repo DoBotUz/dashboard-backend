@@ -1,6 +1,6 @@
 import { Controller, UseGuards, Body, BadRequestException, } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Crud, CrudController, CrudAuth, Override, } from '@nestjsx/crud';
+import { Crud, CrudController, CrudAuth, Override, Feature, Action, } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 import { BotUsersService } from './bot-users.service';
@@ -11,6 +11,7 @@ import { UpdateBotUserDto } from './dto/update-bot-user.dto';
 import { UsersService } from 'src/users/users.service';
 import { UserD } from 'src/auth/user.decorator';
 import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
+import { ACLGuard } from 'src/common/guards/ACL.guard';
 
 @Crud({
   model: {
@@ -53,8 +54,10 @@ import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
 @Controller('/:organizationId/bot-users')
 @UseGuards(
   JwtAuthGuard,
-  OrganizationGuard
+  OrganizationGuard,
+  ACLGuard
 )
+@Feature('bot-users')
 export class BotUsersController implements CrudController<BotUser> {
   constructor(
     public service: BotUsersCrudService,
@@ -63,6 +66,7 @@ export class BotUsersController implements CrudController<BotUser> {
   ) {}
   
   @Override()
+  @Action('Update-One')
   async updateOne(@UserD() user, @Body() updateBotUserDto: UpdateBotUserDto): Promise<BotUser> {
     const botUser = await this.botUsersService.findOneWithBot(updateBotUserDto.id);
     await this.validateCall(user, botUser.bot.organizationId);

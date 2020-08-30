@@ -116,4 +116,7 @@ export class Organization {
 
   @OneToMany(type => MailingTemplate, template => template.organization)
   mailing_templates: MailingTemplate[];
+
+  @OneToMany(type => User, user => user.organization)
+  workers: User[];
 }

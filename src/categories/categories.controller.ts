@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { Controller, Get, UseGuards, Param, Post, Body, Delete, UseInterceptors, UploadedFile, UploadedFiles, BadRequestException } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Crud, CrudController, Override, CrudAuth } from '@nestjsx/crud';
+import { Crud, CrudController, Override, CrudAuth, Feature, Action } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
 import { FileInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express";
@@ -16,6 +16,7 @@ import { CategoriesCrudService } from './categories-crud.service';
 import { User } from 'src/users/user.entity';
 import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
 import { UsersService } from 'src/users/users.service';
+import { ACLGuard } from 'src/common/guards/ACL.guard';
 
 
 @Crud({
@@ -63,8 +64,10 @@ import { UsersService } from 'src/users/users.service';
 @Controller('/:organizationId/categories')
 @UseGuards(
   JwtAuthGuard,
-  OrganizationGuard
+  OrganizationGuard,
+  ACLGuard
 )
+@Feature('categories')
 export class CategoriesController implements CrudController<Category> {
   constructor(
     public service: CategoriesCrudService,
@@ -92,6 +95,7 @@ export class CategoriesController implements CrudController<Category> {
       fileFilter: imageFileFilter,
     }),
   )
+  @Action('Create-One')
   async createOne(@UserD() user, @Body() data: CreateCategoryDto, @UploadedFiles() uploadedFiles): Promise<Category> {
     await this.validateCall(user, data.organizationId);
 
@@ -127,6 +131,7 @@ export class CategoriesController implements CrudController<Category> {
     }),
     fileFilter: imageFileFilter,
   }))
+  @Action('Update-One')
   async updateOne(@UserD() user, @Body() updateCategoryDto: UpdateCategoryDto,  @UploadedFile() thumbnail): Promise<Category> {
     const category = await this.categoriesService.findOne(updateCategoryDto.id);
     await this.validateCall(user, category.organizationId);
@@ -148,6 +153,7 @@ export class CategoriesController implements CrudController<Category> {
     description: 'Updates status',
     type: Category
   })
+  @Action('Update-One')
   async updateStatus(@UserD() user, @Body() updateStatusDto: UpdateCategoryStatusDto): Promise<Category> {
     const item = await this.categoriesService.findOne(updateStatusDto.id);
     await this.validateCall(user, item.organizationId);
@@ -156,6 +162,7 @@ export class CategoriesController implements CrudController<Category> {
   }
 
   @Get(':id/files')
+  @Action('Read-One')
   async getFiles(@UserD() user, @Param('id') id): Promise<File[]> {
     await this.validateCall(user, id);
     return this.filesService.findFilesByKeyAndId(FILE_KEYS.CATEGORY, id);
@@ -173,6 +180,7 @@ export class CategoriesController implements CrudController<Category> {
     }),
     fileFilter: imageFileFilter,
   }))
+  @Action('Update-One')
   async addFile(@Param("id") id, @UploadedFile() file): Promise<boolean> {
     this.filesService.uploadImagesFor(FILE_KEYS.CATEGORY, id, [file]);
     return true;
@@ -183,6 +191,7 @@ export class CategoriesController implements CrudController<Category> {
     description: 'Remove file from list',
     type: Boolean
   })
+  @Action('Update-One')
   async removeFile(@Param("id") id): Promise<boolean> {
     this.filesService.remove(id);
     return true;

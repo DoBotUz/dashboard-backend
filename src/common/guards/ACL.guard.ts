@@ -17,11 +17,13 @@ export class ACLGuard implements CanActivate {
     const action = getAction(handler);
     const crudAction = this.translateCrudActionToACL(action);
 
+    console.log(request.params);
+    this.logger.log(`${feature} - ${action}`);
     if (!crudAction){
       this.logger.log(`No action translation found: ${feature} - ${action}`);
       return false;
     }
-    
+
     for(let i = 0; i < user.roles.length; i++){
       const role = user.roles[i];
       if(this.roleBuilder.can(role)[crudAction](feature).granted){

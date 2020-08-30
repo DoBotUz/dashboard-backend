@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { Controller, UseGuards, Body, UseInterceptors, UploadedFile, UploadedFiles, ValidationPipe, UsePipes, BadRequestException, Get, Param, Post } from '@nestjs/common';
 import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
-import { Crud, CrudController, Override, CrudAuth } from "@nestjsx/crud";
+import { Crud, CrudController, Override, CrudAuth, Feature, Action } from "@nestjsx/crud";
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
 import { FileInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express";
@@ -20,6 +20,7 @@ import { User } from 'src/users/user.entity';
 import { ValidationError } from 'class-validator';
 import { ValidationException } from 'src/validation-exception';
 import { UsersService } from 'src/users/users.service';
+import { ACLGuard } from 'src/common/guards/ACL.guard';
 
 
 @Crud({
@@ -56,7 +57,8 @@ import { UsersService } from 'src/users/users.service';
 })
 @ApiTags('organizations')
 @Controller('organizations')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, ACLGuard)
+@Feature('organizations')
 export class OrganizationsController  implements CrudController<Organization> {
   constructor(
     public service: OrgCrudService,
@@ -96,6 +98,7 @@ export class OrganizationsController  implements CrudController<Organization> {
        }
     }
   ))
+  @Action('Create-One')
   async createOne(@UserD() user, @Body() data: CreateOrganizationBranchBotDTO, @UploadedFiles() uploadedFiles): Promise<any> {
     if (uploadedFiles && uploadedFiles.thumbnail && typeof uploadedFiles.thumbnail[0] !== 'undefined') {
       const thumbnail = uploadedFiles.thumbnail[0];
@@ -134,6 +137,7 @@ export class OrganizationsController  implements CrudController<Organization> {
     }),
     fileFilter: imageFileFilter,
   }))
+  @Action('Update-One')
   async updateOne(@UserD() user, @Body() updateOrganizationDTO: UpdateOrganizationDTO, @UploadedFile() thumbnail): Promise<any> {
     const { id, bot, ...data } = updateOrganizationDTO;
     await this.validateCall(user, id);
@@ -151,6 +155,7 @@ export class OrganizationsController  implements CrudController<Organization> {
   }
 
   @Get(':id/files')
+  @Action('Read-One')
   async getFiles(@UserD() user, @Param('id') id): Promise<File[]> {
     await this.validateCall(user, id);
     return this.filesService.findFilesByKeyAndId(FILE_KEYS.ORGANIZATION, id);
@@ -168,6 +173,7 @@ export class OrganizationsController  implements CrudController<Organization> {
     }),
     fileFilter: imageFileFilter,
   }))
+  @Action('Update-One')
   async addFile(@Param("id") id, @UploadedFile() file): Promise<boolean> {
     this.filesService.uploadImagesFor(FILE_KEYS.ORGANIZATION, id, [file]);
     return true;
@@ -178,6 +184,7 @@ export class OrganizationsController  implements CrudController<Organization> {
     description: 'Remove file from list',
     type: Boolean
   })
+  @Action('Update-One')
   async removeFile(@Param("id") id): Promise<boolean> {
     this.filesService.remove(id);
     return true;
@@ -188,6 +195,7 @@ export class OrganizationsController  implements CrudController<Organization> {
     description: 'Changes organiaztion related bot status',
     type: Boolean
   })
+  @Action('Update-One')
   async switchBotStatus(@UserD() user, @Body() data: SwitchBotStatusDto): Promise<boolean> {
     await this.validateCall(user, data.id);
     const bot = await this.botsService.findOnyByOrgId(data.id);

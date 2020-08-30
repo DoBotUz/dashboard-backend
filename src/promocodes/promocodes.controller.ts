@@ -1,6 +1,6 @@
 import { Controller, UseGuards, Body, BadRequestException, Post } from '@nestjs/common';
 import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
-import { Crud, CrudController, Override, CrudAuth } from "@nestjsx/crud";
+import { Crud, CrudController, Override, CrudAuth, Feature, Action } from "@nestjsx/crud";
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
 import { PromocodeCrudService } from './promocodes-crud.service';
@@ -11,6 +11,7 @@ import { Promocode, STATUSES } from './promocode.entity';
 import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
 import { UsersService } from 'src/users/users.service';
 import { UpdatePromocodeStatusDto } from './dto/update-promocode.dto';
+import { ACLGuard } from 'src/common/guards/ACL.guard';
 
 
 @Crud({
@@ -56,7 +57,9 @@ import { UpdatePromocodeStatusDto } from './dto/update-promocode.dto';
 @UseGuards(
   JwtAuthGuard,
   OrganizationGuard,
+  ACLGuard
 )
+@Feature('promocode')
 export class PromocodesController  implements CrudController<Promocode> {
   constructor(
     public service: PromocodeCrudService,
@@ -65,6 +68,7 @@ export class PromocodesController  implements CrudController<Promocode> {
   ) {}
   
   @Override()
+  @Action('Create-One')
   async createOne(@UserD() user, @Body() data: CreatePromocodeDto): Promise<Promocode> {
     return this.promocodesService.createNew(data);
   }
@@ -74,6 +78,7 @@ export class PromocodesController  implements CrudController<Promocode> {
     description: 'Updates one promocode',
     type: Promocode
   })
+  @Action('Update-One')
   async updateOne(@UserD() user, @Body() updatePromocodeDto: UpdatePromocodeDto,): Promise<Promocode> {
     const { id, ...data } = updatePromocodeDto;
     return this.promocodesService.updateOne(id, data);
@@ -84,6 +89,7 @@ export class PromocodesController  implements CrudController<Promocode> {
     description: 'Updates status',
     type: Promocode
   })
+  @Action('Update-One')
   async updateStatus(@UserD() user, @Body() updateStatusDto: UpdatePromocodeStatusDto): Promise<Promocode> {
     const item = await this.promocodesService.findOne(updateStatusDto.id);
     await this.validateCall(user, item.organizationId);

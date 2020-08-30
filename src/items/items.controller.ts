@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { Controller, UseGuards, Param, Post, Body, UseInterceptors, UploadedFile, UploadedFiles, BadRequestException, Get } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Crud, CrudController, Override, CrudAuth, } from '@nestjsx/crud';
+import { Crud, CrudController, Override, CrudAuth, Action, Feature, } from '@nestjsx/crud';
 import { FileInterceptor, FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -16,6 +16,7 @@ import { ItemsCrudService } from './items-crud.service';
 import { User } from 'src/users/user.entity';
 import { OrganizationGuard } from 'src/common/guards/OrganizationsGuard';
 import { UsersService } from 'src/users/users.service';
+import { ACLGuard } from 'src/common/guards/ACL.guard';
 
 
 @Crud({
@@ -61,7 +62,9 @@ import { UsersService } from 'src/users/users.service';
 @UseGuards(
   JwtAuthGuard,
   OrganizationGuard,
+  ACLGuard
 )
+@Feature('items')
 export class ItemsController implements CrudController<Item> {
   constructor(
     public service: ItemsCrudService,
@@ -89,6 +92,7 @@ export class ItemsController implements CrudController<Item> {
       fileFilter: imageFileFilter,
     }),
   )
+  @Action('Create-One')
   async createOne(@UserD() user, @Body() data: CreateItemDto, @UploadedFiles() uploadedFiles): Promise<Item> {
     await this.validateCall(user, data.organizationId);
     if (uploadedFiles && uploadedFiles.thumbnail && typeof uploadedFiles.thumbnail[0] !== 'undefined') {
@@ -118,6 +122,7 @@ export class ItemsController implements CrudController<Item> {
     }),
     fileFilter: imageFileFilter,
   }))
+  @Action('Update-One')
   async updateOne(@UserD() user, @Body() updateItemDto: UpdateItemDto, @UploadedFile() thumbnail): Promise<Item> {
     const item = await this.itemsService.findOne(updateItemDto.id);
     await this.validateCall(user, item.organizationId);
@@ -135,6 +140,7 @@ export class ItemsController implements CrudController<Item> {
     description: 'Updates status',
     type: Item
   })
+  @Action('Update-One')
   async updateStatus(@UserD() user, @Body() updateStatusDto: UpdateItemStatusDto): Promise<Item> {
     const item = await this.itemsService.findOne(updateStatusDto.id);
     await this.validateCall(user, item.organizationId);
@@ -143,6 +149,7 @@ export class ItemsController implements CrudController<Item> {
   }
 
   @Get(':id/files')
+  @Action('Read-One')
   async getFiles(@UserD() user, @Param('id') id): Promise<File[]> {
     await this.validateCall(user, id);
     return this.filesService.findFilesByKeyAndId(FILE_KEYS.ITEM, id);
@@ -160,6 +167,7 @@ export class ItemsController implements CrudController<Item> {
     }),
     fileFilter: imageFileFilter,
   }))
+  @Action('Update-One')
   async addFile(@Param('id') id, @UploadedFile() file): Promise<boolean> {
     this.filesService.uploadImagesFor(FILE_KEYS.ITEM, id, [file]);
     return true;
@@ -170,6 +178,7 @@ export class ItemsController implements CrudController<Item> {
     description: 'Remove file from list',
     type: Boolean
   })
+  @Action('Update-One')
   async removeFile(@Param('id') id): Promise<boolean> {
     this.filesService.remove(id);
     return true;

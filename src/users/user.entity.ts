@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Organization } from 'src/organizations/organization.entity';
 import { Notification } from 'src/notifications/notification.entity'
@@ -78,6 +78,16 @@ export class User  {
 
   @OneToMany(type => Notification, notification => notification.user)
   notifications: Notification[];
+
+  @ManyToOne(type => Organization, orgnization => orgnization.workers, { nullable: true })
+  organization: Organization;
+
+  @Column({
+    type: 'int',
+    default: null,
+    nullable: true
+  })
+  organizationId: number;
 
   roles: string[]; //For ACGuard
 }

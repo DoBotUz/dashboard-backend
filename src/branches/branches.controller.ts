@@ -1,6 +1,6 @@
 import { Controller, UseGuards, Param, Post, Get, Body, BadRequestException, UploadedFile, UseInterceptors, } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Crud, CrudController, CrudAuth, Override } from '@nestjsx/crud';
+import { Crud, CrudController, CrudAuth, Override, Feature, Action } from '@nestjsx/crud';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 import { BranchesService } from './branches.service';
@@ -16,6 +16,7 @@ import { File, KEYS as FILE_KEYS } from 'src/files/file.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
 import { diskStorage } from 'multer';
+import { ACLGuard } from 'src/common/guards/ACL.guard';
 
 
 @Crud({
@@ -60,8 +61,10 @@ import { diskStorage } from 'multer';
 @Controller('/:organizationId/branches')
 @UseGuards(
   JwtAuthGuard,
-  OrganizationGuard
+  OrganizationGuard,
+  ACLGuard
 )
+@Feature('branches')
 export class BranchesController implements CrudController<Branch> {
   constructor(
     public service: BranchesCrudService,
@@ -71,6 +74,7 @@ export class BranchesController implements CrudController<Branch> {
   ) {}
 
   @Override()
+  @Action('Create-One')
   async createOne(@UserD() user, @Body() data: CreateBranchDto): Promise<Branch> {
     await this.validateCall(user, data.organizationId);
 
@@ -82,6 +86,7 @@ export class BranchesController implements CrudController<Branch> {
     description: 'Updates one branch',
     type: Branch
   })
+  @Action('Update-One')
   async updateOne(@UserD() user, @Body() updateBranchDto: UpdateBranchDto): Promise<Branch> {
     const model = await this.branchesService.findOne(updateBranchDto.id);
     await this.validateCall(user, model.organizationId);
@@ -95,6 +100,7 @@ export class BranchesController implements CrudController<Branch> {
     description: 'Updates status',
     type: Branch
   })
+  @Action('Update-One')
   async updateStatus(@UserD() user, @Body() updateStatusDto: UpdateBranchStatusDto): Promise<Branch> {
     const item = await this.branchesService.findOne(updateStatusDto.id);
     await this.validateCall(user, item.organizationId);
@@ -103,6 +109,7 @@ export class BranchesController implements CrudController<Branch> {
   }
 
   @Get(':id/files')
+  @Action('Read-One')
   async getFiles(@UserD() user, @Param('id') id): Promise<File[]> {
     await this.validateCall(user, id);
     return this.filesService.findFilesByKeyAndId(FILE_KEYS.BRANCH, id);
@@ -120,6 +127,7 @@ export class BranchesController implements CrudController<Branch> {
     }),
     fileFilter: imageFileFilter,
   }))
+  @Action('Update-One')
   async addFile(@Param("id") id, @UploadedFile() file): Promise<boolean> {
     this.filesService.uploadImagesFor(FILE_KEYS.BRANCH, id, [file]);
     return true;
@@ -130,6 +138,7 @@ export class BranchesController implements CrudController<Branch> {
     description: 'Remove file from list',
     type: Boolean
   })
+  @Action('Update-One')
   async removeFile(@Param("id") id): Promise<boolean> {
     this.filesService.remove(id);
     return true;

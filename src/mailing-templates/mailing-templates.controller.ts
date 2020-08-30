@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { Controller, UseGuards, Param, Post, Body, UseInterceptors, UploadedFile, UploadedFiles, Get, Delete, BadRequestException } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { Crud, CrudController, CrudAuth, } from '@nestjsx/crud';
+import { Crud, CrudController, CrudAuth, Feature, Action, } from '@nestjsx/crud';
 import { FileInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from 'multer';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -18,6 +18,7 @@ import { MailingTemplatesService } from './mailing-templates.service';
 import { BotNotificationsService } from 'src/bot-notifications/bot-notifications.service';
 import { classToPlain } from 'class-transformer';
 import { BotsGateway } from 'src/gateways/bots/bots.gateway';
+import { ACLGuard } from 'src/common/guards/ACL.guard';
 
 
 @Crud({
@@ -57,8 +58,10 @@ import { BotsGateway } from 'src/gateways/bots/bots.gateway';
 @Controller('/:organizationId/mailing-templates')
 @UseGuards(
   JwtAuthGuard,
-  OrganizationGuard
+  OrganizationGuard,
+  ACLGuard
 )
+@Feature('mailing-templates')
 export class MailingTemplatesController implements CrudController<MailingTemplate>{
   constructor(
     public service: MailingTemplatesCrudService,
@@ -91,6 +94,7 @@ export class MailingTemplatesController implements CrudController<MailingTemplat
       fileFilter: imageFileFilter,
     }),
   )
+  @Action('Create-One')
   async createTemplate(@UserD() user, @Body() data: CreateMailingTemplateDto, @UploadedFiles() uploadedFiles): Promise<MailingTemplate> {
     if (uploadedFiles && uploadedFiles.thumbnail && typeof uploadedFiles.thumbnail[0] !== 'undefined') {
       const thumbnail = uploadedFiles.thumbnail[0];
@@ -119,6 +123,7 @@ export class MailingTemplatesController implements CrudController<MailingTemplat
     }),
     fileFilter: imageFileFilter,
   }))
+  @Action('Update-One')
   async updateTemplate(@UserD() user, @Body() updateTemplateDto: UpdateMailingTemplateDto, @UploadedFile() thumbnail): Promise<MailingTemplate> {
     const { id, ...data } = updateTemplateDto;
     if (thumbnail) {
@@ -128,6 +133,7 @@ export class MailingTemplatesController implements CrudController<MailingTemplat
   }
 
   @Get(':id/files')
+  @Action('Read-One')
   async getFiles(@UserD() user, @Param('id') id): Promise<File[]> {
     // await this.validateCall(user, id);
     return this.filesService.findFilesByKeyAndId(FILE_KEYS.MAILING_TEMPLATE, id);
@@ -145,6 +151,7 @@ export class MailingTemplatesController implements CrudController<MailingTemplat
     }),
     fileFilter: imageFileFilter,
   }))
+  @Action('Update-One')
   async addFile(@Param("id") id, @UploadedFile() file): Promise<boolean> {
     this.filesService.uploadImagesFor(FILE_KEYS.MAILING_TEMPLATE, id, [file]);
     return true;
@@ -155,6 +162,7 @@ export class MailingTemplatesController implements CrudController<MailingTemplat
     description: 'Remove file from list',
     type: Boolean
   })
+  @Action('Update-One')
   async removeFile(@Param("id") id): Promise<boolean> {
     this.filesService.remove(id);
     return true;
@@ -165,6 +173,7 @@ export class MailingTemplatesController implements CrudController<MailingTemplat
     description: 'Get list of mailing cateogires',
     type: Boolean
   })
+  @Action('Read-Many')
   async getCats(): Promise<any[]> {
     return CATS_ARRAY;
   }
@@ -174,6 +183,7 @@ export class MailingTemplatesController implements CrudController<MailingTemplat
     description: 'Delete mailing template',
     type: Boolean
   })
+  @Action('Update-One')
   async deleteOne(@Param("id") id): Promise<boolean> {
     return this.mailingTempaltesService.removeOne(id);
   }
@@ -183,6 +193,7 @@ export class MailingTemplatesController implements CrudController<MailingTemplat
     description: 'Start mailing draft',
     type: Boolean
   })
+  @Action('Update-One')
   async startOne(@Param("id") id, @Param("botId") botId): Promise<boolean> {
     const model = await this.mailingTempaltesService.findOne(id);
     if(!model){
@@ -203,6 +214,7 @@ export class MailingTemplatesController implements CrudController<MailingTemplat
     description: 'Duplicate template to draft',
     type: Boolean
   })
+  @Action('Create-One')
   async duplicateOne(@Param("id") modelId): Promise<MailingTemplate> {
     const model = await this.mailingTempaltesService.findOne(modelId);
     if(!model){
