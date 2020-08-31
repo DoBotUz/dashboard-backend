@@ -61,7 +61,7 @@ export class Category {
   children: Category[];
 
   @OneToMany(type => Item, item => item.category)
-  items: Item[];
+  items: Promise<Item[]>;
 
   @ManyToOne(type => Organization, org => org.categories,  {
     onDelete: 'CASCADE',

@@ -93,6 +93,9 @@ const grantsObject = {
       'create:any': ['*'],
       'update:any': ['*'],
     },
+    analytics: {
+      'read:any': ['*'],
+    }
   },
   [AppRoles.owner]: {
     orders: {
@@ -148,6 +151,9 @@ const grantsObject = {
       'update:any': ['*'],
       'delete:any': ['*'],
     },
+    analytics: {
+      'read:any': ['*'],
+    }
   },
   [AppRoles.admin]: {
     orders: {
@@ -205,6 +211,9 @@ const grantsObject = {
       'update:any': ['*'],
       'delete:any': ['*'],
     },
+    analytics: {
+      'read:any': ['*'],
+    }
   }
 };
 
