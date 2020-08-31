@@ -7,6 +7,7 @@ import { UserD } from 'src/auth/user.decorator';
 import { Message } from './message.entity';
 import { MessagesService } from './messages.service';
 import { User } from 'src/users/user.entity';
+import { AppRoles } from 'src/app.roles';
 
 @Crud({
   model: {
@@ -35,9 +36,11 @@ import { User } from 'src/users/user.entity';
 })
 @CrudAuth({
   property: 'user',
-  filter: (user: User) => ({
-    'organization.userId': user.id,
-  })
+  filter: (user: User) => {
+    if (user.role == AppRoles.admin)
+      return { 'organization.userId': user.id }
+    return { 'organization.id': user.organizationId }
+  }
 })
 @Controller('/:organizationId/chat/messages')
 @UseGuards(

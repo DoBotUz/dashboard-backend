@@ -49,9 +49,11 @@ import { AppRoles } from 'src/app.roles';
 })
 @CrudAuth({
   property: 'user',
-  filter: (user: User) => ({
-    'organization.userId': user.id,
-  })
+  filter: (user: User) => {
+    if (user.role == AppRoles.admin)
+      return { 'organization.userId': user.id }
+    return { 'organization.id': user.organizationId }
+  }
 })
 @ApiTags('promocodes')
 @Controller('/:organizationId/promocodes')

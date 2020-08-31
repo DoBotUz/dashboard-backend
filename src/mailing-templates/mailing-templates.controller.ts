@@ -19,6 +19,7 @@ import { BotNotificationsService } from 'src/bot-notifications/bot-notifications
 import { classToPlain } from 'class-transformer';
 import { BotsGateway } from 'src/gateways/bots/bots.gateway';
 import { ACLGuard } from 'src/common/guards/ACL.guard';
+import { AppRoles } from 'src/app.roles';
 
 
 @Crud({
@@ -50,9 +51,11 @@ import { ACLGuard } from 'src/common/guards/ACL.guard';
 })
 @CrudAuth({
   property: 'user',
-  filter: (user: User) => ({
-    'organization.userId': user.id,
-  })
+  filter: (user: User) => {
+    if (user.role == AppRoles.admin)
+      return { 'organization.userId': user.id }
+    return { 'organization.id': user.organizationId }
+  }
 })
 @ApiTags('mailing-templates')
 @Controller('/:organizationId/mailing-templates')

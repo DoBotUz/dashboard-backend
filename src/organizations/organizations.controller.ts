@@ -52,9 +52,10 @@ import { AppRoles } from 'src/app.roles';
 })
 @CrudAuth({
   property: 'user',
-  filter: (user: User) => ({
-    'user.id': user.id,
-  })
+  filter: (user: User) => {
+    if (user.role == AppRoles.admin)
+      return { 'user.id': user.id }
+  }
 })
 @ApiTags('organizations')
 @Controller('organizations')

@@ -17,6 +17,7 @@ import { BotNotificationsCrudService } from './bot-notifications-crud.service';
 import { User } from 'src/users/user.entity';
 import { BotGuard } from 'src/common/guards/BotsGuard';
 import { MailingTemplatesService } from 'src/mailing-templates/mailing-templates.service';
+import { AppRoles } from 'src/app.roles';
 
 
 @Crud({
@@ -52,9 +53,11 @@ import { MailingTemplatesService } from 'src/mailing-templates/mailing-templates
 })
 @CrudAuth({
   property: 'user',
-  filter: (user: User) => ({
-    'organization.userId': user.id,
-  })
+  filter: (user: User) => {
+    if (user.role == AppRoles.admin)
+      return { 'organization.userId': user.id }
+    return { 'organization.id': user.organizationId }
+  }
 })
 @ApiTags('bot-notifications')
 @Controller('/:botId/bot-notifications')
