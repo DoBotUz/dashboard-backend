@@ -64,5 +64,5 @@ export class Bot{
   feedbacks: Feedback[];
 
   @OneToMany(type => BotUser, botUser => botUser.bot)
-  botUsers: BotUser[];
+  botUsers: Promise<BotUser[]>;
 }

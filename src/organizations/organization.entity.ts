@@ -94,19 +94,19 @@ export class Organization {
   @OneToMany(type => Branch, branch => branch.organization, {
     eager: true
   })
-  branches: Branch[];
+  branches: Promise<Branch[]>;
 
   @OneToMany(type => Category, category => category.organization)
-  categories: Category[];
+  categories: Promise<Category[]>;
 
   @OneToMany(type => Item, item => item.organization)
-  items: Item[];
+  items: Promise<Item[]>;
 
   @OneToMany(type => Order, order => order.organization)
   orders: Order[];
 
   @OneToMany(type => BotUser, botUser => botUser.organization)
-  botUsers: BotUser[];
+  botUsers: Promise<BotUser[]>;
 
   @OneToMany(type => Feedback, feedback => feedback.organization)
   feedbacks: Feedback[];

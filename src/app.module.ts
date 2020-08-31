@@ -29,6 +29,7 @@ import { ChatModule } from './chat/chat.module';
 import { roles } from './app.roles';
 import { ACLFilterInterceptor } from './acl-filter.interceptor';
 import { JSendResInterceptor } from './jsend-res.interceptor';
+import { AnalyticsModule } from './analytics/analytics.module';
 
 @Module({
   imports: [
@@ -66,7 +67,10 @@ import { JSendResInterceptor } from './jsend-res.interceptor';
       entities: [],
       synchronize: true,
       autoLoadEntities: true,
-      charset: 'utf8mb4_general_ci'
+      charset: 'utf8mb4_general_ci',
+      extra: {
+        sql_mode: '',
+      }
     }),
     AuthModule,
     UsersModule,
@@ -86,6 +90,7 @@ import { JSendResInterceptor } from './jsend-res.interceptor';
     NotificationsModule,
     MailingTemplatesModule,
     ChatModule,
+    AnalyticsModule,
   ],
   controllers: [AppController],
   providers: [AppService,  {
