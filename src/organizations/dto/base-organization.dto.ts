@@ -34,6 +34,10 @@ export class BaseOrganizationDTO {
   delivery_settings: string;
 
   @IsOptional()
+  @IsJSON()
+  functions: string;
+
+  @IsOptional()
   @Transform((value) => {
     return Number(value)
   })

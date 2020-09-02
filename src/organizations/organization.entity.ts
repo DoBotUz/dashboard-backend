@@ -50,6 +50,9 @@ export class Organization {
   @Column('text', { nullable: true })
   delivery_settings: string;
 
+  @Column('text', { nullable: true })
+  functions: string;
+
   @CreateDateColumn({ name: 'created_at', readonly: true })
   created_at: Date;
 
