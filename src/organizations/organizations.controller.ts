@@ -143,9 +143,11 @@ export class OrganizationsController  implements CrudController<Organization> {
     const { id, bot, ...data } = updateOrganizationDTO;
     await this.validateCall(user, Number(id));
 
-    const uniqueToken = await this.botsService.isTokenUnique(bot.token, bot.id);
-    if (!uniqueToken) {
-      throw new BadRequestException('Wrong Input');
+    if (bot) {
+      const uniqueToken = await this.botsService.isTokenUnique(bot.token, bot.id);
+      if (!uniqueToken) {
+        throw new BadRequestException('Wrong Input');
+      }
     }
 
     if (thumbnail) {
@@ -154,11 +156,13 @@ export class OrganizationsController  implements CrudController<Organization> {
     
     const model = await this.organizationsService.updateOne(id, data);
 
-    const bot_id = bot.id;
-    delete bot.id;
+    if (bot) {
+      const bot_id = bot.id;
+      delete bot.id;
 
-    this.botsService.updateOne(bot_id, bot);
-    model.bot.token = bot.token;
+      this.botsService.updateOne(bot_id, bot);
+      model.bot.token = bot.token;
+    }
     return model;
   }
 
