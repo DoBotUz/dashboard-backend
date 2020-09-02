@@ -56,6 +56,7 @@ export class AnalyticsController {
         ]
       },
       category_orders: await this.analyticsService.getCategorilyOrdersForPeriod(organizationId, startDate, endDate),
+      product_orders: await this.analyticsService.getProductlyOrdersForPeriod(organizationId, startDate, endDate),
       metaData: await this.analyticsService.getMetaDataForPeriod(organizationId, startDate, endDate),
     }
   }

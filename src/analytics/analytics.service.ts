@@ -74,16 +74,20 @@ export class AnalyticsService {
       throw new InternalServerErrorException('Database query error');
     }
 
-    const labels = [];
-    const series = [];
-    for(let i = 0; i < result.length; i++){
-      labels.push(result[i].ru_title);
-      series.push(Number(result[i].total));
+    return this.transformToPies(result);
+  }
+
+  
+  public async getProductlyOrdersForPeriod(organizationId: number, startDate: Date, endDate: Date) {
+    let result = [];
+    try {
+      result = await this.connection.query("SELECT COUNT(item.id) as total, item.ru_title from item INNER JOIN order_item on order_item.itemId = item.id INNER JOIN `order` on order_item.orderId = `order`.id and `order`.organizationId = ? WHERE ( `order`.created_at BETWEEN ? and ? ) GROUP BY item.ru_title", [organizationId, moment(startDate).format('YYYY-MM-DD HH:mm:ss'), moment(endDate).format('YYYY-MM-DD HH:mm:ss') ]);
+    } catch(e) {
+      this.logger.log(`Error on getting data from database for 'getProductlyOrdersForPeriod'\n ${e}`);
+      throw new InternalServerErrorException('Database query error');
     }
-    return {
-      labels,
-      series
-    }
+
+    return this.transformToPies(result);
   }
 
   
@@ -267,5 +271,18 @@ export class AnalyticsService {
       data.push([result[i].lat, result[i].lng]);
     }
     return data;
+  }
+
+  private transformToPies(result: any[]): any {
+    const labels = [];
+    const series = [];
+    for(let i = 0; i < result.length; i++){
+      labels.push(result[i].ru_title);
+      series.push(Number(result[i].total));
+    }
+    return {
+      labels,
+      series
+    }
   }
 }
