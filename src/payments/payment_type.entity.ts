@@ -17,6 +17,9 @@ export const DEFAULT_VALUE = [
 
 @Entity()
 export class PaymentType {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @Column({
     type: 'enum',
     enum: Object.values(TYPES),
