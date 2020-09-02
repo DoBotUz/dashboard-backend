@@ -30,6 +30,7 @@ import { roles } from './app.roles';
 import { ACLFilterInterceptor } from './acl-filter.interceptor';
 import { JSendResInterceptor } from './jsend-res.interceptor';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -91,6 +92,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     MailingTemplatesModule,
     ChatModule,
     AnalyticsModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService,  {

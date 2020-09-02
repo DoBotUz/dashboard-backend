@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { Controller, UseGuards, Body, UseInterceptors, UploadedFile, UploadedFiles, ValidationPipe, UsePipes, BadRequestException, Get, Param, Post } from '@nestjs/common';
 import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
-import { Crud, CrudController, Override, CrudAuth, Feature, Action } from "@nestjsx/crud";
+import { Crud, CrudController, Override, CrudAuth, Feature, Action, CrudRequest, ParsedRequest } from "@nestjsx/crud";
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserD } from 'src/auth/user.decorator';
 import { FileInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express";
@@ -22,7 +22,7 @@ import { ValidationException } from 'src/validation-exception';
 import { UsersService } from 'src/users/users.service';
 import { ACLGuard } from 'src/common/guards/ACL.guard';
 import { AppRoles } from 'src/app.roles';
-
+import { DEFAULT_VALUE as PAYMENT_DEFAULT_VALUE } from 'src/payments/payment_type.entity';
 
 @Crud({
   model: {
@@ -40,6 +40,9 @@ import { AppRoles } from 'src/app.roles';
         eager: true,
       },
       bot: {
+        eager: true,
+      },
+      payment_types: {
         eager: true,
       },
     },
@@ -71,6 +74,24 @@ export class OrganizationsController  implements CrudController<Organization> {
     private filesService: FilesService,
     private usersService: UsersService,
   ) {}
+
+  get base(): CrudController<Organization> {
+    return this;
+  }
+
+  @Override('getOneBase')
+  async getOne(
+    @ParsedRequest() req: CrudRequest,
+  ) {
+    let organization = await this.base.getOneBase(req);
+    if (!organization.payment_types || !organization.payment_types.length) {
+      this.organizationsService.updateOne(organization.id, {
+        payment_types: PAYMENT_DEFAULT_VALUE
+      });
+      organization = await this.base.getOneBase(req);
+    }
+    return organization;
+  }
   
   @Override()
   @UseInterceptors(

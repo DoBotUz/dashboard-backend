@@ -9,7 +9,7 @@ import { BotUser } from 'src/bot-users/bot-user.entity';
 import { Feedback } from 'src/feedbacks/feedback.entity';
 import { Promocode } from 'src/promocodes/promocode.entity';
 import { MailingTemplate } from 'src/mailing-templates/mailing-template.entity';
-
+import { PaymentType } from 'src/payments/payment_type.entity'
 
 export const STATUSES = {
   DELETED: 0,
@@ -101,4 +101,9 @@ export class Organization {
 
   @OneToMany(type => User, user => user.organization)
   workers: User[];
+
+  @OneToMany(type => PaymentType, paymentType => paymentType.organization, {
+    cascade: true
+  })
+  payment_types: PaymentType[];
 }
