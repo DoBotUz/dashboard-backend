@@ -10,27 +10,62 @@ export class AnalyticsService {
   constructor(private connection: Connection) {}
   private logger: Logger = new Logger('AnalyticsService');
 
-  async getAllCategorilyOrders(organizationId: number) {
-    let result = [];
-    try {
-      result = await this.connection.query("SELECT COUNT(category.id) as total, category.ru_title from category INNER JOIN item on item.categoryId = category.id INNER JOIN order_item on order_item.itemId = item.id INNER JOIN `order` on order_item.orderId = `order`.id and `order`.organizationId = ? GROUP BY category.ru_title", [organizationId]);
-    } catch(e) {
-      this.logger.log(`Error on getting data from database for 'getAllCategorilyOrders'\n ${e}`);
-      throw new InternalServerErrorException('Database query error');
-    }
-    const labels = [];
-    const series = [];
-    for(let i = 0; i < result.length; i++){
-      labels.push(result[i].ru_title);
-      series.push(Number(result[i].total));
-    }
-    return {
-      labels,
-      series
+  async getBotUsers(organizationId: number, startDate: Date, endDate: Date, type: string) {
+    if (type === 'month') {
+      return this.getBotUsersByMonth(organizationId, startDate,  endDate);
+    } else if(type == 'days') {
+      return this.getBotUsersByDay(organizationId, startDate,  endDate);
     }
   }
 
-  async getCategorilyOrdersForPeriod(organizationId: number,startDate: Date, endDate: Date) {
+  async getOrders(organizationId: number, startDate: Date, endDate: Date, type: string) {
+    if (type === 'month') {
+      return this.getOrdersByMonth(organizationId, startDate,  endDate);
+    } else if(type == 'days') {
+      return this.getOrdersByDay(organizationId, startDate,  endDate);
+    }
+  }
+
+  public async getMetaDataForPeriod(organizationId: number, startDate: Date, endDate: Date) {
+    let result = [];
+    let bot_users_num = 0;
+    let orders_num = 0;
+    let feedbacks_num = 0;
+    try {
+      result = await this.connection.query("SELECT COUNT(`bot_user`.id) as total from `bot_user` where organizationId = ? and ( `bot_user`.created_at BETWEEN ? and ? )", [organizationId, moment(startDate).format('YYYY-MM-DD HH:mm:ss'), moment(endDate).format('YYYY-MM-DD HH:mm:ss') ]);
+    } catch(e) {
+      this.logger.log(`Error on getting data from database for 'getMetaDataForPeriod(bot_users)'\n ${e}`);
+      throw new InternalServerErrorException('Database query error');
+    }
+    if(result.length)
+      bot_users_num = result[0].total;
+
+    try {
+      result = await this.connection.query("SELECT COUNT(`order`.id) as total from `order` where organizationId = ? and ( `order`.created_at BETWEEN ? and ? )", [organizationId, moment(startDate).format('YYYY-MM-DD HH:mm:ss'), moment(endDate).format('YYYY-MM-DD HH:mm:ss') ]);
+    } catch(e) {
+      this.logger.log(`Error on getting data from database for 'getMetaDataForPeriod(order)'\n ${e}`);
+      throw new InternalServerErrorException('Database query error');
+    }
+    if(result.length)
+      orders_num = result[0].total;
+
+    try {
+      result = await this.connection.query("SELECT COUNT(`feedback`.id) as total from `feedback` where organizationId = ? and ( `feedback`.created_at BETWEEN ? and ? )", [organizationId, moment(startDate).format('YYYY-MM-DD HH:mm:ss'), moment(endDate).format('YYYY-MM-DD HH:mm:ss') ]);
+    } catch(e) {
+      this.logger.log(`Error on getting data from database for 'getMetaDataForPeriod(feedback)'\n ${e}`);
+      throw new InternalServerErrorException('Database query error');
+    }
+    if(result.length)
+      feedbacks_num = result[0].total;
+
+    return {
+      bot_users_num,
+      orders_num,
+      feedbacks_num
+    };
+  }
+
+  public async getCategorilyOrdersForPeriod(organizationId: number, startDate: Date, endDate: Date) {
     let result = [];
     try {
       result = await this.connection.query("SELECT COUNT(category.id) as total, category.ru_title from category INNER JOIN item on item.categoryId = category.id INNER JOIN order_item on order_item.itemId = item.id INNER JOIN `order` on order_item.orderId = `order`.id and `order`.organizationId = ? WHERE ( `order`.created_at BETWEEN ? and ? ) GROUP BY category.ru_title", [organizationId, moment(startDate).format('YYYY-MM-DD HH:mm:ss'), moment(endDate).format('YYYY-MM-DD HH:mm:ss') ]);
@@ -38,6 +73,7 @@ export class AnalyticsService {
       this.logger.log(`Error on getting data from database for 'getCategorilyOrdersForPeriod'\n ${e}`);
       throw new InternalServerErrorException('Database query error');
     }
+
     const labels = [];
     const series = [];
     for(let i = 0; i < result.length; i++){
@@ -51,52 +87,63 @@ export class AnalyticsService {
   }
 
   
-  async getBotUsersForPeriod(organizationId: number, startDate: Date, endDate: Date) {
+  private async getBotUsersByDay(organizationId: number, startDate: Date, endDate: Date) {
     let result = [];
     try{
       result = await this.connection.query("SELECT COUNT(bot_user.id) as total, `created_at` as `date` FROM bot_user where organizationId=? and ( `created_at` BETWEEN ? and ? ) GROUP BY created_at", [organizationId, moment(startDate).format('YYYY-MM-DD HH:mm:ss'), moment(endDate).format('YYYY-MM-DD HH:mm:ss')]);
     } catch(e) {
-      this.logger.log(`Error on getting data from database for 'getBotUsersForPeriod'\n ${e}`);
+      this.logger.log(`Error on getting data from database for 'getBotUsersByDay'\n ${e}`);
       throw new InternalServerErrorException('Database query error');
     }
 
     return this.transformToDates(result);
   }
 
-  async getOrdersForPeriod(organizationId: number, startDate: Date, endDate: Date) {
+  private async getOrdersByDay(organizationId: number, startDate: Date, endDate: Date) {
     let result = [];
     try{
       result = await this.connection.query("SELECT COUNT(`order`.id) as total, `created_at` as `date` FROM `order` where organizationId=? and ( `created_at` BETWEEN ? and ? ) GROUP BY created_at", [organizationId, moment(startDate).format('YYYY-MM-DD HH:mm:ss'), moment(endDate).format('YYYY-MM-DD HH:mm:ss')]);
     } catch(e) {
-      this.logger.log(`Error on getting data from database for 'getOrdersForPeriod'\n ${e}`);
+      this.logger.log(`Error on getting data from database for 'getOrdersByDay'\n ${e}`);
       throw new InternalServerErrorException('Database query error');
     }
 
     return this.transformToDates(result);
   }
 
-  async getMonthlyBotUsers(organizationId: number) {
+  private async getBotUsersByMonth(organizationId: number, startDate: Date, endDate: Date) {
     let result = [];
     try{
-      result = await this.connection.query("SELECT COUNT(bot_user.id) as total, DATE_FORMAT(ANY_VALUE(created_at), '%Y-%m') as `date` FROM bot_user where organizationId=? GROUP BY DATE_FORMAT(created_at, '%Y%m')", [organizationId]);
+      result = await this.connection.query("SELECT COUNT(bot_user.id) as total, DATE_FORMAT(ANY_VALUE(created_at), '%Y-%m') as `date` FROM bot_user where organizationId=? and ( `created_at` BETWEEN ? and ? ) GROUP BY DATE_FORMAT(created_at, '%Y%m')", [organizationId, moment(startDate).format('YYYY-MM-DD HH:mm:ss'), moment(endDate).format('YYYY-MM-DD HH:mm:ss')]);
     } catch(e) {
-      this.logger.log(`Error on getting data from database for 'getMonthlyBotUsers'\n ${e}`);
+      this.logger.log(`Error on getting data from database for 'getBotUsersByMonth'\n ${e}`);
       throw new InternalServerErrorException('Database query error');
     }
 
     return this.transformToMonthly(result);
   }
 
-  async getMonthlyOrders(organizationId: number) {
+  private async getOrdersByMonth(organizationId: number, startDate: Date, endDate: Date) {
     let result = [];
     try{
-      result = await this.connection.query("SELECT COUNT(`order`.id) as total, DATE_FORMAT(ANY_VALUE(created_at), '%Y-%m') as `date` FROM `order` where organizationId=? GROUP BY DATE_FORMAT(created_at, '%Y%m')", [organizationId]);
+      result = await this.connection.query("SELECT COUNT(`order`.id) as total, DATE_FORMAT(ANY_VALUE(created_at), '%Y-%m') as `date` FROM `order` where organizationId=? and ( `created_at` BETWEEN ? and ? ) GROUP BY DATE_FORMAT(created_at, '%Y%m')", [organizationId, moment(startDate).format('YYYY-MM-DD HH:mm:ss'), moment(endDate).format('YYYY-MM-DD HH:mm:ss')]);
     } catch(e) {
-      this.logger.log(`Error on getting data from database for 'getMonthlyOrders'\n ${e}`);
+      this.logger.log(`Error on getting data from database for 'getOrdersByMonth'\n ${e}`);
       throw new InternalServerErrorException('Database query error');
     }
 
     return this.transformToMonthly(result);
+  }
+
+  public async getGeoOrdersForPeriod(organizationId: number, startDate: Date, endDate: Date) {
+    let result = [];
+    try{
+      result = await this.connection.query("SELECT `lat`, `lng` FROM `order` where organizationId=? and `lat` IS NOT NULL and `lng` IS NOT NULL and ( `created_at` BETWEEN ? and ? )", [organizationId, moment(startDate).format('YYYY-MM-DD HH:mm:ss'), moment(endDate).format('YYYY-MM-DD HH:mm:ss')]);
+    } catch(e) {
+      this.logger.log(`Error on getting data from database for 'getGeoOrdersForPeriod'\n ${e}`);
+      throw new InternalServerErrorException('Database query error');
+    }
+    return this.transformLatLngForYandex(result);
   }
 
   async generateBotUsers(organizationId: number, startDate: Date) {
@@ -107,28 +154,6 @@ export class AnalyticsService {
       await this.connection.query("INSERT INTO `bot_user` (`id`, `tg_id`, `first_name`, `last_name`, `phone_number`, `username`, `bio`, `avatar`, `language`, `last_seen`, `created_at`, `updated_at`, `botId`, `organizationId`, `status`) VALUES (NULL, ?, ?, NULL, NULL, NULL, NULL, NULL, 'ru', NULL, ?, ?, ?, ?, '10');", [i+100, 'John', created_at, created_at, organizationId, organizationId]);
 
     }
-  }
-
-  async getGeoOrdersAll(organizationId: number) {
-    let result = [];
-    try{
-      result = await this.connection.query("SELECT `lat`, `lng` FROM `order` where organizationId=? and `lat` IS NOT NULL and `lng` IS NOT NULL", [organizationId]);
-    } catch(e) {
-      this.logger.log(`Error on getting data from database for 'getGeoOrdersAll'\n ${e}`);
-      throw new InternalServerErrorException('Database query error');
-    }
-    return this.transformLatLngForYandex(result);
-  }
-
-  async getGeoOrdersForPeriod(organizationId: number, startDate: Date, endDate: Date) {
-    let result = [];
-    try{
-      result = await this.connection.query("SELECT `lat`, `lng` FROM `order` where organizationId=? and `lat` IS NOT NULL and `lng` IS NOT NULL and ( `created_at` BETWEEN ? and ? )", [organizationId, moment(startDate).format('YYYY-MM-DD HH:mm:ss'), moment(endDate).format('YYYY-MM-DD HH:mm:ss')]);
-    } catch(e) {
-      this.logger.log(`Error on getting data from database for 'getGeoOrdersForPeriod'\n ${e}`);
-      throw new InternalServerErrorException('Database query error');
-    }
-    return this.transformLatLngForYandex(result);
   }
 
   async generateOrders(organization: Organization) {

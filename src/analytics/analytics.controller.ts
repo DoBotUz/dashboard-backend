@@ -9,77 +9,41 @@ import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('analytics')
 @Controller('/:organizationId/analytics')
-@Feature('analytics')
 @UseGuards(JwtAuthGuard, ACLGuard, OrganizationGuard)
+@Feature('analytics')
 export class AnalyticsController {
   constructor(
     private analyticsService: AnalyticsService,
     private organizationsService: OrganizationsService,
   ) {}
 
-
-  @Get('bot-users-info-monthly')
+  @Get('orders-geo')
   @Action('Read-One')
-  async getBotUsersInfo(@Param('organizationId') organizationId: number): Promise<any> {
+  async getOrdersGeo(@Param('organizationId') organizationId: number, @Query('start') start, @Query('end') end): Promise<any> {
     const organization = await this.organizationsService.findOne(organizationId);
-    if(!organization)
+    if(!organization || !start || !end)
       throw new NotFoundException('404');
 
-    const data = await this.analyticsService.getMonthlyBotUsers(organizationId);
-    return {
-      series: [
-        {
-          name: 'Подписчиков',
-          data
-        }
-      ]
-    };
-  }
-
-  @Get('orders-info-monthly')
-  @Action('Read-One')
-  async getOrdersInfoMonthly(@Param('organizationId') organizationId: number): Promise<any> {
-    const organization = await this.organizationsService.findOne(organizationId);
-    if(!organization)
-      throw new NotFoundException('404');
-
-    const data = await this.analyticsService.getMonthlyOrders(organizationId);
-    return {
-      series: [
-        {
-          name: 'Заказов',
-          data
-        }
-      ]
-    };
-  }
-
-  @Get('orders-info-categories')
-  @Action('Read-One')
-  async getOrdersInfoCategories(@Param('organizationId') organizationId: number): Promise<any> {
-    const organization = await this.organizationsService.findOne(organizationId);
-    if(!organization)
-      throw new NotFoundException('404');
-
-    const data = await this.analyticsService.getAllCategorilyOrders(organizationId);
-    return data;
-  }
-
-  @Get('period-info')
-  @Action('Read-One')
-  async getForPeriod(@Param('organizationId') organizationId: number, @Query('start') start, @Query('end') end): Promise<any> {
-    const organization = await this.organizationsService.findOne(organizationId);
-    if(!organization)
-      throw new NotFoundException('404');
-    
     const startDate = new Date(start);
     const endDate = new Date(end);
+    return { data: await this.analyticsService.getGeoOrdersForPeriod(organizationId, startDate, endDate) };
+  }
+  
+  @Get('period-info')
+  @Action('Read-One')
+  async getForPeriod(@Param('organizationId') organizationId: number, @Query('start') start, @Query('end') end, @Query('type') type): Promise<any> {
+    const organization = await this.organizationsService.findOne(organizationId);
+    if(!organization || !start || !end || !type)
+      throw new NotFoundException('404');
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
     return {
       bot_users: {
         series: [
           {
             name: 'Подписчиков',
-            data: await this.analyticsService.getBotUsersForPeriod(organizationId, startDate, endDate)
+            data: await this.analyticsService.getBotUsers(organizationId, startDate, endDate, type)
           }
         ]
       },
@@ -87,29 +51,13 @@ export class AnalyticsController {
         series: [
           {
             name: 'Заказов',
-            data: await this.analyticsService.getOrdersForPeriod(organizationId, startDate, endDate)
+            data: await this.analyticsService.getOrders(organizationId, startDate, endDate, type)
           }
         ]
       },
       category_orders: await this.analyticsService.getCategorilyOrdersForPeriod(organizationId, startDate, endDate),
+      metaData: await this.analyticsService.getMetaDataForPeriod(organizationId, startDate, endDate),
     }
-  }
-
-  @Get('geo-orders')
-  @Action('Read-One')
-  async getGeoOrders(@Param('organizationId') organizationId: number, @Query('start') start, @Query('end') end): Promise<any> {
-    const organization = await this.organizationsService.findOne(organizationId);
-    if(!organization)
-      throw new NotFoundException('404');
-    
-
-    if (start && end) {
-      const startDate = new Date(start);
-      const endDate = new Date(end);
-      return this.analyticsService.getGeoOrdersForPeriod(organizationId, startDate, endDate);
-    }
-
-    return this.analyticsService.getGeoOrdersAll(organizationId)
   }
 
   @Get('generate-bot-users')
