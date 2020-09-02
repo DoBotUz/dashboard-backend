@@ -3,7 +3,6 @@ import { IsUserExists } from 'src/users/validators';
 import { STATUSES } from '../organization.entity';
 import { Transform } from 'class-transformer';
 
-
 export class BaseOrganizationDTO {
   userId: number;
 

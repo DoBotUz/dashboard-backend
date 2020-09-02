@@ -9,11 +9,12 @@ import { Promocode } from 'src/promocodes/promocode.entity';
 
 export const STATUSES = {
   DELETED: 0,
-  MODERATION: 9,
-  ACTIVE: 10,
+  NEW: 10,
   CANCELED: 11,
-  PAID: 12,
-  DELIVERED: 13,
+  ACCEPTED: 12,
+  READY: 13,
+  DRIVER_ACCEPTED: 14,
+  DELIVERED: 15
 };
 
 export const PAYMENT_TYPES = {
@@ -60,7 +61,7 @@ export class Order {
 
   @Column({
     type: 'int',
-    default: STATUSES.MODERATION
+    default: STATUSES.NEW
   })
   status: number;
 
