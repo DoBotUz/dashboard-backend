@@ -26,7 +26,11 @@ export class ACLFilterInterceptor implements NestInterceptor {
     if(user && user.roles && user.roles.length)
       role = user.roles[0];
 
-    if (!crudAction || !role){
+    if (!role) {
+      return next.handle();
+    }
+
+    if (!crudAction){
       this.logger.log(`No action translation found: ${feature} - ${action}`);
     } else{
       
@@ -49,6 +53,7 @@ export class ACLFilterInterceptor implements NestInterceptor {
       'Replace-One': 'updateAny',
       'Delete-One': 'deleteAny',
     };
+    
 
     if (!translations.hasOwnProperty(action)) {
       return null;
