@@ -4,6 +4,7 @@ import { IsOrganizationExists } from '../validators';
 import { Transform, plainToClass } from 'class-transformer';
 import { IsBotExists } from 'src/bots/validators';
 import { STATUSES } from '../organization.entity';
+import { PaymentType } from 'src/payments/payment_type.entity';
 
 class Bot{
   @IsNotEmpty()
@@ -49,4 +50,7 @@ export class UpdateOrganizationDTO extends BaseOrganizationDTO {
   @IsOptional()
   @IsString()
   uz_description: string;
+
+  @IsOptional()
+  payment_types: PaymentType[]
 }
