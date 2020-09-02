@@ -1,4 +1,4 @@
-import { IsNotEmpty, Validate, Length, ValidateNested, IsOptional, IsIn, IsNumber } from 'class-validator';
+import { IsNotEmpty, Validate, Length, ValidateNested, IsOptional, IsIn, IsNumber, IsString, IsAscii } from 'class-validator';
 import { BaseOrganizationDTO } from './base-organization.dto';
 import { IsOrganizationExists } from '../validators';
 import { Transform, plainToClass } from 'class-transformer';
@@ -20,11 +20,33 @@ export class UpdateOrganizationDTO extends BaseOrganizationDTO {
   @Validate(IsOrganizationExists)
   id: number;
   
-  @IsNotEmpty()
+  @IsOptional()
   @Transform((value) => {
     return plainToClass(Bot, JSON.parse(value));
   })
   @ValidateNested()
   bot: Bot;
 
+  @IsOptional()
+  @IsString()
+  @Length(3, 255)
+  title: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(3, 255)
+  @IsAscii()
+  slug: string;
+
+  @IsOptional()
+  @IsString()
+  ru_description: string;
+
+  @IsOptional()
+  @IsString()
+  en_description: string;
+
+  @IsOptional()
+  @IsString()
+  uz_description: string;
 }

@@ -41,32 +41,14 @@ export class Organization {
   @Column('varchar', { 'length': 255, 'nullable': true })
   thumbnail: string;
 
-  @Column('boolean', { 'default': false })
-  is_multilanguage: boolean;
-
-  @Column('double', { 'default': 0 })
-  min_order_charge: number;
-
-  @Column('double', { 'default': 0 })
-  free_distance: number;
-
-  @Column('double')
-  fixed_delivery_price: number;
-
-  @Column('double', { 'nullable': true })
-  per_km_deliver_price: number;
-
-  @Column('int', { 'nullable': true })
-  delivery_time_range_start: number;
-
-  @Column('int', { 'nullable': true })
-  delivery_time_range_end: number;
-
   @Column({
     type: 'int',
     default: STATUSES.ACTIVE
   })
   status: number;
+
+  @Column('text', { nullable: true })
+  delivery_settings: string;
 
   @CreateDateColumn({ name: 'created_at', readonly: true })
   created_at: Date;

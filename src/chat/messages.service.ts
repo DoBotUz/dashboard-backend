@@ -43,6 +43,9 @@ export class MessagesService extends TypeOrmCrudService<Message> {
         created_at: 'DESC',
       },
     });
+    if (messages.length == 0) {
+      return [];
+    }
     const distinctBotUserIds = messages.reduce((p,c) => {
       if (!c.sent_by_operator) {
         p.add(c.author);
