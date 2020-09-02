@@ -78,7 +78,7 @@ export class AnalyticsService {
   async getMonthlyBotUsers(organizationId: number) {
     let result = [];
     try{
-      result = await this.connection.query("SELECT COUNT(bot_user.id) as total, DATE_FORMAT(created_at, '%Y-%m') as `date` FROM bot_user where organizationId=? GROUP BY DATE_FORMAT(created_at, '%Y%m')", [organizationId]);
+      result = await this.connection.query("SELECT COUNT(bot_user.id) as total, DATE_FORMAT(ANY_VALUE(created_at), '%Y-%m') as `date` FROM bot_user where organizationId=? GROUP BY DATE_FORMAT(created_at, '%Y%m')", [organizationId]);
     } catch(e) {
       this.logger.log(`Error on getting data from database for 'getMonthlyBotUsers'\n ${e}`);
       throw new InternalServerErrorException('Database query error');
@@ -90,7 +90,7 @@ export class AnalyticsService {
   async getMonthlyOrders(organizationId: number) {
     let result = [];
     try{
-      result = await this.connection.query("SELECT COUNT(`order`.id) as total, DATE_FORMAT(created_at, '%Y-%m') as `date` FROM `order` where organizationId=? GROUP BY DATE_FORMAT(created_at, '%Y%m')", [organizationId]);
+      result = await this.connection.query("SELECT COUNT(`order`.id) as total, DATE_FORMAT(ANY_VALUE(created_at), '%Y-%m') as `date` FROM `order` where organizationId=? GROUP BY DATE_FORMAT(created_at, '%Y%m')", [organizationId]);
     } catch(e) {
       this.logger.log(`Error on getting data from database for 'getMonthlyOrders'\n ${e}`);
       throw new InternalServerErrorException('Database query error');
@@ -107,6 +107,28 @@ export class AnalyticsService {
       await this.connection.query("INSERT INTO `bot_user` (`id`, `tg_id`, `first_name`, `last_name`, `phone_number`, `username`, `bio`, `avatar`, `language`, `last_seen`, `created_at`, `updated_at`, `botId`, `organizationId`, `status`) VALUES (NULL, ?, ?, NULL, NULL, NULL, NULL, NULL, 'ru', NULL, ?, ?, ?, ?, '10');", [i+100, 'John', created_at, created_at, organizationId, organizationId]);
 
     }
+  }
+
+  async getGeoOrdersAll(organizationId: number) {
+    let result = [];
+    try{
+      result = await this.connection.query("SELECT `lat`, `lng` FROM `order` where organizationId=? and `lat` IS NOT NULL and `lng` IS NOT NULL", [organizationId]);
+    } catch(e) {
+      this.logger.log(`Error on getting data from database for 'getGeoOrdersAll'\n ${e}`);
+      throw new InternalServerErrorException('Database query error');
+    }
+    return this.transformLatLngForYandex(result);
+  }
+
+  async getGeoOrdersForPeriod(organizationId: number, startDate: Date, endDate: Date) {
+    let result = [];
+    try{
+      result = await this.connection.query("SELECT `lat`, `lng` FROM `order` where organizationId=? and `lat` IS NOT NULL and `lng` IS NOT NULL and ( `created_at` BETWEEN ? and ? )", [organizationId, moment(startDate).format('YYYY-MM-DD HH:mm:ss'), moment(endDate).format('YYYY-MM-DD HH:mm:ss')]);
+    } catch(e) {
+      this.logger.log(`Error on getting data from database for 'getGeoOrdersForPeriod'\n ${e}`);
+      throw new InternalServerErrorException('Database query error');
+    }
+    return this.transformLatLngForYandex(result);
   }
 
   async generateOrders(organization: Organization) {
@@ -166,8 +188,15 @@ export class AnalyticsService {
 
       let orderId = null;
 
+      const start_lat = 41.396390;
+      const start_lng =  69.178457;
+      const end_lat = 41.253010;
+      const end_lng =  69.358358;
+      const lat = Math.random() * (end_lat - start_lat) + start_lat;
+      const lng = Math.random() * (end_lng - start_lng) + start_lng;
+      
       try {
-        orderId = (await this.connection.query("INSERT INTO `order` (`id`, `total_charge`, `delivery_charge`, `for_datetime`, `lat`, `lng`, `address`, `payment_type`, `phone`, `comment`, `is_paid`, `created_at`, `updated_at`, `botUserId`, `organizationId`, `branchId`, `promocodeId`, `status`, `is_self_service`) VALUES (NULL, ?, '1000', ?, NULL, NULL, NULL, '10', '', NULL, '0', ?, ?, ?, ?, ?, NULL, '9', '0');", [totalCharge, created_at, created_at, created_at, botUserId, organization.id, branchId])).insertId;
+        orderId = (await this.connection.query("INSERT INTO `order` (`id`, `total_charge`, `delivery_charge`, `for_datetime`, `lat`, `lng`, `address`, `payment_type`, `phone`, `comment`, `is_paid`, `created_at`, `updated_at`, `botUserId`, `organizationId`, `branchId`, `promocodeId`, `status`, `is_self_service`) VALUES (NULL, ?, '1000', ?, ?, ?, NULL, '10', '', NULL, '0', ?, ?, ?, ?, ?, NULL, '9', '0');", [totalCharge, created_at, lat, lng, created_at, created_at, botUserId, organization.id, branchId])).insertId;
       } catch(e) {
         this.logger.log(`Error on inserting data to database for order\n ${e}`);
         throw new InternalServerErrorException("Database error. Order Inserting");
@@ -204,6 +233,14 @@ export class AnalyticsService {
       })
     }
 
+    return data;
+  }
+
+  private transformLatLngForYandex(result: any[]): any {
+    const data = [];
+    for(let i = 0; i < result.length; i++){
+      data.push([result[i].lat, result[i].lng]);
+    }
     return data;
   }
 }

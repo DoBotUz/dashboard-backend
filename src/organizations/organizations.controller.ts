@@ -197,7 +197,7 @@ export class OrganizationsController  implements CrudController<Organization> {
     this.filesService.remove(id);
     return true;
   }
-
+  
   @Post("/switch-bot-status")
   @ApiOkResponse({
     description: 'Changes organiaztion related bot status',

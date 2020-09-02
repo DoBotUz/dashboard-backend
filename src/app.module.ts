@@ -69,7 +69,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
       autoLoadEntities: true,
       charset: 'utf8mb4_general_ci',
       extra: {
-        sql_mode: '',
+        'sql_mode': '',
       }
     }),
     AuthModule,

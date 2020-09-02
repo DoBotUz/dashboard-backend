@@ -9,7 +9,7 @@ import { User } from './user.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { editFileName, imageFileFilter } from 'src/files/utils/file-upload.utils';
-import { Feature } from '@nestjsx/crud';
+import { Feature, Action } from '@nestjsx/crud';
 
 @ApiTags('profile')
 @Controller('profile')
@@ -25,6 +25,7 @@ export class ProfileController {
     description: 'Logged in user info',
     type: User
   })
+  @Action('Read-One')
   async profile(@UserD() user): Promise<any> {
     return this.usersService.findOne(user.id);
   }
@@ -41,6 +42,7 @@ export class ProfileController {
     }),
     fileFilter: imageFileFilter,
   }))
+  @Action('Update-One')
   async updateProfile(@UserD() user, @Body() data: UpdateProfileDto,  @UploadedFile() avatar): Promise<any> {
     if (avatar) {
       data.avatar = avatar.filename;
@@ -53,6 +55,7 @@ export class ProfileController {
     description: 'Update user',
     type: User
   })
+  @Action('Update-One')
   async deleteAvatar(@UserD() user): Promise<any> {
     return this.usersService.updateOne(user.id, {
       avatar: '',
@@ -64,6 +67,7 @@ export class ProfileController {
     description: "Is email unique?",
     type: Boolean
   })
+  @Action('Read-One')
   async isEmailUnique(@UserD() user, @Param('email') email: string): Promise<boolean> {
     return await this.usersService.isEmailUnique(email, user.id);
   }

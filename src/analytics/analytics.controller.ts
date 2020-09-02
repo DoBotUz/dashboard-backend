@@ -95,6 +95,23 @@ export class AnalyticsController {
     }
   }
 
+  @Get('geo-orders')
+  @Action('Read-One')
+  async getGeoOrders(@Param('organizationId') organizationId: number, @Query('start') start, @Query('end') end): Promise<any> {
+    const organization = await this.organizationsService.findOne(organizationId);
+    if(!organization)
+      throw new NotFoundException('404');
+    
+
+    if (start && end) {
+      const startDate = new Date(start);
+      const endDate = new Date(end);
+      return this.analyticsService.getGeoOrdersForPeriod(organizationId, startDate, endDate);
+    }
+
+    return this.analyticsService.getGeoOrdersAll(organizationId)
+  }
+
   @Get('generate-bot-users')
   @Action('Read-One')
   async generateBotUsers(@Param('organizationId') organizationId: number): Promise<any> {

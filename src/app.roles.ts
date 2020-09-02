@@ -9,6 +9,10 @@ export enum AppRoles {
 
 const grantsObject = {
   [AppRoles.operator]: {
+    profile: {
+      'read:any': ['*'],
+      'update:any': ['*'],
+    },
     orders: {
       'create:any': ['*'],
       'read:any': ['*'],
@@ -42,6 +46,10 @@ const grantsObject = {
     },
   },
   [AppRoles.manager]: {
+    profile: {
+      'read:any': ['*'],
+      'update:any': ['*'],
+    },
     orders: {
       'create:any': ['*'],
       'read:any': ['*'],
@@ -98,6 +106,10 @@ const grantsObject = {
     }
   },
   [AppRoles.owner]: {
+    profile: {
+      'read:any': ['*'],
+      'update:any': ['*'],
+    },
     orders: {
       'create:any': ['*'],
       'read:any': ['*'],
@@ -156,6 +168,10 @@ const grantsObject = {
     }
   },
   [AppRoles.admin]: {
+    profile: {
+      'read:any': ['*'],
+      'update:any': ['*'],
+    },
     orders: {
       'create:any': ['*'],
       'read:any': ['*'],
