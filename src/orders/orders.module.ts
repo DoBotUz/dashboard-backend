@@ -7,7 +7,7 @@ import { OrdersCrudService } from './orders-crud.service';
 import { OrganizationsModule } from 'src/organizations/organizations.module';
 import { IsOrderExists } from './validators/isOrderExists';
 import { BotUsersModule } from 'src/bot-users/bot-users.module';
-import { OrderItem } from './order-item';
+import { OrderItem } from './order-item.entity';
 
 @Global()
 @Module({

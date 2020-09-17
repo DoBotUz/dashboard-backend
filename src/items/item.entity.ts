@@ -1,7 +1,8 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Category } from 'src/categories/category.entity';
 import { Organization } from 'src/organizations/organization.entity';
-import { OrderItem } from 'src/orders/order-item';
+import { OrderItem } from 'src/orders/order-item.entity';
+import { PromocodeItem } from 'src/promocodes/promocode-item.entity';
 
 
 export const STATUSES = {
@@ -76,4 +77,7 @@ export class Item {
 
   @OneToMany(type => OrderItem, orderItem => orderItem.item)
   order_items: OrderItem[];
+
+  @OneToMany(type => PromocodeItem, promocodeItem => promocodeItem.item)
+  promocode_items: PromocodeItem[];
 }

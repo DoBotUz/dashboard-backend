@@ -72,10 +72,7 @@ const grantsObject = {
       'delete:any': ['*'],
     },
     promocodes: {
-      'create:any': ['*'],
       'read:any': ['*'],
-      'update:any': ['*'],
-      'delete:any': ['*'],
     },
     branches: {
       'create:any': ['*'],
