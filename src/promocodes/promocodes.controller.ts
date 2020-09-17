@@ -62,7 +62,7 @@ import { AppRoles } from 'src/app.roles';
   OrganizationGuard,
   ACLGuard
 )
-@Feature('promocode')
+@Feature('promocodes')
 export class PromocodesController  implements CrudController<Promocode> {
   constructor(
     public service: PromocodeCrudService,

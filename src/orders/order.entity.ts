@@ -3,7 +3,7 @@ import { BotUser } from 'src/bot-users/bot-user.entity';
 import { Organization } from 'src/organizations/organization.entity';
 import { Branch } from 'src/branches/branch.entity';
 import { Item } from 'src/items/item.entity';
-import { OrderItem } from './order-item';
+import { OrderItem } from './order-item.entity';
 import { Promocode } from 'src/promocodes/promocode.entity';
 
 
